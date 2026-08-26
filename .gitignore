@@ -1,0 +1,11 @@
+node_modules/
+.next/
+out/
+preview/serenou-fase-01.html
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+
+# Arquivos originais de câmera e do vídeo. Pesados e não versionados por
+# padrão — as variantes servidas ficam em public/images e public/videos.
+assets-originais/

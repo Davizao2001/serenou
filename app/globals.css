@@ -1,0 +1,397 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   SERENOU — sistema de design
+   Paleta derivada do material existente da marca (preto, bege, off-white,
+   verde oliva). As cores vivas entram pelas roupas e pelas fotografias,
+   nunca pela interface.
+--------------------------------------------------------------------------- */
+
+@theme {
+  /* Superfícies */
+  --color-linho: #f2ece2;        /* off-white quente — fundo principal */
+  --color-linho-alto: #f8f4ed;   /* off-white elevado — header sólido */
+  --color-areia: #e6dbcb;        /* bege — fundo secundário */
+  --color-areia-forte: #d3c3ac;  /* bege saturado — divisores, hairlines */
+
+  /* Tinta */
+  --color-carvao: #16130f;       /* carvão quente — tipografia e impacto */
+  --color-carvao-medio: #524a3f; /* texto secundário sobre claro */
+  --color-carvao-fraco: #645b4f; /* labels, metadados — 4.9:1 sobre bege, 5.7:1 sobre linho */
+
+  /* Acento — pontual, nunca decorativo */
+  --color-oliva: #565e38;
+
+  /* Tipografia */
+  --font-display: "Archivo Variable", "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Instrument Sans Variable", "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+
+  /* Ritmo vertical */
+  --spacing-gutter: 1.5rem;
+}
+
+:root {
+  /* A marca vive em um único mundo visual, claro e quente. Declarado
+     explicitamente para que nenhum host imponha um esquema escuro. */
+  color-scheme: light;
+
+  /* Motion — tokens únicos para todo o site */
+  --dur-quick: 0.4s;
+  --dur-base: 0.7s;
+  --dur-slow: 1.1s;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Altura real do header, usada por âncoras e pelo estado sólido */
+  --header-h: 4.5rem;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-h: 5.5rem;
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* `clip`, nunca `hidden`: `hidden` transforma o elemento em contêiner de
+     rolagem e quebra o position:sticky da placa fotográfica. */
+  overflow-x: clip;
+}
+
+body {
+  background-color: var(--color-linho);
+  color: var(--color-carvao);
+  font-family: var(--font-sans);
+  font-size: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+/* ---------------------------------------------------------------------------
+   Papéis tipográficos
+--------------------------------------------------------------------------- */
+
+.t-display {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 116, "wght" 420;
+  text-transform: uppercase;
+  letter-spacing: -0.028em;
+  line-height: 0.86;
+  text-wrap: balance;
+}
+
+/* Variante estreita — usada quando a linha precisa caber sem quebrar mal */
+.t-display-tight {
+  font-variation-settings: "wdth" 96, "wght" 440;
+  letter-spacing: -0.02em;
+}
+
+.t-hero {
+  /* A hero horizontal devolveu tamanho à headline: 9,2vw contra os 7,4vw que
+     a fotografia anterior permitia. O teto continua sendo a parede branca da
+     loja atrás dos manequins — acima disso a linha sobe até ela e a
+     tipografia off-white perde contraste. Medido, não estimado. */
+  font-size: clamp(2.7rem, 9.2vw, 9.6rem);
+}
+
+.t-manifesto {
+  font-size: clamp(1.8rem, 4vw, 3.9rem);
+  line-height: 0.94;
+}
+
+.t-chapter {
+  font-size: clamp(2rem, 5.2vw, 4.75rem);
+}
+
+/* Janela de máscara para revelar linhas de display.
+   O padding vertical existe para os acentos: com line-height 0.86 as caixas
+   cortam o til de ÃO e o agudo de É. O negative margin devolve o espaço,
+   então o ritmo entre as linhas não muda. */
+.line-mask {
+  display: block;
+  overflow: hidden;
+  padding-top: 0.18em;
+  margin-top: -0.18em;
+  padding-bottom: 0.1em;
+}
+
+.t-eyebrow {
+  font-family: var(--font-sans);
+  /* 12px é o piso para texto legível; abaixo disso o tracking largo não
+     compensa a perda. */
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  line-height: 1;
+}
+
+.t-body {
+  max-width: 34ch;
+  color: var(--color-carvao-medio);
+  text-wrap: pretty;
+}
+
+/* ---------------------------------------------------------------------------
+   Intro
+
+   A camada existe no HTML do servidor e fica invisível por padrão. Quem
+   acende é o script inline do <head>, antes da primeira pintura — é isso que
+   impede um quadro da hero de aparecer antes da cortina.
+
+   O fundo reproduz a vinheta horizontal do próprio vídeo (amostrada do
+   arquivo). Assim as barras do `contain` no mobile e o estado anterior ao
+   carregamento se confundem com a imagem, sem emenda visível.
+--------------------------------------------------------------------------- */
+
+[data-intro-camada] {
+  display: none;
+}
+
+html[data-intro="ativa"] {
+  overflow: hidden;
+}
+
+html[data-intro="ativa"] [data-intro-camada] {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: linear-gradient(
+    to right,
+    #c9c3bb 0%,
+    #d1cbc2 25%,
+    #cfc8be 50%,
+    #c6beb3 75%,
+    #b1a99e 100%
+  );
+}
+
+[data-intro-media] {
+  display: block;
+  width: 100%;
+  height: 100svh;
+  object-fit: contain;
+}
+
+/* `cover` só onde a tela é larga o bastante para não cortar o selo: o logo
+   ocupa 412 dos 1280 px do quadro, e abaixo de 3:4 a fatia visível fica mais
+   estreita do que ele. Melhor barra de fundo do que meio logotipo. */
+@media (min-aspect-ratio: 3 / 4) {
+  [data-intro-media] {
+    object-fit: cover;
+  }
+}
+
+[data-intro-pular] {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  padding: 0.75rem 1rem;
+  color: var(--color-carvao-medio);
+  transition: color 0.2s ease;
+}
+
+[data-intro-pular]:hover {
+  color: var(--color-carvao);
+}
+
+@media (min-width: 768px) {
+  [data-intro-pular] {
+    right: 2rem;
+    bottom: 2rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Marca
+
+   O lettering oficial entra como máscara e recebe `currentColor`. Assim ele
+   acompanha sozinho a troca de cor do header — off-white sobre a hero,
+   carvão sobre o fundo claro — sem precisar de dois arquivos nem de um
+   crossfade para sincronizar.
+--------------------------------------------------------------------------- */
+
+.marca-serenou {
+  display: block;
+  height: 1.15rem;
+  aspect-ratio: 4.016;
+  background-color: currentColor;
+  -webkit-mask: url("/images/serenou/marca/serenou-lettering-144.png") left center /
+    contain no-repeat;
+  mask: url("/images/serenou/marca/serenou-lettering-144.png") left center / contain
+    no-repeat;
+}
+
+@media (min-width: 1024px) {
+  .marca-serenou {
+    height: 1.4rem;
+  }
+}
+
+.marca-texto {
+  display: none;
+}
+
+/* Sem suporte a máscara, o lettering viraria um retângulo sólido. */
+@supports not ((-webkit-mask-image: none) or (mask-image: none)) {
+  .marca-serenou {
+    display: none;
+  }
+  .marca-texto {
+    display: block;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Área de toque
+
+   Links editoriais precisam de tipografia pequena e sublinhado colado ao
+   texto. Em vez de inflar o elemento com padding — o que afastaria a régua do
+   sublinhado — a área sensível cresce por um pseudo-elemento, sem mexer no
+   desenho. Equivale ao hitSlop das plataformas nativas.
+--------------------------------------------------------------------------- */
+
+.tap {
+  position: relative;
+}
+
+.tap::after {
+  content: "";
+  position: absolute;
+  inset: -0.85rem -0.5rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Estados de foco — visíveis em ambos os fundos
+--------------------------------------------------------------------------- */
+
+:where(a, button, [tabindex]):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+  border-radius: 1px;
+}
+
+/* ---------------------------------------------------------------------------
+   Estados iniciais das animações.
+
+   `.js-motion` é aplicado por um script inline no <head>, antes da primeira
+   pintura. Sem JavaScript a classe nunca entra e todo o conteúdo nasce
+   visível; com prefers-reduced-motion ela é neutralizada logo abaixo.
+--------------------------------------------------------------------------- */
+
+.js-motion [data-hero-eyebrow],
+.js-motion [data-hero-desc],
+.js-motion [data-hero-cta],
+.js-motion [data-manifesto-body],
+.js-motion [data-reveal] {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.js-motion [data-hero-line],
+.js-motion [data-leve-line],
+.js-motion [data-versatil-line],
+.js-motion [data-teaser-line] {
+  transform: translateY(108%);
+}
+
+.js-motion [data-plate-reveal],
+.js-motion [data-leve-frame],
+.js-motion [data-teaser-frame] {
+  clip-path: inset(0% 0% 100% 0%);
+}
+
+.js-motion [data-plate-zoom] {
+  transform: scale(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .js-motion [data-hero-eyebrow],
+  .js-motion [data-hero-desc],
+  .js-motion [data-hero-cta],
+  .js-motion [data-manifesto-body],
+  .js-motion [data-reveal] {
+    opacity: 1;
+    visibility: visible;
+  }
+  .js-motion [data-hero-line],
+  .js-motion [data-leve-line],
+  .js-motion [data-versatil-line],
+  .js-motion [data-teaser-line],
+  .js-motion [data-plate-zoom] {
+    transform: none;
+  }
+  .js-motion [data-plate-reveal],
+  .js-motion [data-leve-frame],
+  .js-motion [data-teaser-frame] {
+    clip-path: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Placa fotográfica — a moldura contínua que atravessa a narrativa
+--------------------------------------------------------------------------- */
+
+.plate-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* O enquadramento é por breakpoint: o corte que funciona em uma tela
+     larga corta a peça errada em uma tela estreita. */
+  object-position: var(--focus-mobile, 50% 50%);
+  will-change: transform;
+}
+
+@media (min-width: 768px) {
+  .plate-media {
+    object-position: var(--focus, 50% 50%);
+  }
+}
+
+picture {
+  display: contents;
+}
+
+/* ---------------------------------------------------------------------------
+   Alternativa estática do capítulo VERSÁTIL.
+
+   Com movimento reduzido as composições não podem ficar empilhadas — sem a
+   troca por scroll, só a última seria visível. Elas voltam ao fluxo vertical.
+--------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  [data-looks] {
+    height: auto !important;
+  }
+  [data-look] {
+    position: relative !important;
+    inset: auto !important;
+    margin-bottom: 4rem;
+  }
+  [data-look] [data-look-frame],
+  [data-look] [data-look-caption] {
+    position: relative !important;
+    inset: auto !important;
+    flex: none !important;
+    height: auto !important;
+    transform: none !important;
+    margin-top: 1.25rem;
+  }
+  /* sem a altura da coluna sticky, a placa colapsaria para zero */
+  [data-look] [data-look-frame] > * {
+    height: auto !important;
+    aspect-ratio: 4 / 5;
+  }
+  [data-versatil-stage] {
+    height: auto !important;
+  }
+  [data-versatil-stage] > div {
+    position: static !important;
+    height: auto !important;
+  }
+}
