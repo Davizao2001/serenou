@@ -106,7 +106,7 @@ export const MEDIA = {
     focus: "50% 45%",
     focusMobile: "50% 42%",
     tone: ["#efe0b4", "#c9b183"],
-    note: "Versátil 01: paleta clara",
+    note: "Vitrine 01 Azul: fotografia nova pedida à cliente (10/09)",
   },
   versatilTarde: {
     id: "versatil-tarde",
@@ -119,7 +119,7 @@ export const MEDIA = {
     focus: "50% 46%",
     focusMobile: "46% 44%",
     tone: ["#8d9668", "#4e5733"],
-    note: "Versátil 02: paleta oliva",
+    note: "Vitrine 02 Rosa: fotografia nova pedida à cliente (10/09)",
   },
   versatilNoite: {
     id: "versatil-noite",
@@ -132,7 +132,7 @@ export const MEDIA = {
     focus: "50% 34%",
     focusMobile: "52% 32%",
     tone: ["#4a4640", "#1b1815"],
-    note: "Versátil 03: paleta preta",
+    note: "Vitrine 03 Verde: fotografia nova pedida à cliente (10/09)",
   },
 
   /* ---- TEASER 03 MARCANTE ---------------------------------------------

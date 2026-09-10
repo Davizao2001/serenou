@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/site/Header";
+import { ASerenou } from "@/components/site/ASerenou";
+import { LojaFisica } from "@/components/site/LojaFisica";
 import { Fecho } from "@/components/site/Fecho";
 import { PainelProduto } from "@/components/catalogo/PainelProduto";
 import { ProductImage } from "@/components/catalogo/ProductImage";
@@ -78,6 +80,8 @@ export default async function Produto({ params }: Props) {
           )}
         </div>
       </main>
+      <ASerenou />
+      <LojaFisica />
       <Fecho />
     </>
   );

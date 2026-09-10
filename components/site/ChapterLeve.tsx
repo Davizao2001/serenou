@@ -42,7 +42,7 @@ export function ChapterLeve() {
           </p>
 
           <h2 id="leve-titulo" className="t-display t-chapter">
-            {["Movimento", "também", "veste."].map((linha) => (
+            {["Conforto que", "acompanha", "a sua rotina."].map((linha) => (
               <span key={linha} className="line-mask">
                 <span data-leve-line className="block">
                   {linha}
@@ -51,8 +51,10 @@ export function ChapterLeve() {
             ))}
           </h2>
 
-          <p data-reveal className="t-body mt-8 max-w-[36ch] md:mt-10">
-            Tecidos que respondem ao corpo.
+          <p data-reveal className="t-body mt-8 max-w-[42ch] md:mt-10">
+            Tecidos leves, modelagens confortáveis e peças que você veste sem
+            precisar pensar demais. Porque se sentir bem também faz parte do
+            look.
           </p>
 
           <a

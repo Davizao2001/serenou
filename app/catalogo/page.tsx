@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Header } from "@/components/site/Header";
+import { ASerenou } from "@/components/site/ASerenou";
+import { LojaFisica } from "@/components/site/LojaFisica";
 import { Fecho } from "@/components/site/Fecho";
 import { Vitrine } from "@/components/catalogo/Vitrine";
 import { PRODUTOS_EXEMPLO } from "@/lib/catalogo";
@@ -31,6 +33,8 @@ export default function Catalogo() {
           <Vitrine produtos={PRODUTOS_EXEMPLO} />
         </div>
       </main>
+      <ASerenou />
+      <LojaFisica />
       <Fecho />
     </>
   );

@@ -9,6 +9,14 @@
    e formas de entrega ainda não foram fechados — não inventar.
 --------------------------------------------------------------------------- */
 
+/* ---- Marca ----------------------------------------------------------- */
+
+export const MARCA = {
+  /** Como a marca assina o rodapé. */
+  nome: "Serenou Beach",
+  assinatura: "Moda para acompanhar todos os seus momentos.",
+};
+
 /* ---- Contato --------------------------------------------------------- */
 
 /** Número oficial, formato internacional só com dígitos (para o wa.me). */
@@ -25,9 +33,27 @@ export const INSTAGRAM = {
 /* ---- Loja física ----------------------------------------------------- */
 
 export const LOJA = {
-  /* Confirmado. Cidade, CEP e horário ainda não — não completar de cabeça. */
+  /* Confirmado. Cidade, CEP e horário ainda não foram fechados: não
+     completar de cabeça. A ausência da cidade afeta só a precisão do pino
+     nos mapas, não o texto. */
   endereco: "Rua Samuel Laurence, 177, Parque Maria Fernandes",
 };
+
+/* ---- Rotas -----------------------------------------------------------
+
+   Busca por endereço, não por coordenada: nenhum dos dois exige chave de
+   API nem plano pago, e os dois abrem o app nativo quando ele existe.
+--------------------------------------------------------------------- */
+
+/** Google Maps a partir de um endereço em texto. */
+export function googleMapsUrl(endereco: string = LOJA.endereco): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)}`;
+}
+
+/** Waze a partir de um endereço em texto. `navigate=yes` já inicia a rota. */
+export function wazeUrl(endereco: string = LOJA.endereco): string {
+  return `https://waze.com/ul?q=${encodeURIComponent(endereco)}&navigate=yes`;
+}
 
 /* ---- WhatsApp -------------------------------------------------------- */
 

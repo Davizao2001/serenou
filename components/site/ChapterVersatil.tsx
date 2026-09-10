@@ -6,11 +6,23 @@ import { versatilScene } from "@/lib/scenes";
 import { MEDIA, type MediaSlot } from "@/lib/media";
 import { Frame } from "@/components/media/Frame";
 
-/** Claro → oliva → preto. A progressão de cor é o argumento da seção. */
+/**
+ * As três vitrines de looks.
+ *
+ * O texto de cada uma vem inteiro da cliente. A quebra em duas alturas
+ * tipográficas — a primeira frase em display, o resto em corpo — é
+ * composição, não edição: nenhuma palavra muda de lugar. É o que mantém a
+ * parte editorial em vez de virar legenda de card.
+ *
+ * `vitrine` é o nome pelo qual a Grazi identifica cada uma. As fotografias
+ * novas (azul, rosa, verde) ainda não chegaram; quando chegarem, o único
+ * lugar a mexer é o slot correspondente em `lib/media.ts`.
+ */
 const LOOKS: Array<{
   slot: MediaSlot;
   indice: string;
-  ocasiao: string;
+  vitrine: string;
+  chamada: string;
   nota: string;
   /** Deslocamento horizontal da placa no desktop — a composição se
    *  reorganiza a cada troca em vez de trocar no mesmo lugar. */
@@ -18,23 +30,26 @@ const LOOKS: Array<{
 }> = [
   {
     slot: MEDIA.versatilDia,
-    indice: "Look 01",
-    ocasiao: "Dia",
-    nota: "Amarelo-manteiga, para começar.",
+    indice: "01",
+    vitrine: "Azul",
+    chamada: "Para quando o básico pede um pouco mais.",
+    nota: "Peças que transitam do trabalho ao jantar sem complicação.",
     offset: "lg:left-0",
   },
   {
     slot: MEDIA.versatilTarde,
-    indice: "Look 02",
-    ocasiao: "Tarde",
-    nota: "O oliva da marca, no meio do dia.",
+    indice: "02",
+    vitrine: "Rosa",
+    chamada: "Para vestir e se sentir bem.",
+    nota: "Modelagens femininas, tecidos leves e aquela dose de cor que transforma o look.",
     offset: "lg:left-[13%]",
   },
   {
     slot: MEDIA.versatilNoite,
-    indice: "Look 03",
-    ocasiao: "Noite",
-    nota: "Preto, quando o dia continua.",
+    indice: "03",
+    vitrine: "Verde",
+    chamada: "Para acompanhar a vida real.",
+    nota: "Conforto, praticidade e combinações que funcionam em diferentes momentos do seu dia.",
     offset: "lg:left-[5%]",
   },
 ];
@@ -77,7 +92,7 @@ export function ChapterVersatil() {
               </p>
 
               <h2 id="versatil-titulo" className="t-display t-chapter">
-                {["Manhã,", "tarde,", "noite."].map((linha) => (
+                {["Um look.", "Várias", "possibilidades"].map((linha) => (
                   <span key={linha} className="line-mask">
                     <span data-versatil-line className="block">
                       {linha}
@@ -86,8 +101,10 @@ export function ChapterVersatil() {
                 ))}
               </h2>
 
-              <p data-reveal className="t-body mt-8 max-w-[34ch] md:mt-10">
-                O que muda é a paleta, não a mulher.
+              <p data-reveal className="t-body mt-8 max-w-[40ch] md:mt-10">
+                Do trabalho ao jantar, da viagem ao fim de semana.
+                Acreditamos em peças que se adaptam à sua rotina e não o
+                contrário.
               </p>
 
               {/* Índice de posição — só faz sentido enquanto a seção está presa */}
@@ -120,19 +137,14 @@ export function ChapterVersatil() {
                       className="aspect-[4/5] w-full lg:aspect-[4/5] lg:h-full lg:w-auto"
                     />
                   </div>
-                  <div
-                    data-look-caption
-                    className="mt-5 flex flex-wrap items-baseline gap-x-5 gap-y-2"
-                  >
-                    <p className="t-eyebrow basis-full text-carvao-fraco sm:basis-auto">
+                  <div data-look-caption className="mt-5 max-w-[46ch] md:mt-6">
+                    <p className="t-eyebrow mb-3 text-carvao-fraco">
                       {look.indice}
                     </p>
-                    <p className="t-display text-[1.6rem] tracking-[0.04em]">
-                      {look.ocasiao}
+                    <p className="t-display text-[1.25rem] leading-[1.06] tracking-[0.01em] md:text-[1.5rem]">
+                      {look.chamada}
                     </p>
-                    <p className="t-body basis-full text-sm md:basis-auto">
-                      {look.nota}
-                    </p>
+                    <p className="t-body mt-3 max-w-[46ch] text-sm">{look.nota}</p>
                   </div>
                 </article>
               ))}

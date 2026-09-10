@@ -126,11 +126,15 @@ export function Opening() {
 
             <p
               data-manifesto-body
-              className="t-body mt-16 max-w-[42ch] text-base md:mt-24 md:text-lg"
+              className="t-body mt-16 max-w-[46ch] text-base md:mt-24 md:text-lg"
             >
-              Hoje são <span className="text-oliva">vestidos</span>,{" "}
+              Hoje, a Serenou veste diferentes momentos da mulher:{" "}
+              <span className="text-oliva">vestidos</span>,{" "}
               <span className="text-oliva">conjuntos</span>,{" "}
-              <span className="text-oliva">peças casuais</span> e moda praia.
+              <span className="text-oliva">peças casuais</span> e moda praia
+              pensados para uma rotina real. Peças que combinam entre si,
+              transitam entre ocasiões e, acima de tudo, fazem você se sentir
+              bem.
             </p>
           </div>
         </div>
