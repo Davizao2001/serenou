@@ -293,7 +293,8 @@ html[data-intro="ativa"] [data-intro-camada] {
 .js-motion [data-hero-line],
 .js-motion [data-leve-line],
 .js-motion [data-versatil-line],
-.js-motion [data-teaser-line] {
+.js-motion [data-teaser-line],
+.js-motion [data-fecho-line] {
   transform: translateY(108%);
 }
 
@@ -323,6 +324,7 @@ html[data-intro="ativa"] [data-intro-camada] {
   .js-motion [data-leve-line],
   .js-motion [data-versatil-line],
   .js-motion [data-teaser-line],
+  .js-motion [data-fecho-line],
   .js-motion [data-plate-zoom] {
     transform: none;
   }

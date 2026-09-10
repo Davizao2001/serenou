@@ -538,9 +538,59 @@ export function headerScene(root: HTMLElement): Cleanup {
   };
 }
 
+
+
+/* =========================================================================
+   FECHO — informações da loja
+
+   O capítulo anterior já levou o fundo ao carvão; aqui nada mais muda de
+   humor. O movimento é o mais discreto do site de propósito: é a parte
+   funcional da página, onde a pessoa procura endereço e contato, não uma
+   cena a mais para assistir.
+   ========================================================================= */
+export function fechoScene(root: HTMLElement): Cleanup {
+  const { q, one } = scoped(root);
+  const mm = gsap.matchMedia();
+
+  mm.add({ desktop: MQ.desktop, mobile: MQ.mobile, reduce: MQ.reduce }, (ctx) => {
+    if ((ctx.conditions as Record<string, boolean>).reduce) return;
+
+    const chamada = one("[data-fecho-chamada]") ?? root;
+
+    gsap.fromTo(
+      q("[data-fecho-line]"),
+      { yPercent: 108, y: 0 },
+      {
+        yPercent: 0,
+        y: 0,
+        duration: 0.9,
+        stagger: 0.1,
+        ease: EASE.out,
+        scrollTrigger: { trigger: chamada, start: "top 82%", once: true },
+      }
+    );
+
+    gsap.fromTo(
+      q("[data-reveal]"),
+      { autoAlpha: 0, y: TRAVEL.md },
+      {
+        autoAlpha: 1,
+        y: 0,
+        duration: DUR.slow,
+        stagger: 0.1,
+        ease: EASE.out,
+        scrollTrigger: { trigger: chamada, start: "top 76%", once: true },
+      }
+    );
+  });
+
+  return () => mm.revert();
+}
+
 export const SCENES = {
   "[data-scene='header']": headerScene,
   "[data-scene='teaser']": teaserScene,
+  "[data-scene='fecho']": fechoScene,
   "[data-scene='opening']": openingScene,
   "[data-scene='leve']": leveScene,
   "[data-scene='versatil']": versatilScene,

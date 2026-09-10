@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useGSAP } from "@/lib/gsap";
 import { headerScene } from "@/lib/scenes";
+import { linkWhatsApp } from "@/lib/loja";
 
 const NAV = [
   { label: "Novidades", href: "#novidades" },
@@ -79,7 +80,7 @@ export function Header() {
               Buscar
             </button>
             <a
-              href="https://wa.me/"
+              href={linkWhatsApp()}
               className="t-eyebrow tap hidden tracking-[0.14em] opacity-80 transition-opacity duration-200 hover:opacity-100 sm:inline"
             >
               WhatsApp
@@ -120,7 +121,7 @@ export function Header() {
           </ul>
         </nav>
         <a
-          href="https://wa.me/"
+          href={linkWhatsApp()}
           className="t-eyebrow mt-10 inline-block text-carvao-medio"
         >
           Falar no WhatsApp

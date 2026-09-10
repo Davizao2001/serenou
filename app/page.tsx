@@ -4,6 +4,7 @@ import { Opening } from "@/components/site/Opening";
 import { ChapterLeve } from "@/components/site/ChapterLeve";
 import { ChapterVersatil } from "@/components/site/ChapterVersatil";
 import { TeaserMarcante } from "@/components/site/TeaserMarcante";
+import { Fecho } from "@/components/site/Fecho";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
         <ChapterVersatil />
         <TeaserMarcante />
       </main>
+      <Fecho />
     </>
   );
 }
