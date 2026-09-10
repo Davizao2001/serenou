@@ -46,22 +46,31 @@ export function Opening() {
                   opacidade. A primeira entra com prioridade e opacidade 1 —
                   as outras nascem invisíveis, mas presentes, para que a
                   primeira troca não espere download. */}
-              {HERO_SLIDES.map((slide, i) => (
+              {HERO_SLIDES.map(({ slot, tom }, i) => (
                 <div
-                  key={slide.id}
+                  key={slot.id}
                   data-hero-slide
+                  data-tom={tom}
                   className="absolute inset-0"
                   style={{ opacity: i === 0 ? 1 : 0 }}
                 >
                   {/* Só a primeira carrega descrição: as outras são o mesmo
-                      cenário em outra cor, e três alts longos em sequência
-                      viram ruído em leitor de tela. */}
+                      cenário em outra cor, e alts longos em sequência viram
+                      ruído em leitor de tela. */}
                   <Frame
-                    slot={slide}
+                    slot={slot}
                     priority={i === 0}
                     decorative={i > 0}
                     noteSide="right"
                     className="h-full w-full"
+                  />
+                  {/* O véu mora dentro do slide para atravessar a
+                      dissolvência junto com a fotografia. */}
+                  <div
+                    aria-hidden="true"
+                    className={`pointer-events-none absolute inset-0 ${
+                      tom === "escuro" ? "veu-escuro" : "veu-claro"
+                    }`}
                   />
                 </div>
               ))}
@@ -71,10 +80,6 @@ export function Opening() {
               esquerda, exatamente onde a tipografia pousa. A fotografia tem o
               fundo claro justamente nesse canto — sem eles a descrição some.
               A roupa fica no centro-direita e não é tocada. */}
-          {/* Véus. Os valores e o porquê de cada um estão em globals.css,
-              junto do ajuste de mobile: no recorte estreito a tipografia
-              desce sobre o piso de madeira, o ponto mais claro do quadro. */}
-          <div data-plate-scrim aria-hidden="true" className="pointer-events-none absolute inset-0" />
         </div>
       </div>
 
@@ -83,10 +88,10 @@ export function Opening() {
         {/* HERO */}
         <div
           data-hero
-          className="flex h-[100svh] flex-col justify-end px-5 pb-16 text-carvao md:px-8 md:pb-16 lg:px-12 lg:pb-20"
+          className="hero-tinta flex h-[100svh] flex-col justify-end px-5 pb-16 md:px-8 md:pb-16 lg:px-12 lg:pb-20"
         >
           <div data-hero-copy className="max-w-[86rem]">
-            <p data-hero-eyebrow className="t-eyebrow mb-6 text-carvao">
+            <p data-hero-eyebrow className="t-eyebrow mb-6">
               Serenou 2026
             </p>
 
@@ -105,7 +110,7 @@ export function Opening() {
               ))}
             </h1>
 
-            <p data-hero-desc className="t-body mt-7 max-w-[38ch] text-carvao-medio md:mt-9">
+            <p data-hero-desc className="t-body mt-7 max-w-[38ch] md:mt-9">
               Para o trabalho, a viagem e a noite.
             </p>
 
@@ -113,14 +118,14 @@ export function Opening() {
               <Link
                 data-hero-cta
                 href="/catalogo"
-                className="t-eyebrow bg-carvao px-8 py-4 text-linho-alto transition-colors duration-200 hover:bg-[#241f19]"
+                className="t-eyebrow hero-cta-solido px-8 py-4"
               >
                 Ver novidades
               </Link>
               <a
                 data-hero-cta
                 href="#manifesto"
-                className="t-eyebrow tap border-b border-carvao/40 pb-1.5 text-carvao transition-colors duration-200 hover:border-carvao"
+                className="t-eyebrow tap hero-cta-linha border-b pb-1.5"
               >
                 Conhecer a marca
               </a>

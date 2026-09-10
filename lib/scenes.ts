@@ -12,7 +12,7 @@
 import { gsap, ScrollTrigger, SplitText } from "./gsap";
 import { DUR, EASE, MQ, TRAVEL } from "./motion";
 import { aoTerminarIntro, introAtiva } from "./intro";
-import { HERO_INTERVALO } from "./media";
+import { HERO_INTERVALO, HERO_TROCA } from "./media";
 
 type Cleanup = () => void;
 
@@ -54,11 +54,17 @@ function rotacaoHero(q: (s: string) => HTMLElement[], root: HTMLElement): Cleanu
 
   const tl = gsap.timeline({ repeat: -1, paused: true });
 
+  /* O tom vira no início da dissolvência: a transição de cor do texto tem a
+     mesma duração, então as duas terminam juntas. */
+  const tom = (el: HTMLElement) =>
+    document.documentElement.setAttribute("data-hero-tom", el.dataset.tom ?? "claro");
+
   slides.forEach((_, i) => {
     const atual = slides[i];
     const proximo = slides[(i + 1) % slides.length];
     tl.set(proximo, { zIndex: 2 }, `+=${HERO_INTERVALO}`)
-      .to(proximo, { opacity: 1, duration: 1.15, ease: EASE.linear })
+      .add(() => tom(proximo))
+      .to(proximo, { opacity: 1, duration: HERO_TROCA, ease: EASE.linear })
       .set(atual, { opacity: 0 })
       .set(proximo, { zIndex: 1 });
   });
@@ -77,6 +83,7 @@ function rotacaoHero(q: (s: string) => HTMLElement[], root: HTMLElement): Cleanu
     tl.kill();
     gsap.set(slides, { clearProps: "zIndex,opacity" });
     gsap.set(slides[0], { opacity: 1 });
+    tom(slides[0]);
   };
 }
 
@@ -567,18 +574,28 @@ export function headerScene(root: HTMLElement): Cleanup {
   /* A hero vive fora do escopo do header — referência direta ao nó. */
   const hero = document.querySelector("[data-hero]");
 
+  /* A cor do header não entra na timeline: sobre a hero ela acompanha a
+     fotografia da vez, que muda sozinha. Quem decide é o CSS, a partir de
+     `data-solido` — aqui só se liga e desliga o atributo. */
   const solido = gsap
-    .timeline({ paused: true })
+    .timeline({
+      paused: true,
+      onStart: () => root.setAttribute("data-solido", "sim"),
+      onReverseComplete: () => root.removeAttribute("data-solido"),
+    })
     .to(one("[data-header-surface]"), { autoAlpha: 1, duration: DUR.quick, ease: EASE.out }, 0)
-    .to(one("[data-header-hairline]"), { scaleX: 1, duration: DUR.base, ease: EASE.out }, 0)
-    .to(root, { color: "#16130f", duration: DUR.quick, ease: EASE.out }, 0);
+    .to(one("[data-header-hairline]"), { scaleX: 1, duration: DUR.base, ease: EASE.out }, 0);
 
   /* Páginas sem hero — catálogo, produto — não têm fotografia atrás da
      navegação. O header nasce sólido nelas: transparente sobre bege claro é
      tipografia off-white sobre off-white, ou seja, um header invisível. */
   if (!hero) {
+    root.setAttribute("data-solido", "sim");
     solido.progress(1).pause();
-    return () => solido.revert();
+    return () => {
+      root.removeAttribute("data-solido");
+      solido.revert();
+    };
   }
 
   const st = ScrollTrigger.create({
@@ -591,6 +608,7 @@ export function headerScene(root: HTMLElement): Cleanup {
   return () => {
     st.kill();
     solido.revert();
+    root.removeAttribute("data-solido");
   };
 }
 

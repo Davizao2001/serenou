@@ -54,14 +54,28 @@ export const MEDIA = {
      praia nem festa: é o argumento do manifesto em uma imagem só. O corte
      mantém o rosto inteiro e empurra a arara colorida para o canto superior,
      onde o header pousa. */
-  /* A hero rotativa. Três fotografias da própria loja, entregues pela Grazi
-     em 10/09: a vitrine azul, a rosa e a verde. Mesmo enquadramento nas três
-     — parede clara e piso à esquerda, manequins à direita —, então a
-     tipografia pousa sempre no mesmo lugar e a troca não move nada.
+  /* A hero rotativa: quatro fotografias, todas em AVIF q88 / WebP q95 e
+     origem 1672 px — é o único slot exibido na largura inteira da tela.
 
-     Todas em AVIF q88 / WebP q95, origem 1672 px: é o único slot exibido na
-     largura inteira da tela. */
+     A primeira é a de sempre, com a modelo. As outras três são as vitrines
+     que a Grazi entregou em 10/09. A diferença que importa não é a cor: a
+     primeira é escura e as outras três são claras, então cada uma pede uma
+     tinta diferente para a tipografia. Quem resolve isso é HERO_SLIDES. */
   hero: {
+    id: "hero-modelo",
+    base: "/images/serenou/lifestyle/modelo-preto-com-alfaiataria-ao-fundo",
+    widths: [640, 960, 1280, 1672],
+    sizes: "100vw",
+    width: 1672,
+    height: 941,
+    alt: "Mulher em look preto de ombro único na loja da Serenou, com três peças de alfaiataria preta em manequins ao fundo.",
+    focus: "52% 50%",
+    focusMobile: "72% 50%",
+    tone: ["#2b2825", "#111010"],
+    note: "Hero 01: lifestyle, modelo ao centro",
+  },
+
+  heroAzul: {
     id: "hero-azul",
     base: "/images/serenou/hero/vitrine-azul",
     widths: [640, 960, 1280, 1672],
@@ -189,19 +203,36 @@ export const MEDIA = {
 export type MediaKey = keyof typeof MEDIA;
 
 /**
+ * `claro` e `escuro` descrevem a FOTOGRAFIA, não a tipografia: uma foto clara
+ * pede texto em carvão, uma escura pede off-white. O componente e a cena leem
+ * daqui para virar a tinta da hero junto com a imagem.
+ */
+export type TomHero = "claro" | "escuro";
+
+/**
  * A sequência da hero, na ordem em que aparece.
  *
  * Trocar a ordem, tirar ou acrescentar uma fotografia é mexer só aqui: o
  * componente monta quantas houver, e com uma só a rotação simplesmente não
  * acontece.
  */
-export const HERO_SLIDES: MediaSlot[] = [MEDIA.hero, MEDIA.heroRosa, MEDIA.heroVerde];
+export const HERO_SLIDES: Array<{ slot: MediaSlot; tom: TomHero }> = [
+  { slot: MEDIA.hero, tom: "escuro" },
+  { slot: MEDIA.heroAzul, tom: "claro" },
+  { slot: MEDIA.heroRosa, tom: "claro" },
+  { slot: MEDIA.heroVerde, tom: "claro" },
+];
 
 /**
- * Quanto cada fotografia fica parada, em segundos. Somado à dissolvência de
- * 1,15s, dá um ciclo de ~3,5s por foto.
+ * Quanto cada fotografia fica parada e quanto dura a troca, em segundos.
+ *
+ * A dissolvência é curta de propósito. Enquanto ela acontece as duas
+ * fotografias estão sobrepostas, e sobreposição longa entre uma foto escura e
+ * uma clara lê como imagem borrada, não como transição. Meio segundo é o
+ * bastante para não ser um corte seco e pouco para virar fantasma.
  */
-export const HERO_INTERVALO = 2.4;
+export const HERO_INTERVALO = 2.9;
+export const HERO_TROCA = 0.55;
 
 /** Monta o srcset de um formato a partir do caminho-base. */
 export function srcset(slot: MediaSlot, ext: "avif" | "webp") {

@@ -41,6 +41,14 @@
   --dur-slow: 1.1s;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
+  /* Tinta da hero. A rotação alterna fotografias claras e escuras, e a
+     tipografia acompanha: carvão sobre foto clara, off-white sobre foto
+     escura. A transição é de cor, não de opacidade — o texto nunca some,
+     só muda de tom junto com a imagem por baixo. */
+  --hero-tinta: #16130f;
+  --hero-tinta-fraca: #2a251e;
+  --hero-papel: #f8f4ed;
+
   /* Altura real do header, usada por âncoras e pelo estado sólido */
   --header-h: 4.5rem;
 }
@@ -346,72 +354,175 @@ html[data-intro="ativa"] [data-intro-camada] {
 }
 
 /* ---------------------------------------------------------------------------
-   Véus da hero
+   Tinta da hero
 
-   As fotografias da hero são claras: parede branca, piso de madeira. Medido
-   nas três, a tipografia em carvão já sai entre 5,8:1 e 8,8:1 sem véu
-   nenhum — por isso aqui o véu clareia em vez de escurecer, e é o mais
-   discreto do site.
-
-   Ele existe por três motivos concretos: o cortinado escuro que entra pela
-   esquerda em uma das fotos, a arara de roupas no topo por onde o header
-   passa, e a margem de segurança para as próximas fotografias, que ninguém
-   garante que virão com o mesmo canto vazio.
+   Um bloco de texto, duas superfícies possíveis. A cor transita no mesmo
+   tempo da dissolvência entre fotografias, então o texto muda de tom junto
+   com o que está por baixo dele, sem piscar nem sumir.
 --------------------------------------------------------------------------- */
 
-[data-plate-scrim] {
-  --scrim-base: 0.46;
-  --scrim-base-ate: 34%;
+.hero-tinta,
+.hero-tinta [data-hero-eyebrow],
+.hero-tinta [data-hero-desc] {
+  color: var(--hero-tinta);
+  transition: color 0.55s var(--ease-out);
+}
 
+/* Secundários pedem menos peso, mas sobre fotografia o contraste é frágil
+   demais para descer muito. Valores explícitos em vez de `color-mix`: o
+   navegador resolve `color-mix` para `oklab()`, e todo medidor de contraste
+   que lê `rgb()` passa a mentir sem avisar. */
+.hero-tinta [data-hero-desc] {
+  color: var(--hero-tinta-fraca);
+}
+
+/* A linha de olho fica com a tinta cheia. Ela é o elemento mais alto do
+   bloco, cai onde o véu já quase acabou, e tem 12px: é o texto da hero com
+   menos margem, não o que pode abrir mão de contraste. */
+.hero-tinta [data-hero-eyebrow] {
+  color: var(--hero-tinta);
+}
+
+.hero-cta-solido {
+  background-color: var(--hero-tinta);
+  color: var(--hero-papel);
+  transition:
+    background-color 0.55s var(--ease-out),
+    color 0.55s var(--ease-out);
+}
+
+.hero-cta-solido:hover {
+  background-color: var(--hero-tinta-fraca);
+}
+
+.hero-cta-linha {
+  color: var(--hero-tinta);
+  border-color: var(--hero-tinta);
+  opacity: 1;
+  transition:
+    color 0.55s var(--ease-out),
+    border-color 0.3s var(--ease-out);
+}
+
+.hero-cta-linha:hover {
+  border-color: var(--hero-tinta);
+}
+
+/* Enquanto a hero mostra uma fotografia escura, tudo que está por cima dela
+   acompanha. Depois da hero o header fica sólido sobre linho e volta ao
+   carvão, sempre. */
+[data-hero-tom="escuro"] {
+  --hero-tinta: #f8f4ed;
+  --hero-tinta-fraca: #e4ded3;
+  --hero-papel: #16130f;
+}
+
+.header-tinta {
+  color: var(--hero-tinta);
+  transition: color 0.55s var(--ease-out);
+}
+
+.header-tinta[data-solido="sim"] {
+  color: var(--color-carvao);
+}
+
+/* ---------------------------------------------------------------------------
+   Véus da hero
+
+   Um véu por fotografia, dentro do próprio slide: assim ele atravessa a
+   dissolvência junto com a imagem, e cada foto recebe só o que ela precisa.
+
+   As três vitrines são claras — parede branca, piso de madeira — e a
+   tipografia em carvão já sai entre 5,7:1 e 8,8:1 nelas sem véu nenhum. O
+   véu claro existe só pelo cortinado escuro que entra pela esquerda em uma
+   delas e pela arara no topo, por onde o header passa. É de longe o mais
+   discreto do site.
+
+   A fotografia da modelo é escura e leva o véu escuro de sempre, calibrado
+   para a tipografia off-white.
+--------------------------------------------------------------------------- */
+
+.veu-claro {
   background:
-    /* Lateral esquerda: onde a tipografia pousa. */
+    /* Estreito e forte na borda, em vez de largo e fraco: o que precisa de
+       proteção são os objetos escuros que encostam na lateral esquerda — o
+       cortinado em uma foto, o banco e a planta em outra. Depois dos 18% a
+       fotografia fica limpa, e é ela que ocupa a maior parte do quadro. */
     linear-gradient(
       to right,
-      rgba(242, 236, 226, 0.5) 0%,
-      rgba(242, 236, 226, 0.44) 38%,
-      rgba(242, 236, 226, 0) 78%
+      rgba(242, 236, 226, 0.66) 0%,
+      rgba(242, 236, 226, 0.3) 18%,
+      rgba(242, 236, 226, 0) 55%
     ),
-    /* Base: descrição e botões. */
     linear-gradient(
       to top,
-      rgba(242, 236, 226, var(--scrim-base)) 0%,
-      rgba(242, 236, 226, 0) var(--scrim-base-ate)
+      rgba(242, 236, 226, 0.3) 0%,
+      rgba(242, 236, 226, 0) 30%
     ),
-    /* Topo: a navegação cruza a arara de roupas ao fundo. */
     linear-gradient(
       to bottom,
-      rgba(242, 236, 226, 0.72) 0%,
+      rgba(242, 236, 226, 0.58) 0%,
       rgba(242, 236, 226, 0) 15%
     );
+}
+
+.veu-escuro {
+  background:
+    linear-gradient(
+      to right,
+      rgba(14, 11, 8, 0.48) 0%,
+      rgba(14, 11, 8, 0.48) 40%,
+      rgba(14, 11, 8, 0) 80%
+    ),
+    linear-gradient(to top, rgba(14, 11, 8, 0.36) 0%, rgba(14, 11, 8, 0) 28%),
+    linear-gradient(to bottom, rgba(14, 11, 8, 0.68) 0%, rgba(14, 11, 8, 0) 14%),
+    linear-gradient(rgba(14, 11, 8, 0.16), rgba(14, 11, 8, 0.16));
 }
 
 @media (max-width: 640px) {
   /* No recorte estreito o bloco de texto ocupa quase metade da altura e a
      linha de olho, o elemento mais alto dele, cai por volta de 49%. O platô
-     intermediário segura o clareado exatamente ali. */
-  [data-plate-scrim] {
+     intermediário segura o véu exatamente ali, nos dois tons. */
+  .veu-claro {
     background:
       linear-gradient(
         to right,
-        rgba(242, 236, 226, 0.4) 0%,
-        rgba(242, 236, 226, 0.34) 40%,
-        rgba(242, 236, 226, 0) 85%
+        rgba(242, 236, 226, 0.5) 0%,
+        rgba(242, 236, 226, 0.2) 22%,
+        rgba(242, 236, 226, 0) 60%
       ),
-      /* Sobe até 80%: no mobile o enquadramento fecha nos manequins e a
-         tipografia pousa sobre a própria roupa, não sobre a parede. O
-         clareado forte também emenda a base da hero com o linho da seção
-         seguinte, em vez de cortar seco. */
+      /* No mobile o enquadramento fecha nos manequins e a tipografia pousa
+         sobre a própria roupa, não sobre a parede: aqui o véu precisa da
+         força que o desktop dispensa. */
       linear-gradient(
         to top,
-        rgba(242, 236, 226, 0.95) 0%,
-        rgba(242, 236, 226, 0.82) 30%,
-        rgba(242, 236, 226, 0) 80%
+        rgba(242, 236, 226, 0.88) 0%,
+        rgba(242, 236, 226, 0.74) 38%,
+        rgba(242, 236, 226, 0) 84%
       ),
       linear-gradient(
         to bottom,
-        rgba(242, 236, 226, 0.72) 0%,
+        rgba(242, 236, 226, 0.58) 0%,
         rgba(242, 236, 226, 0) 15%
       );
+  }
+
+  .veu-escuro {
+    background:
+      linear-gradient(
+        to right,
+        rgba(14, 11, 8, 0.48) 0%,
+        rgba(14, 11, 8, 0.48) 40%,
+        rgba(14, 11, 8, 0) 80%
+      ),
+      linear-gradient(
+        to top,
+        rgba(14, 11, 8, 0.72) 0%,
+        rgba(14, 11, 8, 0.5) 34%,
+        rgba(14, 11, 8, 0) 74%
+      ),
+      linear-gradient(to bottom, rgba(14, 11, 8, 0.68) 0%, rgba(14, 11, 8, 0) 14%),
+      linear-gradient(rgba(14, 11, 8, 0.16), rgba(14, 11, 8, 0.16));
   }
 }
 

@@ -41,9 +41,9 @@ export function Header() {
       <header
         ref={header}
         data-scene="header"
-        /* Carvao desde o primeiro quadro: a hero passou a ser fotografia
-           clara, e off-white sobre parede branca e um header invisivel. */
-        className="fixed inset-x-0 top-0 z-50 h-[var(--header-h)] text-carvao"
+        /* A cor segue a fotografia da hero enquanto ele está por cima dela;
+           depois da hero fica sólido sobre linho e volta ao carvão. */
+        className="header-tinta fixed inset-x-0 top-0 z-50 h-[var(--header-h)]"
       >
         {/* Superfície sólida — some sobre a hero, entra depois dela */}
         <div

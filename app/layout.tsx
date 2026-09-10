@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/archivo/wdth.css";
 import "@fontsource-variable/instrument-sans/index.css";
 import "./globals.css";
+import { HERO_SLIDES } from "@/lib/media";
 
 export const metadata: Metadata = {
   title: "Serenou | Moda feminina para o dia inteiro",
@@ -43,7 +44,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR">
+    /* O tom da primeira fotografia entra já no HTML do servidor: se
+       esperasse o JavaScript, a tipografia piscaria em carvão sobre a
+       foto escura antes de virar off-white. */
+    <html lang="pt-BR" data-hero-tom={HERO_SLIDES[0].tom}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: ANTES_DA_PINTURA }} />
       </head>
