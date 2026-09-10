@@ -50,16 +50,23 @@ export function PainelProduto({ produto }: { produto: Produto }) {
         <SeletorTamanho tamanhos={produto.tamanhos} valor={tamanho} aoEscolher={setTamanho} />
       </div>
 
+      {/* Esgotado não vira outro botão. A cliente vê o estado e para por aí —
+          um CTA de aviso de reposição prometeria uma função que não existe.
+          A regra confirmada é outra: quando a peça acaba, a Grazi oculta pelo
+          painel e ela sai do catálogo. */}
       <div className="mt-10">
-        <BotaoQuero
-          nome={produto.nome}
-          cor={cor}
-          tamanho={tamanho}
-          esgotado={esgotado}
-        />
-        <p className="t-body mt-4 text-center text-sm">
-          A conversa continua no WhatsApp da loja.
-        </p>
+        {esgotado ? (
+          <div className="border border-carvao/20 px-8 py-5 text-center">
+            <p className="t-eyebrow text-carvao-fraco">Peça esgotada</p>
+          </div>
+        ) : (
+          <>
+            <BotaoQuero nome={produto.nome} cor={cor} tamanho={tamanho} />
+            <p className="t-body mt-4 text-center text-sm">
+              A conversa continua no WhatsApp da loja.
+            </p>
+          </>
+        )}
       </div>
 
       {produto.detalhes.length > 0 && (

@@ -51,9 +51,7 @@ export function SeletorTamanho({ tamanhos, valor, aoEscolher }: Props) {
       </div>
 
       {todosEsgotados && (
-        <p className="t-body mt-4 text-sm">
-          Todos os tamanhos esgotados. Fale no WhatsApp para saber sobre reposição.
-        </p>
+        <p className="t-body mt-4 text-sm">Todos os tamanhos esgotados.</p>
       )}
     </fieldset>
   );
