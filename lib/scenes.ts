@@ -12,6 +12,7 @@
 import { gsap, ScrollTrigger, SplitText } from "./gsap";
 import { DUR, EASE, MQ, TRAVEL } from "./motion";
 import { aoTerminarIntro, introAtiva } from "./intro";
+import { HERO_INTERVALO } from "./media";
 
 type Cleanup = () => void;
 
@@ -35,6 +36,50 @@ function scoped(root: HTMLElement) {
          [data-plate-zoom] scale da entrada 1.06 → 1
            .plate-media    scale do scroll  1 → 1.04
    ========================================================================= */
+/**
+ * A hero rotativa.
+ *
+ * As fotografias estão empilhadas no mesmo lugar. A que entra sobe de z-index
+ * e cresce em opacidade por cima da anterior, que só então é zerada — nenhum
+ * quadro tem as duas em meia-opacidade, então não existe o clareado que uma
+ * dissolvência cruzada normal produziria no meio do caminho.
+ *
+ * A troca pausa quando a hero sai da tela: o resto da página tem animação
+ * presa ao scroll, e não faz sentido gastar quadro repintando o que ninguém
+ * está vendo.
+ */
+function rotacaoHero(q: (s: string) => HTMLElement[], root: HTMLElement): Cleanup {
+  const slides = q("[data-hero-slide]");
+  if (slides.length < 2) return () => {};
+
+  const tl = gsap.timeline({ repeat: -1, paused: true });
+
+  slides.forEach((_, i) => {
+    const atual = slides[i];
+    const proximo = slides[(i + 1) % slides.length];
+    tl.set(proximo, { zIndex: 2 }, `+=${HERO_INTERVALO}`)
+      .to(proximo, { opacity: 1, duration: 1.15, ease: EASE.linear })
+      .set(atual, { opacity: 0 })
+      .set(proximo, { zIndex: 1 });
+  });
+
+  const st = ScrollTrigger.create({
+    trigger: root,
+    start: "top bottom",
+    end: "bottom top",
+    onToggle: ({ isActive }) => (isActive ? tl.play() : tl.pause()),
+  });
+
+  tl.play();
+
+  return () => {
+    st.kill();
+    tl.kill();
+    gsap.set(slides, { clearProps: "zIndex,opacity" });
+    gsap.set(slides[0], { opacity: 1 });
+  };
+}
+
 export function openingScene(root: HTMLElement): Cleanup {
   const { q, one } = scoped(root);
   const mm = gsap.matchMedia();
@@ -44,8 +89,12 @@ export function openingScene(root: HTMLElement): Cleanup {
   mm.add({ desktop: MQ.desktop, mobile: MQ.mobile, reduce: MQ.reduce }, (ctx) => {
     const { desktop, reduce } = ctx.conditions as Record<string, boolean>;
 
-    /* Movimento reduzido: nada se move, tudo está presente. */
+    /* Movimento reduzido: nada se move, tudo está presente. A hero fica na
+       primeira fotografia — trocar sozinha a cada poucos segundos é
+       exatamente o tipo de movimento que a preferência pede para não ter. */
     if (reduce) return;
+
+    limpezas.push(rotacaoHero(q, root));
 
     /* ---- Entrada da hero ----
        Duas versões. Quem chega direto vê a sequência completa de cinco tempos.

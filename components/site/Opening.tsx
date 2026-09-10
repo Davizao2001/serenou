@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRef } from "react";
 import { useGSAP } from "@/lib/gsap";
 import { openingScene } from "@/lib/scenes";
-import { MEDIA } from "@/lib/media";
+import { HERO_SLIDES } from "@/lib/media";
 import { Frame } from "@/components/media/Frame";
 
 /**
@@ -42,7 +42,29 @@ export function Opening() {
         <div data-plate className="absolute inset-0 overflow-hidden">
           <div data-plate-reveal className="absolute inset-0">
             <div data-plate-zoom className="absolute inset-0">
-              <Frame slot={MEDIA.hero} priority noteSide="right" className="h-full w-full" />
+              {/* As três fotografias ocupam o mesmo lugar; a cena troca a
+                  opacidade. A primeira entra com prioridade e opacidade 1 —
+                  as outras nascem invisíveis, mas presentes, para que a
+                  primeira troca não espere download. */}
+              {HERO_SLIDES.map((slide, i) => (
+                <div
+                  key={slide.id}
+                  data-hero-slide
+                  className="absolute inset-0"
+                  style={{ opacity: i === 0 ? 1 : 0 }}
+                >
+                  {/* Só a primeira carrega descrição: as outras são o mesmo
+                      cenário em outra cor, e três alts longos em sequência
+                      viram ruído em leitor de tela. */}
+                  <Frame
+                    slot={slide}
+                    priority={i === 0}
+                    decorative={i > 0}
+                    noteSide="right"
+                    className="h-full w-full"
+                  />
+                </div>
+              ))}
             </div>
           </div>
           {/* Dois véus, ambos discretos: um pela base e outro pela lateral
@@ -61,27 +83,29 @@ export function Opening() {
         {/* HERO */}
         <div
           data-hero
-          className="flex h-[100svh] flex-col justify-end px-5 pb-16 text-linho-alto md:px-8 md:pb-16 lg:px-12 lg:pb-20"
+          className="flex h-[100svh] flex-col justify-end px-5 pb-16 text-carvao md:px-8 md:pb-16 lg:px-12 lg:pb-20"
         >
           <div data-hero-copy className="max-w-[86rem]">
-            <p data-hero-eyebrow className="t-eyebrow mb-6 text-linho-alto/90">
+            <p data-hero-eyebrow className="t-eyebrow mb-6 text-carvao">
               Serenou 2026
             </p>
 
+            {/* Três linhas, não duas. Em duas, "VISTA O DIA" atravessava 72%
+                do quadro e terminava sobre os manequins, onde o carvão caía
+                para 2,4:1. Em três, a linha mais longa para nos 38% e a
+                headline inteira mora na parede vazia — que é justamente o
+                que as três fotografias têm em comum. */}
             <h1 className="t-display t-hero">
-              <span className="line-mask">
-                <span data-hero-line className="block">
-                  Vista o dia
+              {["Vista", "o dia", "inteiro."].map((linha) => (
+                <span key={linha} className="line-mask">
+                  <span data-hero-line className="block">
+                    {linha}
+                  </span>
                 </span>
-              </span>
-              <span className="line-mask">
-                <span data-hero-line className="block">
-                  inteiro.
-                </span>
-              </span>
+              ))}
             </h1>
 
-            <p data-hero-desc className="t-body mt-7 max-w-[38ch] text-linho-alto/85 md:mt-9">
+            <p data-hero-desc className="t-body mt-7 max-w-[38ch] text-carvao-medio md:mt-9">
               Para o trabalho, a viagem e a noite.
             </p>
 
@@ -89,14 +113,14 @@ export function Opening() {
               <Link
                 data-hero-cta
                 href="/catalogo"
-                className="t-eyebrow bg-linho-alto px-8 py-4 text-carvao transition-colors duration-200 hover:bg-white"
+                className="t-eyebrow bg-carvao px-8 py-4 text-linho-alto transition-colors duration-200 hover:bg-[#241f19]"
               >
                 Ver novidades
               </Link>
               <a
                 data-hero-cta
                 href="#manifesto"
-                className="t-eyebrow tap border-b border-linho-alto/45 pb-1.5 text-linho-alto transition-colors duration-200 hover:border-linho-alto"
+                className="t-eyebrow tap border-b border-carvao/40 pb-1.5 text-carvao transition-colors duration-200 hover:border-carvao"
               >
                 Conhecer a marca
               </a>

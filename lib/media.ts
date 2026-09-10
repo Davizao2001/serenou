@@ -54,23 +54,56 @@ export const MEDIA = {
      praia nem festa: é o argumento do manifesto em uma imagem só. O corte
      mantém o rosto inteiro e empurra a arara colorida para o canto superior,
      onde o header pousa. */
+  /* A hero rotativa. Três fotografias da própria loja, entregues pela Grazi
+     em 10/09: a vitrine azul, a rosa e a verde. Mesmo enquadramento nas três
+     — parede clara e piso à esquerda, manequins à direita —, então a
+     tipografia pousa sempre no mesmo lugar e a troca não move nada.
+
+     Todas em AVIF q88 / WebP q95, origem 1672 px: é o único slot exibido na
+     largura inteira da tela. */
   hero: {
-    id: "hero",
-    base: "/images/serenou/lifestyle/modelo-preto-com-alfaiataria-ao-fundo",
-    /* A hero é o único slot exibido na largura toda da tela. Ela tem as
-       maiores larguras do projeto e a origem mais alta (1672 px), e é a única
-       codificada em AVIF q88 / WebP q95 — 45,7 dB, perda imperceptível. */
+    id: "hero-azul",
+    base: "/images/serenou/hero/vitrine-azul",
     widths: [640, 960, 1280, 1672],
     sizes: "100vw",
     width: 1672,
     height: 941,
-    alt: "Mulher em look preto de ombro único na loja da Serenou, com três peças de alfaiataria preta em manequins ao fundo.",
-    /* Horizontal 16:9: em telas largas o corte é lateral, não vertical.
-       No mobile a fatia é estreita e precisa ficar centrada na modelo. */
-    focus: "52% 50%",
-    focusMobile: "72% 50%",
-    tone: ["#2b2825", "#111010"],
-    note: "Hero: lifestyle horizontal, modelo ao centro",
+    alt: "Vitrine da Serenou em tons de azul-marinho: conjunto de camiseta e calça, blusa drapeada com saia off-white e vestido longo justo, em manequins na loja.",
+    /* Horizontal 16:9. No desktop o corte é lateral e mantém a parede vazia
+       à esquerda, onde a headline pousa. No mobile a fatia é estreita e
+       precisa fechar nos manequins, senão sobra parede. */
+    focus: "58% 50%",
+    focusMobile: "72% 52%",
+    tone: ["#e9e4dc", "#cfc6b8"],
+    note: "Hero 01: vitrine azul",
+  },
+
+  heroRosa: {
+    id: "hero-rosa",
+    base: "/images/serenou/hero/vitrine-rosa",
+    widths: [640, 960, 1280, 1672],
+    sizes: "100vw",
+    width: 1672,
+    height: 941,
+    alt: "Vitrine da Serenou em tons de rosa: conjunto rosa-claro de ombro a ombro, vestido longo pink drapeado e vestido curto rosa com recorte, em manequins na loja.",
+    focus: "58% 50%",
+    focusMobile: "72% 52%",
+    tone: ["#efe6e4", "#d8c3c4"],
+    note: "Hero 02: vitrine rosa",
+  },
+
+  heroVerde: {
+    id: "hero-verde",
+    base: "/images/serenou/hero/vitrine-verde",
+    widths: [640, 960, 1280, 1672],
+    sizes: "100vw",
+    width: 1672,
+    height: 941,
+    alt: "Vitrine da Serenou em tons de verde militar: conjunto de kimono e pantalona, camisa sobre saia off-white e macacão bege, em manequins na loja.",
+    focus: "58% 50%",
+    focusMobile: "70% 52%",
+    tone: ["#e8e6dc", "#c9c6b3"],
+    note: "Hero 03: vitrine verde",
   },
 
   /* ---- 01 LEVE --------------------------------------------------------
@@ -154,6 +187,21 @@ export const MEDIA = {
 } satisfies Record<string, MediaSlot>;
 
 export type MediaKey = keyof typeof MEDIA;
+
+/**
+ * A sequência da hero, na ordem em que aparece.
+ *
+ * Trocar a ordem, tirar ou acrescentar uma fotografia é mexer só aqui: o
+ * componente monta quantas houver, e com uma só a rotação simplesmente não
+ * acontece.
+ */
+export const HERO_SLIDES: MediaSlot[] = [MEDIA.hero, MEDIA.heroRosa, MEDIA.heroVerde];
+
+/**
+ * Quanto cada fotografia fica parada, em segundos. Somado à dissolvência de
+ * 1,15s, dá um ciclo de ~3,5s por foto.
+ */
+export const HERO_INTERVALO = 2.4;
 
 /** Monta o srcset de um formato a partir do caminho-base. */
 export function srcset(slot: MediaSlot, ext: "avif" | "webp") {

@@ -96,11 +96,12 @@ body {
   }
 
   .t-hero {
-    /* A hero horizontal devolveu tamanho à headline: 9,2vw contra os 7,4vw que
-       a fotografia anterior permitia. O teto continua sendo a parede branca da
-       loja atrás dos manequins — acima disso a linha sobe até ela e a
-       tipografia off-white perde contraste. Medido, não estimado. */
-    font-size: clamp(2.7rem, 9.2vw, 9.6rem);
+    /* O teto é a parede vazia à esquerda das fotografias. Em 9,2vw a linha
+       "VISTA O DIA" atravessava o quadro e terminava sobre os manequins, onde
+       a tipografia em carvão caía para 1,7:1. Em 7,6vw ela para dentro da
+       parede em qualquer largura, porque as duas medidas são proporcionais.
+       Medido, não estimado. */
+    font-size: clamp(2.7rem, 7.6vw, 8rem);
   }
 
   .t-manifesto {
@@ -347,61 +348,70 @@ html[data-intro="ativa"] [data-intro-camada] {
 /* ---------------------------------------------------------------------------
    Véus da hero
 
-   Quatro camadas, cada uma resolvendo um ponto claro específico da
-   fotografia. Os dois primeiros valores são medidos, não estimados.
+   As fotografias da hero são claras: parede branca, piso de madeira. Medido
+   nas três, a tipografia em carvão já sai entre 5,8:1 e 8,8:1 sem véu
+   nenhum — por isso aqui o véu clareia em vez de escurecer, e é o mais
+   discreto do site.
 
-   No mobile o enquadramento muda (`--focus-mobile`) e o bloco de texto ocupa
-   quase metade da altura: a linha de olho, que é o elemento mais alto do
-   bloco, cai sobre o piso de madeira. Medido em 360px, o contraste era
-   3,36:1 com o véu de desktop. O véu da base sobe para alcançá-la — e para
-   no meio do quadro, longe do rosto.
+   Ele existe por três motivos concretos: o cortinado escuro que entra pela
+   esquerda em uma das fotos, a arara de roupas no topo por onde o header
+   passa, e a margem de segurança para as próximas fotografias, que ninguém
+   garante que virão com o mesmo canto vazio.
 --------------------------------------------------------------------------- */
 
 [data-plate-scrim] {
-  --scrim-base: 0.36;
-  --scrim-base-ate: 28%;
+  --scrim-base: 0.46;
+  --scrim-base-ate: 34%;
 
   background:
-    /* Lateral esquerda: platô e queda, cobrindo a faixa onde a tipografia pousa. */
+    /* Lateral esquerda: onde a tipografia pousa. */
     linear-gradient(
       to right,
-      rgba(14, 11, 8, 0.48) 0%,
-      rgba(14, 11, 8, 0.48) 40%,
-      rgba(14, 11, 8, 0) 80%
+      rgba(242, 236, 226, 0.5) 0%,
+      rgba(242, 236, 226, 0.44) 38%,
+      rgba(242, 236, 226, 0) 78%
     ),
-    /* Base: descrição e botões, sobre o piso claro. */
+    /* Base: descrição e botões. */
     linear-gradient(
       to top,
-      rgba(14, 11, 8, var(--scrim-base)) 0%,
-      rgba(14, 11, 8, 0) var(--scrim-base-ate)
+      rgba(242, 236, 226, var(--scrim-base)) 0%,
+      rgba(242, 236, 226, 0) var(--scrim-base-ate)
     ),
-    /* Topo: a navegação cruza a parede branca e o letreiro da loja. */
-    linear-gradient(to bottom, rgba(14, 11, 8, 0.68) 0%, rgba(14, 11, 8, 0) 14%),
-    /* Véu uniforme, mínimo — a roupa fica praticamente intocada. */
-    linear-gradient(rgba(14, 11, 8, 0.16), rgba(14, 11, 8, 0.16));
+    /* Topo: a navegação cruza a arara de roupas ao fundo. */
+    linear-gradient(
+      to bottom,
+      rgba(242, 236, 226, 0.72) 0%,
+      rgba(242, 236, 226, 0) 15%
+    );
 }
 
 @media (max-width: 640px) {
-  /* Rampa de três paradas em vez de duas. A linha de olho é o elemento mais
-     alto do bloco de texto e cai por volta de 49% da altura do quadro, onde
-     uma rampa linear já entregou quase todo o véu. O platô intermediário
-     segura ~0,3 exatamente ali: 3,8:1 → 6,4:1 em 360px, medido. */
+  /* No recorte estreito o bloco de texto ocupa quase metade da altura e a
+     linha de olho, o elemento mais alto dele, cai por volta de 49%. O platô
+     intermediário segura o clareado exatamente ali. */
   [data-plate-scrim] {
     background:
       linear-gradient(
         to right,
-        rgba(14, 11, 8, 0.48) 0%,
-        rgba(14, 11, 8, 0.48) 40%,
-        rgba(14, 11, 8, 0) 80%
+        rgba(242, 236, 226, 0.4) 0%,
+        rgba(242, 236, 226, 0.34) 40%,
+        rgba(242, 236, 226, 0) 85%
       ),
+      /* Sobe até 80%: no mobile o enquadramento fecha nos manequins e a
+         tipografia pousa sobre a própria roupa, não sobre a parede. O
+         clareado forte também emenda a base da hero com o linho da seção
+         seguinte, em vez de cortar seco. */
       linear-gradient(
         to top,
-        rgba(14, 11, 8, 0.72) 0%,
-        rgba(14, 11, 8, 0.5) 34%,
-        rgba(14, 11, 8, 0) 74%
+        rgba(242, 236, 226, 0.95) 0%,
+        rgba(242, 236, 226, 0.82) 30%,
+        rgba(242, 236, 226, 0) 80%
       ),
-      linear-gradient(to bottom, rgba(14, 11, 8, 0.68) 0%, rgba(14, 11, 8, 0) 14%),
-      linear-gradient(rgba(14, 11, 8, 0.16), rgba(14, 11, 8, 0.16));
+      linear-gradient(
+        to bottom,
+        rgba(242, 236, 226, 0.72) 0%,
+        rgba(242, 236, 226, 0) 15%
+      );
   }
 }
 
