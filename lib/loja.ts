@@ -26,7 +26,7 @@ export const INSTAGRAM = {
 
 export const LOJA = {
   /* Confirmado. Cidade, CEP e horário ainda não — não completar de cabeça. */
-  endereco: "Rua Samuel Laurence, 177 — Parque Maria Fernandes",
+  endereco: "Rua Samuel Laurence, 177, Parque Maria Fernandes",
 };
 
 /* ---- WhatsApp -------------------------------------------------------- */

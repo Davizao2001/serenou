@@ -65,7 +65,7 @@ export function Opening() {
         >
           <div data-hero-copy className="max-w-[86rem]">
             <p data-hero-eyebrow className="t-eyebrow mb-6 text-linho-alto/90">
-              Serenou — 2026
+              Serenou 2026
             </p>
 
             <h1 className="t-display t-hero">
@@ -82,7 +82,7 @@ export function Opening() {
             </h1>
 
             <p data-hero-desc className="t-body mt-7 max-w-[38ch] text-linho-alto/85 md:mt-9">
-              Moda feminina para o trabalho, o almoço, a viagem e a noite.
+              Para o trabalho, a viagem e a noite.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-4 md:mt-10 md:gap-7">
@@ -130,8 +130,7 @@ export function Opening() {
             >
               Hoje são <span className="text-oliva">vestidos</span>,{" "}
               <span className="text-oliva">conjuntos</span>,{" "}
-              <span className="text-oliva">peças casuais</span> e moda praia. A
-              mesma marca, muito mais dias do ano.
+              <span className="text-oliva">peças casuais</span> e moda praia.
             </p>
           </div>
         </div>

@@ -134,7 +134,7 @@ export const PRODUTOS_EXEMPLO: Produto[] = [
       { nome: "Preto", amostra: "#16130f" },
     ],
     tamanhos: TAMANHOS_PADRAO,
-    resumo: "Plissado que acompanha o passo, do escritório ao jantar.",
+    resumo: "Do escritório ao jantar.",
     detalhes: ["Tecido leve com caimento fluido", "Forro na saia", "Comprimento ao tornozelo"],
   },
   {
@@ -159,7 +159,7 @@ export const PRODUTOS_EXEMPLO: Produto[] = [
       { nome: "Bege", amostra: "#d3c3ac" },
     ],
     tamanhos: TAMANHOS_PADRAO,
-    resumo: "Blusa e pantalona no mesmo tecido — funciona junto ou separado.",
+    resumo: "Funciona junto ou separado.",
     detalhes: ["Blusa com alça ajustável", "Pantalona com cós elástico", "Vendido em conjunto"],
   },
   {
@@ -188,7 +188,7 @@ export const PRODUTOS_EXEMPLO: Produto[] = [
       { rotulo: "G", disponivel: true },
       { rotulo: "GG", disponivel: true },
     ],
-    resumo: "Decote reto, alça fina, comprimento acima do joelho.",
+    resumo: "Decote reto, alça fina.",
     detalhes: ["Malha canelada", "Alças finas", "Acima do joelho"],
   },
   {
@@ -208,7 +208,7 @@ export const PRODUTOS_EXEMPLO: Produto[] = [
     ],
     cores: [{ nome: "Preto", amostra: "#16130f" }],
     tamanhos: TAMANHOS_PADRAO,
-    resumo: "Babado assimétrico na blusa, pantalona de cintura alta.",
+    resumo: "Babado assimétrico, cintura alta.",
     detalhes: ["Babado assimétrico", "Cintura alta", "Tecido fluido"],
   },
   {
@@ -233,7 +233,7 @@ export const PRODUTOS_EXEMPLO: Produto[] = [
       { rotulo: "G", disponivel: false },
       { rotulo: "GG", disponivel: false },
     ],
-    resumo: "Corte assimétrico com gola alta e broche dourado.",
+    resumo: "Gola alta, broche dourado.",
     detalhes: ["Gola alta", "Broche dourado incluso", "Corte assimétrico"],
   },
   {
@@ -259,7 +259,7 @@ export const PRODUTOS_EXEMPLO: Produto[] = [
       { nome: "Bege", amostra: "#d3c3ac" },
     ],
     tamanhos: TAMANHOS_PADRAO,
-    resumo: "Cintura alta, perna ampla, cai bem com salto ou rasteira.",
+    resumo: "Cintura alta, perna ampla.",
     detalhes: ["Cintura alta", "Perna ampla", "Bolsos laterais"],
   },
   {
@@ -284,7 +284,7 @@ export const PRODUTOS_EXEMPLO: Produto[] = [
     tamanhos: [
       { rotulo: "Único", disponivel: true },
     ],
-    resumo: "Tecido leve, translúcido, para vestir por cima do biquíni.",
+    resumo: "Tecido leve e translúcido.",
     detalhes: ["Tecido translúcido", "Tamanho único", "Manga ampla"],
   },
   {
@@ -306,7 +306,7 @@ export const PRODUTOS_EXEMPLO: Produto[] = [
     ],
     cores: [{ nome: "Preto", amostra: "#16130f" }],
     tamanhos: TAMANHOS_PADRAO,
-    resumo: "Ombro único, broche dourado, comprimento midi.",
+    resumo: "Ombro único, comprimento midi.",
     detalhes: ["Ombro único", "Broche dourado", "Comprimento midi"],
   },
 ];

@@ -5,7 +5,7 @@ import { Vitrine } from "@/components/catalogo/Vitrine";
 import { PRODUTOS_EXEMPLO } from "@/lib/catalogo";
 
 export const metadata: Metadata = {
-  title: "Catálogo — Serenou",
+  title: "Catálogo | Serenou",
   description: "As peças da Serenou: vestidos, conjuntos, calças, blusas e moda praia.",
 };
 

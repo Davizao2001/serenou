@@ -63,7 +63,7 @@ export function PainelProduto({ produto }: { produto: Produto }) {
           <>
             <BotaoQuero nome={produto.nome} cor={cor} tamanho={tamanho} />
             <p className="t-body mt-4 text-center text-sm">
-              A conversa continua no WhatsApp da loja.
+              A conversa segue no WhatsApp.
             </p>
           </>
         )}

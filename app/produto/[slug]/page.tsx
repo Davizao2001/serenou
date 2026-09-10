@@ -18,8 +18,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const p = acharProduto(slug);
   return p
-    ? { title: `${p.nome} — Serenou`, description: p.resumo }
-    : { title: "Peça não encontrada — Serenou" };
+    ? { title: `${p.nome} | Serenou`, description: p.resumo }
+    : { title: "Peça não encontrada | Serenou" };
 }
 
 /**

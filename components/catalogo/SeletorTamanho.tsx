@@ -44,7 +44,7 @@ export function SeletorTamanho({ tamanhos, valor, aoEscolher }: Props) {
               }`}
             >
               {t.rotulo}
-              {!t.disponivel && <span className="sr-only"> — esgotado</span>}
+              {!t.disponivel && <span className="sr-only">, esgotado</span>}
             </button>
           );
         })}

@@ -52,8 +52,7 @@ export function ChapterLeve() {
           </h2>
 
           <p data-reveal className="t-body mt-8 max-w-[36ch] md:mt-10">
-            Tecidos que respondem ao corpo. Vestidos que acompanham o passo em
-            vez de decidir a ocasião.
+            Tecidos que respondem ao corpo.
           </p>
 
           <a

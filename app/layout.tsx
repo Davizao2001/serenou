@@ -4,11 +4,11 @@ import "@fontsource-variable/instrument-sans/index.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Serenou — Moda feminina para o dia inteiro",
+  title: "Serenou | Moda feminina para o dia inteiro",
   description:
     "Vestidos, conjuntos, peças casuais e moda praia. A mesma marca, muito mais dias do ano.",
   openGraph: {
-    title: "Serenou — Moda feminina para o dia inteiro",
+    title: "Serenou | Moda feminina para o dia inteiro",
     description:
       "Vestidos, conjuntos, peças casuais e moda praia. A mesma marca, muito mais dias do ano.",
     locale: "pt_BR",

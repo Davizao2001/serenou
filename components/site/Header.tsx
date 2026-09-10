@@ -114,7 +114,7 @@ export function Header() {
         hidden={!menuOpen}
         className="fixed inset-0 z-40 bg-linho px-5 pt-[calc(var(--header-h)+2rem)] lg:hidden"
       >
-        <nav aria-label="Principal — mobile">
+        <nav aria-label="Menu principal">
           <ul className="flex flex-col gap-1">
             {NAV.map((item) => (
               <li key={item.href}>

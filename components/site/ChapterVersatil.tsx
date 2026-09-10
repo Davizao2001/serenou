@@ -20,21 +20,21 @@ const LOOKS: Array<{
     slot: MEDIA.versatilDia,
     indice: "Look 01",
     ocasiao: "Dia",
-    nota: "Amarelo-manteiga e bege, para o dia que começa sem hora marcada.",
+    nota: "Amarelo-manteiga, para começar.",
     offset: "lg:left-0",
   },
   {
     slot: MEDIA.versatilTarde,
     indice: "Look 02",
     ocasiao: "Tarde",
-    nota: "O oliva da marca, do vestido longo ao conjunto de pantalona.",
+    nota: "O oliva da marca, no meio do dia.",
     offset: "lg:left-[13%]",
   },
   {
     slot: MEDIA.versatilNoite,
     indice: "Look 03",
     ocasiao: "Noite",
-    nota: "Preto, quando o mesmo dia continua.",
+    nota: "Preto, quando o dia continua.",
     offset: "lg:left-[5%]",
   },
 ];
@@ -87,8 +87,7 @@ export function ChapterVersatil() {
               </h2>
 
               <p data-reveal className="t-body mt-8 max-w-[34ch] md:mt-10">
-                A mesma marca em três horários. O que muda é a paleta, não a
-                mulher.
+                O que muda é a paleta, não a mulher.
               </p>
 
               {/* Índice de posição — só faz sentido enquanto a seção está presa */}

@@ -19,7 +19,7 @@ export function ProductGrid({ produtos, prioritarias = 2 }: Props) {
   if (produtos.length === 0) {
     return (
       <p className="t-body py-16 text-center">
-        Nenhuma peça nesta seleção no momento.
+        Nenhuma peça nesta seleção.
       </p>
     );
   }

@@ -52,8 +52,7 @@ export function TeaserMarcante() {
           </h2>
 
           <p data-reveal className="t-body mt-8 max-w-[32ch] text-linho-alto/70 md:mt-10">
-            Alfaiataria em preto, ombro único, broche dourado. O capítulo
-            inteiro vem a seguir.
+            Alfaiataria em preto, ombro único, broche dourado.
           </p>
 
           <div data-reveal className="mt-14 border-t border-linho-alto/20 pt-8 md:mt-20">

@@ -57,8 +57,7 @@ export function Fecho() {
 
           <div className="mt-10 lg:mt-0 lg:self-end lg:pb-3">
             <p data-reveal className="t-body max-w-[38ch] text-linho-alto/70">
-              As peças ficam na loja, para ver e provar sem pressa. E qualquer
-              dúvida sobre uma delas cabe numa mensagem — é só chamar.
+              As peças ficam na loja, para ver e provar sem pressa.
             </p>
 
             <a
@@ -123,7 +122,7 @@ export function Fecho() {
           <span className="marca-serenou text-linho-alto" aria-hidden="true" />
           <span className="marca-texto t-display text-[1.4rem]">Serenou</span>
           <p className="t-eyebrow text-linho-alto/55">
-            Serenou — {new Date().getFullYear()}
+            Serenou {new Date().getFullYear()}
           </p>
         </div>
       </div>

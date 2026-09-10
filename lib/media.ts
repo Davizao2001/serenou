@@ -70,7 +70,7 @@ export const MEDIA = {
     focus: "52% 50%",
     focusMobile: "72% 50%",
     tone: ["#2b2825", "#111010"],
-    note: "Hero — lifestyle horizontal, modelo ao centro",
+    note: "Hero: lifestyle horizontal, modelo ao centro",
   },
 
   /* ---- 01 LEVE --------------------------------------------------------
@@ -83,13 +83,13 @@ export const MEDIA = {
     sizes: "(min-width: 1024px) 44vw, 92vw",
     width: 1122,
     height: 1402,
-    alt: "Três vestidos Serenou em tons claros — verde-lima, off-white e verde-menta — apresentados na loja.",
+    alt: "Três vestidos Serenou em tons claros: verde-lima, off-white e verde-menta, apresentados na loja.",
     focus: "50% 42%",
     focusMobile: "50% 38%",
     video: null,
     poster: null,
     tone: ["#c9cf9a", "#8d9668"],
-    note: "Leve — vestidos claros e fluidos (vídeo original, se existir)",
+    note: "Leve: vestidos claros e fluidos (vídeo original, se existir)",
   },
 
   /* ---- 02 VERSÁTIL ----------------------------------------------------
@@ -102,11 +102,11 @@ export const MEDIA = {
     sizes: "(min-width: 1024px) 42vw, 92vw",
     width: 1122,
     height: 1402,
-    alt: "Conjuntos Serenou em amarelo-manteiga e bege — pantalonas e blusas de tecido leve.",
+    alt: "Conjuntos Serenou em amarelo-manteiga e bege: pantalonas e blusas de tecido leve.",
     focus: "50% 45%",
     focusMobile: "50% 42%",
     tone: ["#efe0b4", "#c9b183"],
-    note: "Versátil 01 — paleta clara",
+    note: "Versátil 01: paleta clara",
   },
   versatilTarde: {
     id: "versatil-tarde",
@@ -115,11 +115,11 @@ export const MEDIA = {
     sizes: "(min-width: 1024px) 42vw, 92vw",
     width: 1122,
     height: 1402,
-    alt: "Looks Serenou em verde oliva — vestido longo plissado, kimono com pantalona e conjunto monocromático.",
+    alt: "Looks Serenou em verde oliva: vestido longo plissado, kimono com pantalona e conjunto monocromático.",
     focus: "50% 46%",
     focusMobile: "46% 44%",
     tone: ["#8d9668", "#4e5733"],
-    note: "Versátil 02 — paleta oliva",
+    note: "Versátil 02: paleta oliva",
   },
   versatilNoite: {
     id: "versatil-noite",
@@ -132,7 +132,7 @@ export const MEDIA = {
     focus: "50% 34%",
     focusMobile: "52% 32%",
     tone: ["#4a4640", "#1b1815"],
-    note: "Versátil 03 — paleta preta",
+    note: "Versátil 03: paleta preta",
   },
 
   /* ---- TEASER 03 MARCANTE ---------------------------------------------
@@ -145,11 +145,11 @@ export const MEDIA = {
     sizes: "(min-width: 1024px) 58vw, 100vw",
     width: 1122,
     height: 1402,
-    alt: "Looks Serenou em preto — túnica assimétrica, conjunto de pantalona e vestido de ombro único com broche dourado.",
+    alt: "Looks Serenou em preto: túnica assimétrica, conjunto de pantalona e vestido de ombro único com broche dourado.",
     focus: "50% 30%",
     focusMobile: "50% 28%",
     tone: ["#2b2825", "#111010"],
-    note: "Marcante — alfaiataria preta",
+    note: "Marcante: alfaiataria preta",
   },
 } satisfies Record<string, MediaSlot>;
 
