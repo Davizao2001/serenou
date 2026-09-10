@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useRef } from "react";
 import { useGSAP } from "@/lib/gsap";
 import { openingScene } from "@/lib/scenes";
@@ -47,29 +49,10 @@ export function Opening() {
               esquerda, exatamente onde a tipografia pousa. A fotografia tem o
               fundo claro justamente nesse canto — sem eles a descrição some.
               A roupa fica no centro-direita e não é tocada. */}
-          <div
-            data-plate-scrim
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background: [
-                /* Lateral esquerda: platô e depois a queda, cobrindo toda a
-                   faixa onde a tipografia pousa. */
-                "linear-gradient(to right, rgba(14,11,8,0.48) 0%, rgba(14,11,8,0.48) 40%, rgba(14,11,8,0) 80%)",
-                /* Base — descrição e botões, sobre o piso claro. */
-                "linear-gradient(to top, rgba(14,11,8,0.36) 0%, rgba(14,11,8,0) 28%)",
-                /* Topo — a barra de navegação cruza a parede branca e o letreiro
-                   da loja, o ponto mais claro do quadro. */
-                "linear-gradient(to bottom, rgba(14,11,8,0.68) 0%, rgba(14,11,8,0) 14%)",
-                /* Véu uniforme de 16%. Era 32% na fotografia anterior, que
-                   tinha zíper e faixas brancas atravessando a headline. Aqui o
-                   único ponto claro sob a tipografia é o piso de madeira na
-                   base do quadro — metade do véu resolve, e a roupa fica
-                   praticamente intocada. */
-                "linear-gradient(rgba(14,11,8,0.16), rgba(14,11,8,0.16))",
-              ].join(", "),
-            }}
-          />
+          {/* Véus. Os valores e o porquê de cada um estão em globals.css,
+              junto do ajuste de mobile: no recorte estreito a tipografia
+              desce sobre o piso de madeira, o ponto mais claro do quadro. */}
+          <div data-plate-scrim aria-hidden="true" className="pointer-events-none absolute inset-0" />
         </div>
       </div>
 
@@ -81,7 +64,7 @@ export function Opening() {
           className="flex h-[100svh] flex-col justify-end px-5 pb-16 text-linho-alto md:px-8 md:pb-16 lg:px-12 lg:pb-20"
         >
           <div data-hero-copy className="max-w-[86rem]">
-            <p data-hero-eyebrow className="t-eyebrow mb-6 text-linho-alto/75">
+            <p data-hero-eyebrow className="t-eyebrow mb-6 text-linho-alto/90">
               Serenou — 2026
             </p>
 
@@ -103,13 +86,13 @@ export function Opening() {
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-4 md:mt-10 md:gap-7">
-              <a
+              <Link
                 data-hero-cta
-                href="#novidades"
+                href="/catalogo"
                 className="t-eyebrow bg-linho-alto px-8 py-4 text-carvao transition-colors duration-200 hover:bg-white"
               >
                 Ver novidades
-              </a>
+              </Link>
               <a
                 data-hero-cta
                 href="#manifesto"

@@ -1,17 +1,26 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { useGSAP } from "@/lib/gsap";
 import { headerScene } from "@/lib/scenes";
 import { linkWhatsApp } from "@/lib/loja";
 
+/* Destinos absolutos: o mesmo header serve home, catálogo e produto, e uma
+   âncora relativa não sai do lugar quando a pessoa já está em /catalogo.
+
+   `Novidades`, `Casual` e `Praia` apontavam para âncoras que não existem —
+   os capítulos correspondentes não foram construídos. Vão para o catálogo
+   até a call decidir a composição final do menu: `Casual` não está na lista
+   de categorias confirmadas, e `Calças`, `Blusas` e `Promoções` não estão
+   no menu. */
 const NAV = [
-  { label: "Novidades", href: "#novidades" },
-  { label: "Vestidos", href: "#vestidos" },
-  { label: "Conjuntos", href: "#conjuntos" },
-  { label: "Casual", href: "#casual" },
-  { label: "Praia", href: "#praia" },
-  { label: "Sobre", href: "#sobre" },
+  { label: "Novidades", href: "/catalogo" },
+  { label: "Vestidos", href: "/#vestidos" },
+  { label: "Conjuntos", href: "/#conjuntos" },
+  { label: "Casual", href: "/catalogo" },
+  { label: "Praia", href: "/catalogo" },
+  { label: "Sobre", href: "/#sobre" },
 ];
 
 export function Header() {
@@ -47,7 +56,7 @@ export function Header() {
         />
 
         <div className="relative mx-auto grid h-full max-w-[112rem] grid-cols-[auto_1fr_auto] items-center gap-6 px-5 md:px-8 lg:grid-cols-[1fr_auto_1fr] lg:px-12">
-          <a href="#topo" className="tap block" aria-label="Serenou, início">
+          <Link href="/" className="tap block" aria-label="Serenou, início">
             <span className="marca-serenou" aria-hidden="true" />
             <span
               className="marca-texto t-display text-[1.05rem] tracking-[0.3em] lg:text-[1.2rem]"
@@ -55,18 +64,18 @@ export function Header() {
             >
               Serenou
             </span>
-          </a>
+          </Link>
 
           <nav aria-label="Principal" className="hidden lg:block">
             <ul className="flex items-center gap-9">
               {NAV.map((item) => (
                 <li key={item.href}>
-                  <a
+                  <Link
                     href={item.href}
-                    className="t-eyebrow tap tracking-[0.14em] opacity-80 transition-opacity duration-200 hover:opacity-100"
+                    className="t-eyebrow tap block py-2 tracking-[0.14em] opacity-80 transition-opacity duration-200 hover:opacity-100"
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -81,7 +90,7 @@ export function Header() {
             </button>
             <a
               href={linkWhatsApp()}
-              className="t-eyebrow tap hidden tracking-[0.14em] opacity-80 transition-opacity duration-200 hover:opacity-100 sm:inline"
+              className="t-eyebrow tap hidden py-3 tracking-[0.14em] opacity-80 transition-opacity duration-200 hover:opacity-100 sm:inline-block"
             >
               WhatsApp
             </a>
@@ -109,20 +118,20 @@ export function Header() {
           <ul className="flex flex-col gap-1">
             {NAV.map((item) => (
               <li key={item.href}>
-                <a
+                <Link
                   href={item.href}
                   onClick={() => setMenuOpen(false)}
                   className="t-display block py-3 text-[2.4rem] text-carvao"
                 >
                   {item.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
         </nav>
         <a
           href={linkWhatsApp()}
-          className="t-eyebrow mt-10 inline-block text-carvao-medio"
+          className="t-eyebrow tap mt-10 inline-block py-3 text-carvao-medio"
         >
           Falar no WhatsApp
         </a>

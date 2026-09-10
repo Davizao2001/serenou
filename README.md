@@ -375,3 +375,32 @@ precisam ser refeitas. A placa sticky foi verificada depois disso.
 **A orquestração mora em `lib/intro-cena.ts`, fora do React**, como todas as
 outras cenas: o componente é só marcação, e a prévia hospedada chama a mesma
 função sobre o HTML estático. Uma implementação só.
+
+## Camada visual do catálogo
+
+Componentes de apresentação, sem banco, CMS, autenticação nem painel. Os
+produtos vêm de `lib/catalogo.ts` (`PRODUTOS_EXEMPLO`) e existem só para a UI
+ter o que desenhar até os dados reais chegarem.
+
+| Arquivo | Papel |
+| --- | --- |
+| `lib/catalogo.ts` | tipos `Produto`, `Cor`, `Tamanho` + dados de desenvolvimento |
+| `components/catalogo/ProductImage.tsx` | recorte, proporção e aproximação no hover |
+| `components/catalogo/ProductCard.tsx` | ficha da vitrine — foto, nome, preço, cores |
+| `components/catalogo/ProductGrid.tsx` | grade 2 / 3 colunas |
+| `components/catalogo/FiltroCategorias.tsx` | trilho de categorias e coleções |
+| `components/catalogo/Vitrine.tsx` | estado do filtro |
+| `components/catalogo/SeletorCor.tsx` | amostras de cor |
+| `components/catalogo/SeletorTamanho.tsx` | tamanhos, esgotado riscado |
+| `components/catalogo/BotaoQuero.tsx` | CTA `QUERO ESSA PEÇA` |
+| `components/catalogo/PainelProduto.tsx` | coluna de decisão da página de produto |
+| `app/catalogo/page.tsx` | vitrine |
+| `app/produto/[slug]/page.tsx` | esqueleto da página de produto |
+
+Para ligar aos dados reais: trocar `PRODUTOS_EXEMPLO` pela fonte verdadeira
+mantendo o tipo `Produto`. Nada mais precisa mudar de forma.
+
+O que ficou deliberadamente em aberto, à espera da call: obrigatoriedade de
+cor e tamanho antes do WhatsApp (uma condição no `disabled` de `BotaoQuero`),
+a forma final de Promoções, o tratamento visual de `indisponivel` e a
+composição do menu.

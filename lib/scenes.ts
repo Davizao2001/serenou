@@ -517,13 +517,20 @@ export function headerScene(root: HTMLElement): Cleanup {
 
   /* A hero vive fora do escopo do header — referência direta ao nó. */
   const hero = document.querySelector("[data-hero]");
-  if (!hero) return () => {};
 
   const solido = gsap
     .timeline({ paused: true })
     .to(one("[data-header-surface]"), { autoAlpha: 1, duration: DUR.quick, ease: EASE.out }, 0)
     .to(one("[data-header-hairline]"), { scaleX: 1, duration: DUR.base, ease: EASE.out }, 0)
     .to(root, { color: "#16130f", duration: DUR.quick, ease: EASE.out }, 0);
+
+  /* Páginas sem hero — catálogo, produto — não têm fotografia atrás da
+     navegação. O header nasce sólido nelas: transparente sobre bege claro é
+     tipografia off-white sobre off-white, ou seja, um header invisível. */
+  if (!hero) {
+    solido.progress(1).pause();
+    return () => solido.revert();
+  }
 
   const st = ScrollTrigger.create({
     trigger: hero,

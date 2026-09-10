@@ -108,14 +108,28 @@ export function introScene(camada: HTMLElement, fontes: FontesIntro): Cleanup {
      Os `codecs` precisam ser declarados: sem eles o navegador responde "talvez"
      para o MP4, tenta, falha, e cai no tratamento de erro em vez de escolher o
      WebM sozinho. Com eles a negociação acontece antes de qualquer download. */
-  for (const [src, type] of [
+  /* O elemento <video> só dispara `error` em alguns caminhos de falha; quando
+     nenhuma fonte carrega ele costuma ficar em silêncio, e a cortina ficava
+     presa até o limite de carregamento — cinco segundos de tela parada por
+     um arquivo que já tinha falhado no primeiro segundo. Contar os `error`
+     das próprias <source> resolve: quando todas falharam, não há o que
+     esperar. */
+  const candidatas: Array<[string, string]> = [
     [fontes.mp4, 'video/mp4; codecs="avc1.64001F"'],
     [fontes.webm, 'video/webm; codecs="vp9"'],
-  ]) {
-    if (!src) continue;
+  ].filter(([src]) => !!src) as Array<[string, string]>;
+
+  let falhas = 0;
+  const aoFalharFonte = () => {
+    falhas += 1;
+    if (falhas >= candidatas.length) falhar();
+  };
+
+  for (const [src, type] of candidatas) {
     const s = document.createElement("source");
     s.src = src;
     s.type = type;
+    s.addEventListener("error", aoFalharFonte);
     v.appendChild(s);
   }
   camada.prepend(v);
@@ -150,6 +164,7 @@ export function introScene(camada: HTMLElement, fontes: FontesIntro): Cleanup {
 
   return () => {
     timers.forEach(clearTimeout);
+    v.querySelectorAll("source").forEach((s) => s.removeEventListener("error", aoFalharFonte));
     v.removeEventListener("canplaythrough", tocar);
     v.removeEventListener("loadeddata", aoCarregar);
     v.removeEventListener("error", falhar);

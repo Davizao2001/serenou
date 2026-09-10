@@ -70,67 +70,76 @@ body {
 
 /* ---------------------------------------------------------------------------
    Papéis tipográficos
+
+   Dentro de `@layer components` de propósito. CSS sem camada vence qualquer
+   utilitário do Tailwind, que vive em `@layer utilities` — então um
+   `.t-body` sem camada sequestrava `text-linho-alto/85` e `max-w-[38ch]` em
+   todo lugar onde apareciam juntos, e o texto claro sobre fotografia escura
+   saía em carvão. Aqui os papéis definem o padrão e o utilitário ainda
+   corrige quando a superfície muda.
 --------------------------------------------------------------------------- */
 
-.t-display {
-  font-family: var(--font-display);
-  font-variation-settings: "wdth" 116, "wght" 420;
-  text-transform: uppercase;
-  letter-spacing: -0.028em;
-  line-height: 0.86;
-  text-wrap: balance;
-}
+@layer components {
+  .t-display {
+    font-family: var(--font-display);
+    font-variation-settings: "wdth" 116, "wght" 420;
+    text-transform: uppercase;
+    letter-spacing: -0.028em;
+    line-height: 0.86;
+    text-wrap: balance;
+  }
 
-/* Variante estreita — usada quando a linha precisa caber sem quebrar mal */
-.t-display-tight {
-  font-variation-settings: "wdth" 96, "wght" 440;
-  letter-spacing: -0.02em;
-}
+  /* Variante estreita — usada quando a linha precisa caber sem quebrar mal */
+  .t-display-tight {
+    font-variation-settings: "wdth" 96, "wght" 440;
+    letter-spacing: -0.02em;
+  }
 
-.t-hero {
-  /* A hero horizontal devolveu tamanho à headline: 9,2vw contra os 7,4vw que
-     a fotografia anterior permitia. O teto continua sendo a parede branca da
-     loja atrás dos manequins — acima disso a linha sobe até ela e a
-     tipografia off-white perde contraste. Medido, não estimado. */
-  font-size: clamp(2.7rem, 9.2vw, 9.6rem);
-}
+  .t-hero {
+    /* A hero horizontal devolveu tamanho à headline: 9,2vw contra os 7,4vw que
+       a fotografia anterior permitia. O teto continua sendo a parede branca da
+       loja atrás dos manequins — acima disso a linha sobe até ela e a
+       tipografia off-white perde contraste. Medido, não estimado. */
+    font-size: clamp(2.7rem, 9.2vw, 9.6rem);
+  }
 
-.t-manifesto {
-  font-size: clamp(1.8rem, 4vw, 3.9rem);
-  line-height: 0.94;
-}
+  .t-manifesto {
+    font-size: clamp(1.8rem, 4vw, 3.9rem);
+    line-height: 0.94;
+  }
 
-.t-chapter {
-  font-size: clamp(2rem, 5.2vw, 4.75rem);
-}
+  .t-chapter {
+    font-size: clamp(2rem, 5.2vw, 4.75rem);
+  }
 
-/* Janela de máscara para revelar linhas de display.
-   O padding vertical existe para os acentos: com line-height 0.86 as caixas
-   cortam o til de ÃO e o agudo de É. O negative margin devolve o espaço,
-   então o ritmo entre as linhas não muda. */
-.line-mask {
-  display: block;
-  overflow: hidden;
-  padding-top: 0.18em;
-  margin-top: -0.18em;
-  padding-bottom: 0.1em;
-}
+  /* Janela de máscara para revelar linhas de display.
+     O padding vertical existe para os acentos: com line-height 0.86 as caixas
+     cortam o til de ÃO e o agudo de É. O negative margin devolve o espaço,
+     então o ritmo entre as linhas não muda. */
+  .line-mask {
+    display: block;
+    overflow: hidden;
+    padding-top: 0.18em;
+    margin-top: -0.18em;
+    padding-bottom: 0.1em;
+  }
 
-.t-eyebrow {
-  font-family: var(--font-sans);
-  /* 12px é o piso para texto legível; abaixo disso o tracking largo não
-     compensa a perda. */
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
-  line-height: 1;
-}
+  .t-eyebrow {
+    font-family: var(--font-sans);
+    /* 12px é o piso para texto legível; abaixo disso o tracking largo não
+       compensa a perda. */
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    line-height: 1;
+  }
 
-.t-body {
-  max-width: 34ch;
-  color: var(--color-carvao-medio);
-  text-wrap: pretty;
+  .t-body {
+    max-width: 34ch;
+    color: var(--color-carvao-medio);
+    text-wrap: pretty;
+  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -332,6 +341,67 @@ html[data-intro="ativa"] [data-intro-camada] {
   .js-motion [data-leve-frame],
   .js-motion [data-teaser-frame] {
     clip-path: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Véus da hero
+
+   Quatro camadas, cada uma resolvendo um ponto claro específico da
+   fotografia. Os dois primeiros valores são medidos, não estimados.
+
+   No mobile o enquadramento muda (`--focus-mobile`) e o bloco de texto ocupa
+   quase metade da altura: a linha de olho, que é o elemento mais alto do
+   bloco, cai sobre o piso de madeira. Medido em 360px, o contraste era
+   3,36:1 com o véu de desktop. O véu da base sobe para alcançá-la — e para
+   no meio do quadro, longe do rosto.
+--------------------------------------------------------------------------- */
+
+[data-plate-scrim] {
+  --scrim-base: 0.36;
+  --scrim-base-ate: 28%;
+
+  background:
+    /* Lateral esquerda: platô e queda, cobrindo a faixa onde a tipografia pousa. */
+    linear-gradient(
+      to right,
+      rgba(14, 11, 8, 0.48) 0%,
+      rgba(14, 11, 8, 0.48) 40%,
+      rgba(14, 11, 8, 0) 80%
+    ),
+    /* Base: descrição e botões, sobre o piso claro. */
+    linear-gradient(
+      to top,
+      rgba(14, 11, 8, var(--scrim-base)) 0%,
+      rgba(14, 11, 8, 0) var(--scrim-base-ate)
+    ),
+    /* Topo: a navegação cruza a parede branca e o letreiro da loja. */
+    linear-gradient(to bottom, rgba(14, 11, 8, 0.68) 0%, rgba(14, 11, 8, 0) 14%),
+    /* Véu uniforme, mínimo — a roupa fica praticamente intocada. */
+    linear-gradient(rgba(14, 11, 8, 0.16), rgba(14, 11, 8, 0.16));
+}
+
+@media (max-width: 640px) {
+  /* Rampa de três paradas em vez de duas. A linha de olho é o elemento mais
+     alto do bloco de texto e cai por volta de 49% da altura do quadro, onde
+     uma rampa linear já entregou quase todo o véu. O platô intermediário
+     segura ~0,3 exatamente ali: 3,8:1 → 6,4:1 em 360px, medido. */
+  [data-plate-scrim] {
+    background:
+      linear-gradient(
+        to right,
+        rgba(14, 11, 8, 0.48) 0%,
+        rgba(14, 11, 8, 0.48) 40%,
+        rgba(14, 11, 8, 0) 80%
+      ),
+      linear-gradient(
+        to top,
+        rgba(14, 11, 8, 0.72) 0%,
+        rgba(14, 11, 8, 0.5) 34%,
+        rgba(14, 11, 8, 0) 74%
+      ),
+      linear-gradient(to bottom, rgba(14, 11, 8, 0.68) 0%, rgba(14, 11, 8, 0) 14%),
+      linear-gradient(rgba(14, 11, 8, 0.16), rgba(14, 11, 8, 0.16));
   }
 }
 

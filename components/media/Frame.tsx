@@ -68,7 +68,6 @@ export function Frame({
         <picture>
           <source type="image/avif" srcSet={srcset(slot, "avif")} sizes={slot.sizes} />
           <source type="image/webp" srcSet={srcset(slot, "webp")} sizes={slot.sizes} />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             className={`plate-media ${mediaClassName}`}
             style={foco}

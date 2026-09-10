@@ -125,7 +125,9 @@ export function ChapterVersatil() {
                     data-look-caption
                     className="mt-5 flex flex-wrap items-baseline gap-x-5 gap-y-2"
                   >
-                    <p className="t-eyebrow text-carvao-fraco">{look.indice}</p>
+                    <p className="t-eyebrow basis-full text-carvao-fraco sm:basis-auto">
+                      {look.indice}
+                    </p>
                     <p className="t-display text-[1.6rem] tracking-[0.04em]">
                       {look.ocasiao}
                     </p>

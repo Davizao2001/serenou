@@ -23,7 +23,16 @@ export function SerenouIntro() {
 
   useGSAP(() => {
     const el = camada.current;
-    if (!el || !introAtiva()) return;
+    if (!el) return;
+
+    /* Quem já viu a intro nesta sessão não precisa da cortina no documento.
+       O CSS já a esconde, mas um `display:none` ainda é um nó com um botão
+       dentro — some com ele, como a própria saída da intro faz ao terminar. */
+    if (!introAtiva()) {
+      el.remove();
+      return;
+    }
+
     return introScene(el, escolherFontes());
   }, {});
 
