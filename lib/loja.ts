@@ -35,8 +35,13 @@ export const INSTAGRAM = {
 export const LOJA = {
   /* Confirmado. Cidade, CEP e horário ainda não foram fechados: não
      completar de cabeça. A ausência da cidade afeta só a precisão do pino
-     nos mapas, não o texto. */
+     nos mapas, não o texto.
+
+     `linhas` é o MESMO endereço, só quebrado onde ele quebra bem na tela
+     (rua e número em uma linha, bairro na outra). Nenhuma palavra muda —
+     `endereco` continua sendo a forma única usada nos links de rota. */
   endereco: "Rua Samuel Laurence, 177, Parque Maria Fernandes",
+  linhas: ["Rua Samuel Laurence, 177,", "Parque Maria Fernandes"],
 };
 
 /* ---- Rotas -----------------------------------------------------------

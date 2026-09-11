@@ -142,49 +142,53 @@ export const MEDIA = {
   /* ---- 02 VERSÁTIL ----------------------------------------------------
      Claro → oliva → preto. A progressão cromática é o argumento: mesma
      marca, três formas de vestir. */
-  versatilDia: {
-    id: "versatil-dia",
-    base: "/images/serenou/looks/conjuntos-amarelo-manteiga-bege",
-    widths: W,
+  /* ---- VITRINES ------------------------------------------------------
+     As três fotografias que a Grazi entregou, recortadas em 4:5 a partir dos
+     originais 16:9 e ancoradas nos manequins. O mesmo material aparece na
+     hero em quadro cheio; aqui ele é retrato, porque a seção é vertical.
+
+     A associação é a que a cliente definiu e não deve ser trocada:
+     azul → vitrine 01, rosa → vitrine 02, verde → vitrine 03. */
+  vitrineAzul: {
+    id: "vitrine-azul",
+    base: "/images/serenou/vitrines/azul",
+    widths: [480, 720, 753],
     sizes: "(min-width: 1024px) 42vw, 92vw",
-    width: 1122,
-    height: 1402,
-    alt: "Conjuntos Serenou em amarelo-manteiga e bege: pantalonas e blusas de tecido leve.",
+    width: 753,
+    height: 941,
+    alt: "Vitrine da Serenou em azul-marinho: conjunto de camiseta e calça, blusa drapeada com saia off-white e vestido longo justo.",
     focus: "50% 45%",
     focusMobile: "50% 42%",
-    tone: ["#efe0b4", "#c9b183"],
-    note: "Vitrine 01 Azul: fotografia nova pedida à cliente (10/09)",
+    tone: ["#dfe0e6", "#b3b6c4"],
+    note: "Vitrine 01: azul",
   },
-  versatilTarde: {
-    id: "versatil-tarde",
-    base: "/images/serenou/looks/conjuntos-verde-oliva",
-    widths: W,
+  vitrineRosa: {
+    id: "vitrine-rosa",
+    base: "/images/serenou/vitrines/rosa",
+    widths: [480, 720, 753],
     sizes: "(min-width: 1024px) 42vw, 92vw",
-    width: 1122,
-    height: 1402,
-    alt: "Looks Serenou em verde oliva: vestido longo plissado, kimono com pantalona e conjunto monocromático.",
-    focus: "50% 46%",
-    focusMobile: "46% 44%",
-    tone: ["#8d9668", "#4e5733"],
-    note: "Vitrine 02 Rosa: fotografia nova pedida à cliente (10/09)",
+    width: 753,
+    height: 941,
+    alt: "Vitrine da Serenou em rosa: conjunto rosa-claro de ombro a ombro, vestido longo pink drapeado e vestido curto rosa com recorte.",
+    focus: "50% 45%",
+    focusMobile: "50% 42%",
+    tone: ["#f2e2e4", "#dcbcc2"],
+    note: "Vitrine 02: rosa",
   },
-  versatilNoite: {
-    id: "versatil-noite",
-    base: "/images/serenou/lifestyle/conjunto-preto-babado",
-    widths: W,
+  vitrineVerde: {
+    id: "vitrine-verde",
+    base: "/images/serenou/vitrines/verde",
+    widths: [480, 720, 753],
     sizes: "(min-width: 1024px) 42vw, 92vw",
-    width: 1122,
-    height: 1402,
-    alt: "Cliente da Serenou usando conjunto preto de blusa com babado e pantalona, na loja.",
-    focus: "50% 34%",
-    focusMobile: "52% 32%",
-    tone: ["#4a4640", "#1b1815"],
-    note: "Vitrine 03 Verde: fotografia nova pedida à cliente (10/09)",
+    width: 753,
+    height: 941,
+    alt: "Vitrine da Serenou em verde militar: conjunto de kimono e pantalona, camisa sobre saia off-white e macacão bege.",
+    focus: "50% 45%",
+    focusMobile: "50% 42%",
+    tone: ["#e2e3d7", "#b9bda6"],
+    note: "Vitrine 03: verde",
   },
 
-  /* ---- TEASER 03 MARCANTE ---------------------------------------------
-     Entra parcialmente pela base da viewport e leva o fundo da página para o
-     carvão. Fecha a fase 01 apontando para o capítulo seguinte. */
   marcante: {
     id: "marcante",
     base: "/images/serenou/mannequins/looks-pretos-alfaiataria",
