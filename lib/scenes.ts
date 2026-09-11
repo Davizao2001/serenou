@@ -631,6 +631,27 @@ export function fechoScene(root: HTMLElement): Cleanup {
 
     const chamada = one("[data-fecho-chamada]") ?? root;
 
+    /* Bege → carvão no fundo da página. A passagem que a pessoa VÊ é o
+       degradê dentro de A SERENOU; isto aqui é só o fundo fixo atrás de
+       tudo, para o overscroll no fim da página não mostrar bege por baixo
+       do rodapé escuro. Por isso dispara tarde, quando a tela já está
+       inteira tomada por seção escura e a troca é invisível.
+
+       `fromTo` explícito porque o capítulo anterior deixou o fundo em bege —
+       um `to` capturaria o valor errado ao ser criado. */
+    if (root.hasAttribute("data-escurece-fundo")) {
+      gsap.fromTo(
+        document.querySelector("[data-canvas]"),
+        { backgroundColor: "#e6dbcb" },
+        {
+          backgroundColor: "#16130f",
+          ease: EASE.linear,
+          immediateRender: false,
+          scrollTrigger: { trigger: root, start: "top 90%", end: "top 55%", scrub: true },
+        }
+      );
+    }
+
     gsap.fromTo(
       q("[data-fecho-line]"),
       { yPercent: 108, y: 0 },

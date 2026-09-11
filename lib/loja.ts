@@ -37,11 +37,15 @@ export const LOJA = {
      completar de cabeça. A ausência da cidade afeta só a precisão do pino
      nos mapas, não o texto.
 
-     `linhas` é o MESMO endereço, só quebrado onde ele quebra bem na tela
-     (rua e número em uma linha, bairro na outra). Nenhuma palavra muda —
-     `endereco` continua sendo a forma única usada nos links de rota. */
-  endereco: "Rua Samuel Laurence, 177, Parque Maria Fernandes",
-  linhas: ["Rua Samuel Laurence, 177,", "Parque Maria Fernandes"],
+     Duas formas do MESMO endereço, com as mesmas palavras:
+
+     `linhas`  é o que a cliente lê, com o travessão que a Grazi escreveu,
+               já quebrado onde quebra bem na tela.
+     `busca`   é o que vai para o Google Maps e o Waze. Travessão em campo
+               de busca atrapalha o geocoding, então ali ele vira vírgula.
+               Isso nunca aparece na tela. */
+  linhas: ["Rua Samuel Laurence, 177 —", "Parque Maria Fernandes"],
+  busca: "Rua Samuel Laurence, 177, Parque Maria Fernandes",
 };
 
 /* ---- Rotas -----------------------------------------------------------
@@ -51,12 +55,12 @@ export const LOJA = {
 --------------------------------------------------------------------- */
 
 /** Google Maps a partir de um endereço em texto. */
-export function googleMapsUrl(endereco: string = LOJA.endereco): string {
+export function googleMapsUrl(endereco: string = LOJA.busca): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)}`;
 }
 
 /** Waze a partir de um endereço em texto. `navigate=yes` já inicia a rota. */
-export function wazeUrl(endereco: string = LOJA.endereco): string {
+export function wazeUrl(endereco: string = LOJA.busca): string {
   return `https://waze.com/ul?q=${encodeURIComponent(endereco)}&navigate=yes`;
 }
 
