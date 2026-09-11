@@ -17,17 +17,24 @@ import { CATEGORIAS, COLECOES, linkWhatsApp } from "@/lib/loja";
  * entrada no menu do desktop e do telefone, e a sincronia deixa de depender
  * de alguém lembrar.
  *
- * Novidades abre e Promoções fecha, com as categorias no meio: uma é o que a
- * pessoa procura antes de saber que peça quer, a outra é o que ela procura
+ * "Catálogo" abre a lista: é a única entrada que não filtra nada. Sem ela o
+ * menu inteiro era um conjunto de recortes e não existia caminho para ver
+ * tudo — quem não sabe o que procura ficava sem porta de entrada.
+ *
+ * Depois vêm Novidades, as categorias e Promoções. Novidades é o que a
+ * pessoa procura antes de saber que peça quer; Promoções é o que ela procura
  * quando o preço importa. As duas são flags no produto, não categorias — um
  * vestido em promoção continua em Vestidos e aparece também em Promoções,
  * sem cadastro duplicado.
  */
 const NAV = [
-  ...COLECOES.filter((c) => c.slug === "novidades"),
-  ...CATEGORIAS,
-  ...COLECOES.filter((c) => c.slug === "promocoes"),
-].map((c) => ({ label: c.nome, href: `/catalogo?c=${c.slug}` }));
+  { label: "Catálogo", href: "/catalogo" },
+  ...[
+    ...COLECOES.filter((c) => c.slug === "novidades"),
+    ...CATEGORIAS,
+    ...COLECOES.filter((c) => c.slug === "promocoes"),
+  ].map((c) => ({ label: c.nome, href: `/catalogo?c=${c.slug}` })),
+];
 
 export function Header() {
   const header = useRef<HTMLElement>(null);
@@ -133,7 +140,11 @@ export function Header() {
                 <Link
                   href={item.href}
                   onClick={() => setMenuOpen(false)}
-                  className="t-display block py-3 text-[2.4rem] text-carvao"
+                  /* O tamanho acompanha a altura da tela, não a largura: com oito
+                     entradas, um iPhone SE deitado no limite de 640px só cabe
+                     a lista inteira se a tipografia ceder um pouco. O teto de
+                     2.4rem preserva a escala nos telefones altos. */
+                  className="t-display block py-3 text-[clamp(1.75rem,5.1svh,2.4rem)] text-carvao"
                 >
                   {item.label}
                 </Link>
