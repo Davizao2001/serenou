@@ -43,10 +43,11 @@ export function LojaFisica() {
             </p>
 
             <h2 id="loja-titulo" className="t-display t-chapter">
-              {["A Serenou", "também", "te espera", "por aqui."].map((linha) => (
+              {["A Serenou", "também", "te espera", "por aqui."].map((linha, i, todas) => (
                 <span key={linha} className="line-mask">
                   <span data-fecho-line className="block">
                     {linha}
+                    {i < todas.length - 1 ? " " : ""}
                   </span>
                 </span>
               ))}
@@ -59,8 +60,15 @@ export function LojaFisica() {
               encontrar o look que combina com você.
             </p>
 
-            <address data-reveal className="t-body mt-10 max-w-[28ch] text-[1.0625rem] not-italic leading-[1.45] text-linho-alto/90 md:text-[1.1875rem]">
-              {LOJA.endereco}
+            {/* Mesmo endereço de `lib/loja.ts`, quebrado em rua+número /
+                bairro: só a quebra muda, nenhuma palavra. */}
+            <address data-reveal className="t-body mt-10 max-w-[30ch] text-[1.0625rem] not-italic leading-[1.45] text-linho-alto/90 md:text-[1.1875rem]">
+              {LOJA.linhas.map((linha, i) => (
+                <span key={linha} className="block">
+                  {linha}
+                  {i < LOJA.linhas.length - 1 ? " " : ""}
+                </span>
+              ))}
             </address>
 
             <div data-reveal className="mt-8">

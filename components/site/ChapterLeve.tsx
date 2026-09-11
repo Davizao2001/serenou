@@ -42,10 +42,11 @@ export function ChapterLeve() {
           </p>
 
           <h2 id="leve-titulo" className="t-display t-chapter">
-            {["Conforto que", "acompanha", "a sua rotina."].map((linha) => (
+            {["Conforto que", "acompanha", "a sua rotina."].map((linha, i, todas) => (
               <span key={linha} className="line-mask">
                 <span data-leve-line className="block">
                   {linha}
+                    {i < todas.length - 1 ? " " : ""}
                 </span>
               </span>
             ))}

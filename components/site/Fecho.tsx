@@ -48,7 +48,11 @@ export function Fecho() {
           </div>
 
           <ul data-reveal className="flex flex-col gap-4 sm:items-end">
-            <li>
+            {/* "Instagram @serenoubeach" e "WhatsApp (11) 98448-7394": o
+                rótulo faz parte do texto que a cliente escreveu, então ele
+                aparece. O que vira link é só o dado. */}
+            <li className="flex flex-wrap items-baseline gap-x-2">
+              <span className="t-body text-linho-alto/55">Instagram</span>
               <a
                 href={INSTAGRAM.url}
                 target="_blank"
@@ -58,7 +62,8 @@ export function Fecho() {
                 {INSTAGRAM.usuario}
               </a>
             </li>
-            <li>
+            <li className="flex flex-wrap items-baseline gap-x-2">
+              <span className="t-body text-linho-alto/55">WhatsApp</span>
               <a
                 href={linkWhatsApp()}
                 target="_blank"

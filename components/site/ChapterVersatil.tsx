@@ -9,47 +9,37 @@ import { Frame } from "@/components/media/Frame";
 /**
  * As três vitrines de looks.
  *
- * O texto de cada uma vem inteiro da cliente. A quebra em duas alturas
- * tipográficas — a primeira frase em display, o resto em corpo — é
- * composição, não edição: nenhuma palavra muda de lugar. É o que mantém a
- * parte editorial em vez de virar legenda de card.
- *
- * `vitrine` é o nome pelo qual a Grazi identifica cada uma. As fotografias
- * novas (azul, rosa, verde) ainda não chegaram; quando chegarem, o único
- * lugar a mexer é o slot correspondente em `lib/media.ts`.
+ * Rótulo e texto vêm da cliente e entram inteiros, sem corte e sem quebra em
+ * dois níveis tipográficos. A associação entre fotografia e texto é a que ela
+ * definiu: azul, rosa, verde, nesta ordem.
  */
 const LOOKS: Array<{
   slot: MediaSlot;
-  indice: string;
-  vitrine: string;
-  chamada: string;
-  nota: string;
+  rotulo: string;
+  texto: string;
   /** Deslocamento horizontal da placa no desktop — a composição se
    *  reorganiza a cada troca em vez de trocar no mesmo lugar. */
   offset: string;
 }> = [
   {
-    slot: MEDIA.versatilDia,
-    indice: "01",
-    vitrine: "Azul",
-    chamada: "Para quando o básico pede um pouco mais.",
-    nota: "Peças que transitam do trabalho ao jantar sem complicação.",
+    slot: MEDIA.vitrineAzul,
+    rotulo: "01 / Vitrine azul",
+    texto:
+      "Para quando o básico pede um pouco mais. Peças que transitam do trabalho ao jantar sem complicação.",
     offset: "lg:left-0",
   },
   {
-    slot: MEDIA.versatilTarde,
-    indice: "02",
-    vitrine: "Rosa",
-    chamada: "Para vestir e se sentir bem.",
-    nota: "Modelagens femininas, tecidos leves e aquela dose de cor que transforma o look.",
+    slot: MEDIA.vitrineRosa,
+    rotulo: "02 / Vitrine rosa",
+    texto:
+      "Para vestir e se sentir bem. Modelagens femininas, tecidos leves e aquela dose de cor que transforma o look.",
     offset: "lg:left-[13%]",
   },
   {
-    slot: MEDIA.versatilNoite,
-    indice: "03",
-    vitrine: "Verde",
-    chamada: "Para acompanhar a vida real.",
-    nota: "Conforto, praticidade e combinações que funcionam em diferentes momentos do seu dia.",
+    slot: MEDIA.vitrineVerde,
+    rotulo: "03 / Vitrine verde",
+    texto:
+      "Para acompanhar a vida real. Conforto, praticidade e combinações que funcionam em diferentes momentos do seu dia.",
     offset: "lg:left-[5%]",
   },
 ];
@@ -92,10 +82,11 @@ export function ChapterVersatil() {
               </p>
 
               <h2 id="versatil-titulo" className="t-display t-chapter">
-                {["Um look.", "Várias", "possibilidades"].map((linha) => (
+                {["Um look.", "Várias", "possibilidades"].map((linha, i, todas) => (
                   <span key={linha} className="line-mask">
                     <span data-versatil-line className="block">
                       {linha}
+                    {i < todas.length - 1 ? " " : ""}
                     </span>
                   </span>
                 ))}
@@ -113,7 +104,7 @@ export function ChapterVersatil() {
                 className="mt-12 hidden items-center gap-3 lg:flex"
               >
                 {LOOKS.map((l, i) => (
-                  <li key={l.indice} data-step className="flex items-center gap-2">
+                  <li key={l.rotulo} data-step className="flex items-center gap-2">
                     <span className="t-eyebrow text-carvao-fraco">
                       {String(i + 1).padStart(2, "0")}
                     </span>
@@ -127,7 +118,7 @@ export function ChapterVersatil() {
             <div data-looks className="relative lg:h-[74svh]">
               {LOOKS.map((look) => (
                 <article
-                  key={look.indice}
+                  key={look.rotulo}
                   data-look
                   className={`relative mb-16 lg:absolute lg:inset-y-0 lg:mb-0 ${look.offset}`}
                 >
@@ -137,14 +128,12 @@ export function ChapterVersatil() {
                       className="aspect-[4/5] w-full lg:aspect-[4/5] lg:h-full lg:w-auto"
                     />
                   </div>
-                  <div data-look-caption className="mt-5 max-w-[46ch] md:mt-6">
+                  <div data-look-caption className="mt-5 max-w-[52ch] md:mt-6">
                     <p className="t-eyebrow mb-3 text-carvao-fraco">
-                      {look.indice}
+                      {look.rotulo}
                     </p>
-                    <p className="t-display text-[1.25rem] leading-[1.06] tracking-[0.01em] md:text-[1.5rem]">
-                      {look.chamada}
-                    </p>
-                    <p className="t-body mt-3 max-w-[46ch] text-sm">{look.nota}</p>
+                    {/* O texto da cliente inteiro, em um parágrafo só. */}
+                    <p className="t-body max-w-[52ch]">{look.texto}</p>
                   </div>
                 </article>
               ))}

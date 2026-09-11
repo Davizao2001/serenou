@@ -42,10 +42,11 @@ export function TeaserMarcante() {
           </p>
 
           <h2 id="marcante-titulo" className="t-display t-chapter">
-            {["Sem cor.", "Só", "silhueta."].map((linha) => (
+            {["Sem cor.", "Só", "silhueta."].map((linha, i, todas) => (
               <span key={linha} className="line-mask">
                 <span data-teaser-line className="block">
                   {linha}
+                    {i < todas.length - 1 ? " " : ""}
                 </span>
               </span>
             ))}

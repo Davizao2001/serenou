@@ -47,10 +47,11 @@ export function ASerenou() {
                   "guarda-" / "roupa.", e a linha da máscara passa a conter
                   duas alturas de texto. As três linhas cabem inteiras até
                   360px, então travar a quebra é seguro. */}
-              {["Da tela", "para o seu", "guarda-roupa."].map((linha) => (
+              {["Da tela", "para o seu", "guarda-roupa."].map((linha, i, todas) => (
                 <span key={linha} className="line-mask">
                   <span data-fecho-line className="block whitespace-nowrap">
                     {linha}
+                    {i < todas.length - 1 ? " " : ""}
                   </span>
                 </span>
               ))}

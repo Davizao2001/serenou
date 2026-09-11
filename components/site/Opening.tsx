@@ -101,10 +101,11 @@ export function Opening() {
                 headline inteira mora na parede vazia — que é justamente o
                 que as três fotografias têm em comum. */}
             <h1 className="t-display t-hero">
-              {["Vista", "o dia", "inteiro."].map((linha) => (
+              {["Vista", "o dia", "inteiro."].map((linha, i, todas) => (
                 <span key={linha} className="line-mask">
                   <span data-hero-line className="block">
                     {linha}
+                    {i < todas.length - 1 ? " " : ""}
                   </span>
                 </span>
               ))}
