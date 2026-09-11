@@ -7,11 +7,11 @@ import { HERO_SLIDES } from "@/lib/media";
 export const metadata: Metadata = {
   title: "Serenou | Moda feminina para o dia inteiro",
   description:
-    "Vestidos, conjuntos, peças casuais e moda praia. A mesma marca, muito mais dias do ano.",
+    "Hoje, a Serenou veste diferentes momentos da mulher: vestidos, conjuntos, peças casuais e moda praia pensados para uma rotina real.",
   openGraph: {
     title: "Serenou | Moda feminina para o dia inteiro",
     description:
-      "Vestidos, conjuntos, peças casuais e moda praia. A mesma marca, muito mais dias do ano.",
+      "Hoje, a Serenou veste diferentes momentos da mulher: vestidos, conjuntos, peças casuais e moda praia pensados para uma rotina real.",
     locale: "pt_BR",
     type: "website",
   },
