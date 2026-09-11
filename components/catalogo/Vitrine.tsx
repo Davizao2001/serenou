@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { FiltroCategorias } from "./FiltroCategorias";
 import { ProductGrid } from "./ProductGrid";
 import { produtosVisiveis, type Produto } from "@/lib/catalogo";
+import { linkWhatsApp } from "@/lib/loja";
 
 /**
  * VITRINE
@@ -35,6 +36,15 @@ export function Vitrine({
     setFiltro(filtroInicial);
   }
 
+  /* Catálogo inteiro vazio é diferente de filtro sem resultado.
+     Sem esta distinção, uma loja que ainda não cadastrou nenhuma peça
+     manda a pessoa "escolher outra categoria" — e todas estão vazias.
+     Quando não há nada, os filtros somem e a mensagem diz a verdade. */
+  const temCatalogo = useMemo(
+    () => produtosVisiveis(produtos).length > 0,
+    [produtos]
+  );
+
   const lista = useMemo(() => {
     const visiveis = produtosVisiveis(produtos);
     if (filtro === "tudo") return visiveis;
@@ -55,14 +65,33 @@ export function Vitrine({
 
   return (
     <>
-      <FiltroCategorias ativo={filtro} aoTrocar={trocar} total={lista.length} />
+      {temCatalogo ? (
+        <FiltroCategorias ativo={filtro} aoTrocar={trocar} total={lista.length} />
+      ) : null}
       <div className="mt-12 md:mt-16">
         {lista.length > 0 ? (
           <ProductGrid produtos={lista} />
         ) : (
           <p className="t-body max-w-[46ch] py-[8svh] text-carvao-medio">
-            Nenhuma peça nesta seleção por enquanto. Escolha outra categoria
-            ou fale com a gente no WhatsApp.
+            {temCatalogo ? (
+              <>
+                Nenhuma peça nesta seleção por enquanto. Escolha outra categoria
+                ou{" "}
+                <a href={linkWhatsApp()} className="underline underline-offset-4">
+                  fale com a gente no WhatsApp
+                </a>
+                .
+              </>
+            ) : (
+              <>
+                As peças estão sendo fotografadas e entram aqui em breve.
+                Enquanto isso,{" "}
+                <a href={linkWhatsApp()} className="underline underline-offset-4">
+                  chame a gente no WhatsApp
+                </a>
+                : mostramos o que tem na loja e reservamos pra você.
+              </>
+            )}
           </p>
         )}
       </div>
