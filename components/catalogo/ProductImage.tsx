@@ -9,6 +9,10 @@ type Props = {
   priority?: boolean;
   /** Escurece e dessatura: peça esgotada. */
   esmaecida?: boolean;
+  /** Quanto a foto ocupa da tela neste contexto. O slot já traz o valor da
+   *  vitrine; a página de produto, onde a moldura é muito maior, passa o
+   *  dela. Sem isso o navegador pede largura de card para uma foto grande. */
+  sizes?: string;
   className?: string;
 };
 
@@ -29,8 +33,10 @@ export function ProductImage({
   proporcao = "4/5",
   priority = false,
   esmaecida = false,
+  sizes,
   className = "",
 }: Props) {
+  const slotFinal = sizes ? { ...slot, sizes } : slot;
   return (
     <div
       className={`relative overflow-hidden bg-areia ${
@@ -38,7 +44,7 @@ export function ProductImage({
       } ${className}`}
     >
       <Frame
-        slot={slot}
+        slot={slotFinal}
         priority={priority}
         className="h-full w-full"
         mediaClassName={`transition-[transform,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none group-hover:scale-[1.03] ${

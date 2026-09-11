@@ -140,6 +140,39 @@ export const produto = defineType({
               description:
                 "Para quem usa leitor de tela e para o Google. Exemplo: Vestido longo verde oliva, com caimento fluido.",
             }),
+            /* De que cor é esta foto.
+               Quando preenchido, clicar na bolinha da cor no site troca a
+               fotografia para esta. Em branco, a foto continua na galeria
+               normalmente e não responde a cor nenhuma — é o que acontece
+               com foto de detalhe, de costas ou de cor que a loja ainda não
+               confirmou como disponível.
+               A validação compara com as cores cadastradas na própria peça,
+               porque um nome digitado diferente ("Azul marinho" x
+               "Azul-marinho") quebraria a troca em silêncio. */
+            defineField({
+              name: "cor",
+              title: "Cor desta foto",
+              type: "string",
+              description:
+                "Escreva exatamente o nome de uma das cores da peça. Deixe em branco se a foto não é de uma cor específica.",
+              validation: (r) =>
+                r.custom((valor, contexto) => {
+                  if (!valor) return true;
+                  const doc = contexto.document as
+                    | { cores?: { nome?: string }[] }
+                    | undefined;
+                  const cores = (doc?.cores ?? [])
+                    .map((c) => c?.nome)
+                    .filter(Boolean) as string[];
+                  if (cores.length === 0)
+                    return "Esta peça ainda não tem cores cadastradas na aba Opções.";
+                  const igual = (a: string) =>
+                    a.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                  return cores.some((c) => igual(c) === igual(valor))
+                    ? true
+                    : `Não existe a cor "${valor}" nesta peça. As cadastradas são: ${cores.join(", ")}.`;
+                }),
+            }),
           ],
         },
       ],

@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
+import { PecaEmFoco } from "@/components/catalogo/PecaEmFoco";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/site/Header";
 import { ASerenou } from "@/components/site/ASerenou";
 import { LojaFisica } from "@/components/site/LojaFisica";
 import { Fecho } from "@/components/site/Fecho";
-import { PainelProduto } from "@/components/catalogo/PainelProduto";
-import { ProductImage } from "@/components/catalogo/ProductImage";
 import { ProductGrid } from "@/components/catalogo/ProductGrid";
 import { buscarProduto, listarSlugs, relacionadas } from "@/sanity/lib/produtos";
 import { largest } from "@/lib/media";
@@ -94,19 +93,7 @@ export default async function Produto({ params }: Props) {
             </Link>
           </nav>
 
-          <div className="grid gap-10 lg:grid-cols-[58fr_42fr] lg:gap-20">
-            {/* Galeria */}
-            <div className="flex flex-col gap-4 md:gap-6">
-              {produto.imagens.map((img, i) => (
-                <ProductImage key={img.id} slot={img} proporcao="3/4" priority={i === 0} />
-              ))}
-            </div>
-
-            {/* Decisão */}
-            <div className="lg:sticky lg:top-[calc(var(--header-h)+4svh)] lg:self-start">
-              <PainelProduto produto={produto} />
-            </div>
-          </div>
+          <PecaEmFoco produto={produto} />
 
           {daMesmaCategoria.length > 0 && (
             <section className="mt-[14svh] border-t border-areia-forte pt-12 md:pt-16">

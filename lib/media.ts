@@ -49,6 +49,10 @@ export type MediaSlot = {
     auto?: string;
     fallback: string;
   } | null;
+  /** De que cor é esta fotografia, quando a loja marcou no painel. É por
+   *  aqui que escolher uma cor troca a foto na vitrine e na página de
+   *  produto. `null` ou ausente = foto que não pertence a uma cor. */
+  cor?: string | null;
   /** Vídeo original, quando existir. Tem prioridade sobre a foto. */
   video?: string | null;
   poster?: string | null;
@@ -275,4 +279,35 @@ export function largest(slot: MediaSlot, ext: "avif" | "webp" = "webp") {
  */
 export function srcsetImg(slot: MediaSlot) {
   return slot.fontes?.auto;
+}
+
+/* ---------------------------------------------------------------------------
+   COMBINAR FOTO E COR
+
+   "Azul-marinho", "azul marinho" e "Azul Marinho" são a mesma cor para uma
+   pessoa e três strings diferentes para um computador. A loja digita o nome
+   da cor duas vezes — uma na lista de cores, outra em cada foto — e um acento
+   a mais quebraria a troca em silêncio. Por isso a comparação é frouxa de
+   propósito: sem acento, sem caixa, sem espaço nas pontas.
+--------------------------------------------------------------------------- */
+export function mesmaCor(a?: string | null, b?: string | null): boolean {
+  if (!a || !b) return false;
+  const normal = (s: string) =>
+    s.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return normal(a) === normal(b);
+}
+
+/**
+ * Reordena a galeria para a cor escolhida: as fotos daquela cor primeiro, na
+ * ordem em que a loja as colocou, e o resto atrás.
+ *
+ * Reordenar e não filtrar: uma foto de detalhe ou de costas sem cor marcada
+ * continua acessível. Quem escolheu "Marrom" vê marrom primeiro, não vê
+ * marrom sozinho.
+ */
+export function ordenarPorCor(fotos: MediaSlot[], cor?: string | null): MediaSlot[] {
+  if (!cor) return fotos;
+  const daCor = fotos.filter((f) => mesmaCor(f.cor, cor));
+  if (daCor.length === 0) return fotos;
+  return [...daCor, ...fotos.filter((f) => !mesmaCor(f.cor, cor))];
 }

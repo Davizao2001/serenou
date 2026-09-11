@@ -27,8 +27,35 @@ function construtor() {
   return construtorCache;
 }
 
-/** Larguras servidas para foto de catálogo. */
+/** Larguras servidas para foto de catálogo.
+ *
+ *  1200 é o teto porque é a largura nativa das fotos da Grazi (1200×1600).
+ *  Pedir mais que isso ao CDN devolve um arquivo maior sem um pixel a mais de
+ *  informação — o Sanity amplia, não inventa detalhe. */
 const LARGURAS = [480, 720, 960, 1200];
+
+/** Compressão do CDN.
+ *
+ *  80 é o padrão do Sanity e é pensado para foto de blog. Em tecido liso sob
+ *  luz de provador — cetim, tule, poá em fundo claro — 80 deixa o degradê em
+ *  faixas e borra a trama. 90 recupera a textura com um arquivo poucos
+ *  quilobytes maior, porque AVIF e WebP absorvem bem essa faixa. Acima de 90
+ *  o arquivo cresce rápido e o olho não acompanha. */
+const QUALIDADE = 90;
+
+/* Quanto espaço a fotografia ocupa na tela, por contexto. É isto que decide
+   qual largura do srcset o navegador baixa: um `sizes` que mente para menos
+   faz o navegador escolher um arquivo pequeno e a foto sai mole.
+
+   VITRINE   grade de 2 colunas no telefone, 3 a partir de 768px, 4 a partir
+             de 1280px, dentro de um container que para de crescer em 112rem.
+   PRODUTO   coluna de 58fr no desktop, tela inteira no telefone. Era aqui que
+             o valor da vitrine estava sendo reaproveitado — a moldura ocupa
+             quase 1000px e o navegador pedia largura de card. */
+export const SIZES_VITRINE =
+  "(min-width: 1792px) 420px, (min-width: 1280px) 24vw, (min-width: 768px) 31vw, 47vw";
+export const SIZES_PRODUTO =
+  "(min-width: 1792px) 1010px, (min-width: 1024px) 56vw, 92vw";
 
 export type ImagemSanity = {
   _key?: string;
@@ -42,6 +69,7 @@ export type ImagemSanity = {
     };
   };
   hotspot?: { x?: number; y?: number };
+  cor?: string;
 };
 
 /**
@@ -58,7 +86,7 @@ function url(imagem: ImagemSanity, largura: number) {
     .image(imagem as never)
     .width(largura)
     .auto("format")
-    .quality(80)
+    .quality(QUALIDADE)
     .url();
 }
 
@@ -78,7 +106,7 @@ export function slotDeImagem(
   {
     id,
     alt,
-    sizes = "(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw",
+    sizes = SIZES_VITRINE,
     note = "Fotografia do catálogo",
   }: { id: string; alt?: string; sizes?: string; note?: string }
 ): MediaSlot {
@@ -99,6 +127,7 @@ export function slotDeImagem(
       focus: "50% 50%",
       focusMobile: "50% 50%",
       tone: ["#e6dbcb", "#cbbda6"],
+      cor: null,
       note,
     };
   }
@@ -124,6 +153,7 @@ export function slotDeImagem(
     focus: foco,
     focusMobile: foco,
     tone: [paleta?.background ?? "#e6dbcb", paleta?.foreground ?? "#cbbda6"],
+    cor: imagem.cor?.trim() || null,
     note,
   };
 }
@@ -132,6 +162,7 @@ export function slotDeImagem(
 export const PROJECAO_IMAGEM = `{
   _key,
   alt,
+  cor,
   hotspot,
   asset->{
     _id,

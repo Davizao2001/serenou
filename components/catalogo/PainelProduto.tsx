@@ -22,15 +22,24 @@ import { EXIGIR_ESCOLHA } from "@/lib/loja";
  *
  * A cor já entra escolhida quando só existe uma; obrigar um clique num
  * conjunto de um item é atrito sem informação.
+ *
+ * A cor NÃO mora aqui: ela mora em `PecaEmFoco`, um nível acima, porque a
+ * galeria de fotos também responde a ela. Escolher "Marrom" tem que trocar a
+ * fotografia, e a fotografia é irmã deste painel, não filha.
  */
-export function PainelProduto({ produto }: { produto: Produto }) {
+export function PainelProduto({
+  produto,
+  cor,
+  aoEscolherCor,
+}: {
+  produto: Produto;
+  cor: string | null;
+  aoEscolherCor: (cor: string | null) => void;
+}) {
   const esgotado = produto.status === "indisponivel";
   const temCores = produto.cores.length > 0;
   const temTamanhos = produto.tamanhos.length > 0;
 
-  const [cor, setCor] = useState<string | null>(
-    produto.cores.length === 1 ? produto.cores[0].nome : null
-  );
   const [tamanho, setTamanho] = useState<string | null>(null);
   const selo = rotuloStatus(produto);
 
@@ -64,7 +73,9 @@ export function PainelProduto({ produto }: { produto: Produto }) {
 
       {(temCores || temTamanhos) && (
         <div className="mt-10 space-y-10">
-          {temCores && <SeletorCor cores={produto.cores} valor={cor} aoEscolher={setCor} />}
+          {temCores && (
+            <SeletorCor cores={produto.cores} valor={cor} aoEscolher={aoEscolherCor} />
+          )}
           {temTamanhos && (
             <SeletorTamanho
               tamanhos={produto.tamanhos}

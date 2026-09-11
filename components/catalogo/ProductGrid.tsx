@@ -25,7 +25,14 @@ export function ProductGrid({ produtos, prioritarias = 2 }: Props) {
   }
 
   return (
-    <ul className="grid grid-cols-2 gap-x-4 gap-y-12 md:gap-x-6 md:gap-y-16 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-20">
+    /* Cartão menor, mais peça por tela.
+       Era 2 colunas até 1024px e 3 daí pra cima — num monitor largo cada
+       fotografia passava de 560px, tamanho de página de produto, e a vitrine
+       virava uma peça por vez. Agora vai a 4 colunas, e o respiro vertical
+       encolhe junto: espaço de galeria, não de ensaio.
+       No telefone continuam 2. Três numa tela de 390px deixaria o corpo da
+       roupa com menos de 120px, e aí não dá para ver o que se está olhando. */
+    <ul className="grid grid-cols-2 gap-x-3 gap-y-9 sm:gap-x-4 md:grid-cols-3 md:gap-x-5 md:gap-y-12 xl:grid-cols-4 xl:gap-x-6 xl:gap-y-14">
       {produtos.map((p, i) => (
         <li key={p.slug}>
           <ProductCard produto={p} priority={i < prioritarias} />
