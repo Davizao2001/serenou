@@ -1,4 +1,5 @@
 import { defineField, defineType } from "sanity";
+import { CATEGORIAS } from "../../lib/loja";
 
 /* ---------------------------------------------------------------------------
    PRODUTO — o único tipo de documento do painel
@@ -13,13 +14,15 @@ import { defineField, defineType } from "sanity";
    - SEO manual (o título e a descrição saem do nome e do resumo).
 --------------------------------------------------------------------------- */
 
-export const CATEGORIAS_SANITY = [
-  { title: "Vestidos", value: "vestidos" },
-  { title: "Conjuntos", value: "conjuntos" },
-  { title: "Calças", value: "calcas" },
-  { title: "Blusas", value: "blusas" },
-  { title: "Moda Praia", value: "moda-praia" },
-];
+/* As categorias do painel saem da mesma lista que o menu do site usa. Eram
+   duas listas paralelas, e duas listas paralelas divergem: bastava alguém
+   acrescentar uma categoria em um lugar para o painel oferecer uma opção que
+   o site não sabe filtrar. Agora acrescentar categoria é uma linha em
+   `lib/loja.ts`, e painel e loja mudam juntos. */
+export const CATEGORIAS_SANITY = CATEGORIAS.map((c) => ({
+  title: c.nome,
+  value: c.slug,
+}));
 
 export const produto = defineType({
   name: "produto",
@@ -93,12 +96,19 @@ export const produto = defineType({
 
     defineField({
       name: "resumo",
-      title: "Frase da peça",
-      type: "string",
+      title: "Descrição da peça",
+      type: "text",
+      rows: 3,
       group: "principal",
       description:
-        "Uma frase curta, do jeito que você descreveria a peça. Exemplo: Do escritório ao jantar.",
-      validation: (r) => r.max(90).warning("Frases curtas funcionam melhor na vitrine."),
+        "Uma ou duas frases, do jeito que você descreveria a peça para uma cliente. Aparece na página da peça, abaixo do nome.",
+      /* Era "Frase da peça", limitada a 90 caracteres, porque a suposição era
+         uma linha só. As descrições que a Grazi escreve têm uma ou duas frases
+         e caem num parágrafo da página de produto, que é onde este campo
+         aparece — nunca no card da vitrine. O limite antigo marcava como
+         problema um texto que está certo. 240 ainda avisa quando vira texto
+         longo demais para o espaço. */
+      validation: (r) => r.max(240).warning("Acima de duas frases o texto começa a competir com a fotografia."),
     }),
 
     defineField({

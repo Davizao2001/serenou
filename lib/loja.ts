@@ -154,6 +154,10 @@ export type StatusProduto = "disponivel" | "indisponivel" | "oculto";
  */
 export const CATEGORIAS = [
   { slug: "vestidos", nome: "Vestidos" },
+  /* Macaquinho não é vestido: tem perna, e quem procura vestido não quer ser
+     mandada para um macaquinho. Fica ao lado dos vestidos porque é a mesma
+     decisão de compra — peça única — mas com entrada própria. */
+  { slug: "macaquinhos", nome: "Macaquinhos" },
   { slug: "conjuntos", nome: "Conjuntos" },
   { slug: "calcas", nome: "Calças" },
   { slug: "blusas", nome: "Blusas" },
