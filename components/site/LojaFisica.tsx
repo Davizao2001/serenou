@@ -32,6 +32,7 @@ export function LojaFisica() {
       ref={root}
       id="loja"
       data-scene="fecho"
+      data-escurece-fundo
       aria-labelledby="loja-titulo"
       className="relative overflow-hidden bg-carvao pt-[16svh] text-linho-alto lg:pt-[22svh]"
     >

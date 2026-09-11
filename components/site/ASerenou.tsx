@@ -33,9 +33,18 @@ export function ASerenou() {
       id="sobre"
       data-scene="fecho"
       aria-labelledby="serenou-titulo"
-      className="relative overflow-hidden bg-carvao pt-[18svh] text-linho-alto lg:pt-[24svh]"
+      className="relative overflow-hidden bg-carvao text-linho-alto"
     >
-      <div className="mx-auto max-w-[112rem] px-5 md:px-8 lg:px-12">
+      {/* A passagem do bege para o carvão. Antes ela era um tween no fundo da
+          página, disparado pelo teaser "03 / Marcante". Com o teaser fora da
+          home, virou uma faixa dentro desta seção: assim o degradê acontece
+          aqui e não tinge o capítulo anterior, que continua claro. */}
+      <div
+        aria-hidden="true"
+        className="h-[34svh] bg-gradient-to-b from-areia to-carvao lg:h-[44svh]"
+      />
+
+      <div className="mx-auto max-w-[112rem] px-5 pt-[8svh] md:px-8 lg:px-12 lg:pt-[10svh]">
         <div data-fecho-chamada className="lg:grid lg:grid-cols-[52fr_48fr] lg:gap-16">
           <div>
             <p data-reveal className="t-eyebrow mb-8 text-linho-alto/55 md:mb-12">
@@ -63,7 +72,7 @@ export function ASerenou() {
                 linhas separadas, e a pergunta pede o próprio respiro. */}
             <p data-reveal className="t-body max-w-[44ch] text-linho-alto/70">
               Você escolhe suas peças favoritas por aqui e a gente continua com
-              você no WhatsApp.
+              você no WhatsApp.{" "}
             </p>
             <p data-reveal className="t-body mt-4 max-w-[44ch] text-linho-alto/70">
               Dúvidas sobre tamanho, cor ou disponibilidade? É só chamar.

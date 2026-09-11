@@ -6,6 +6,7 @@ import { useRef } from "react";
 import { useGSAP } from "@/lib/gsap";
 import { openingScene } from "@/lib/scenes";
 import { HERO_SLIDES } from "@/lib/media";
+import { linkWhatsApp } from "@/lib/loja";
 import { Frame } from "@/components/media/Frame";
 
 /**
@@ -111,8 +112,9 @@ export function Opening() {
               ))}
             </h1>
 
-            <p data-hero-desc className="t-body mt-7 max-w-[38ch] md:mt-9">
-              Para o trabalho, a viagem e a noite.
+            <p data-hero-desc className="t-body mt-7 max-w-[42ch] md:mt-9">
+              Peças leves, confortáveis e versáteis para acompanhar a sua
+              rotina, do casual à praia, do trabalho ao fim de semana.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-4 md:mt-10 md:gap-7">
@@ -121,14 +123,21 @@ export function Opening() {
                 href="/catalogo"
                 className="t-eyebrow hero-cta-solido px-8 py-4"
               >
-                Ver novidades
+                Ver as novidades
               </Link>
+              {/* CTA geral: abre a conversa com uma mensagem de boas-vindas,
+                  sem contexto de produto — a peça ainda não foi escolhida.
+                  O número nunca é escrito aqui, vem de `lib/loja.ts`. */}
               <a
                 data-hero-cta
-                href="#manifesto"
+                href={linkWhatsApp(
+                  "Oi! Vim pelo site da Serenou e gostaria de saber mais sobre as peças."
+                )}
+                target="_blank"
+                rel="noreferrer"
                 className="t-eyebrow tap hero-cta-linha border-b pb-1.5"
               >
-                Conhecer a marca
+                Comprar pelo WhatsApp
               </a>
             </div>
           </div>
@@ -143,8 +152,10 @@ export function Opening() {
             <p className="t-eyebrow mb-10 text-carvao-fraco md:mb-14">Serenou</p>
 
             <h2 className="t-display t-manifesto max-w-[15ch]">
+              {/* O espaço final é para o texto lido — por leitor de tela e
+                  por busca — não vir grudado na linha seguinte. */}
               <span data-manifesto-line className="block">
-                A praia é onde a Serenou começou.
+                A praia é onde a Serenou começou.{" "}
               </span>
               <span
                 data-manifesto-line

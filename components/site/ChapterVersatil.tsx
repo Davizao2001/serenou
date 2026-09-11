@@ -47,7 +47,7 @@ const LOOKS: Array<{
 /**
  * CAPÍTULO 02 — VERSÁTIL (início)
  *
- * Uma marca, vários caminhos. No desktop a tipografia fica presa à esquerda e
+ * Um look, várias possibilidades. No desktop a tipografia fica presa à esquerda e
  * as fotografias se sucedem à direita por máscara vertical, cada uma pousando
  * em um ponto diferente da coluna — a composição se reorganiza em vez de
  * trocar de card. No mobile vira sequência vertical, sem pin.
