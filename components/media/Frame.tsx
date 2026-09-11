@@ -1,4 +1,4 @@
-import { srcset, largest, type MediaSlot } from "@/lib/media";
+import { srcset, srcsetImg, largest, type MediaSlot } from "@/lib/media";
 
 type FrameProps = {
   slot: MediaSlot;
@@ -71,6 +71,8 @@ export function Frame({
           <img
             className={`plate-media ${mediaClassName}`}
             style={foco}
+            srcSet={srcsetImg(slot)}
+            sizes={srcsetImg(slot) ? slot.sizes : undefined}
             src={largest(slot, "webp")}
             alt={alt}
             width={slot.width}

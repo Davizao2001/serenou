@@ -5,24 +5,41 @@ import { SeletorCor } from "./SeletorCor";
 import { SeletorTamanho } from "./SeletorTamanho";
 import { BotaoQuero } from "./BotaoQuero";
 import { formatarPreco, rotuloStatus, type Produto } from "@/lib/catalogo";
+import { EXIGIR_ESCOLHA } from "@/lib/loja";
 
 /**
  * PAINEL DE DECISÃO
  *
  * Guarda a escolha de cor e tamanho e repassa para o CTA, que monta a
- * mensagem. Nada é obrigatório: se essa exigência vai existir é decisão da
- * call, e o lugar de aplicá-la é aqui — uma condição no `disabled` do botão.
+ * mensagem.
+ *
+ * Seletor de peça sem opção não existe: uma peça sem cores cadastradas não
+ * mostra a palavra "Cor", e uma sem tamanhos não mostra "Tamanho". A Grazi
+ * cadastra o que a peça tem, e a página se ajusta.
+ *
+ * Exigir ou não a escolha antes do WhatsApp é decisão de negócio e mora em
+ * `EXIGIR_ESCOLHA`, em `lib/loja.ts` — não espalhada aqui.
  *
  * A cor já entra escolhida quando só existe uma; obrigar um clique num
  * conjunto de um item é atrito sem informação.
  */
 export function PainelProduto({ produto }: { produto: Produto }) {
   const esgotado = produto.status === "indisponivel";
+  const temCores = produto.cores.length > 0;
+  const temTamanhos = produto.tamanhos.length > 0;
+
   const [cor, setCor] = useState<string | null>(
     produto.cores.length === 1 ? produto.cores[0].nome : null
   );
   const [tamanho, setTamanho] = useState<string | null>(null);
   const selo = rotuloStatus(produto);
+
+  /* Só falta o que a peça realmente oferece. */
+  const faltando = EXIGIR_ESCOLHA
+    ? [temCores && !cor ? "a cor" : null, temTamanhos && !tamanho ? "o tamanho" : null].filter(
+        Boolean
+      )
+    : [];
 
   return (
     <div>
@@ -45,10 +62,18 @@ export function PainelProduto({ produto }: { produto: Produto }) {
 
       <p className="t-body mt-6 max-w-[42ch]">{produto.resumo}</p>
 
-      <div className="mt-10 space-y-10">
-        <SeletorCor cores={produto.cores} valor={cor} aoEscolher={setCor} />
-        <SeletorTamanho tamanhos={produto.tamanhos} valor={tamanho} aoEscolher={setTamanho} />
-      </div>
+      {(temCores || temTamanhos) && (
+        <div className="mt-10 space-y-10">
+          {temCores && <SeletorCor cores={produto.cores} valor={cor} aoEscolher={setCor} />}
+          {temTamanhos && (
+            <SeletorTamanho
+              tamanhos={produto.tamanhos}
+              valor={tamanho}
+              aoEscolher={setTamanho}
+            />
+          )}
+        </div>
+      )}
 
       {/* Esgotado não vira outro botão. A cliente vê o estado e para por aí —
           um CTA de aviso de reposição prometeria uma função que não existe.
@@ -61,9 +86,18 @@ export function PainelProduto({ produto }: { produto: Produto }) {
           </div>
         ) : (
           <>
-            <BotaoQuero nome={produto.nome} cor={cor} tamanho={tamanho} />
+            <BotaoQuero
+              nome={produto.nome}
+              slug={produto.slug}
+              preco={produto.preco}
+              cor={cor}
+              tamanho={tamanho}
+              bloqueado={faltando.length > 0}
+            />
             <p className="t-body mt-4 text-center text-sm">
-              A conversa segue no WhatsApp.
+              {faltando.length > 0
+                ? `Escolha ${faltando.join(" e ")} para continuar.`
+                : "A conversa segue no WhatsApp."}
             </p>
           </>
         )}

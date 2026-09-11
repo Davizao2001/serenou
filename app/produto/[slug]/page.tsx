@@ -8,24 +8,62 @@ import { Fecho } from "@/components/site/Fecho";
 import { PainelProduto } from "@/components/catalogo/PainelProduto";
 import { ProductImage } from "@/components/catalogo/ProductImage";
 import { ProductGrid } from "@/components/catalogo/ProductGrid";
-import { acharProduto, produtosVisiveis, PRODUTOS_EXEMPLO } from "@/lib/catalogo";
+import { buscarProduto, listarSlugs, relacionadas } from "@/sanity/lib/produtos";
+import { largest } from "@/lib/media";
+import { formatarPreco } from "@/lib/catalogo";
+import { MARCA } from "@/lib/loja";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return PRODUTOS_EXEMPLO.map((p) => ({ slug: p.slug }));
+/* O Next exige um literal aqui: o valor da configuração de segmento é lido
+   na compilação, antes de qualquer import rodar. 60 segundos é o mesmo
+   REVALIDAR de sanity/env.ts — se mudar lá, mude aqui. */
+export const revalidate = 60;
+
+/* Peça cadastrada depois do build também precisa abrir: o Next gera a página
+   na primeira visita e guarda. Se o slug não existir — ou apontar para uma
+   peça oculta — `buscarProduto` devolve nada e cai no notFound. */
+export const dynamicParams = true;
+
+/**
+ * Só as peças visíveis ganham rota.
+ *
+ * Era aqui o furo que a auditoria encontrou: a lista percorria o catálogo
+ * inteiro, ocultas incluídas, e uma peça "retirada do ar" continuava com
+ * página pública. Agora a própria consulta filtra `oculto`.
+ */
+export async function generateStaticParams() {
+  const slugs = await listarSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const p = acharProduto(slug);
-  return p
-    ? { title: `${p.nome} | Serenou`, description: p.resumo }
-    : { title: "Peça não encontrada | Serenou" };
+  const p = await buscarProduto(slug);
+  if (!p) return { title: "Peça não encontrada" };
+
+  /* A descrição precisa servir para o card do WhatsApp, que é por onde o
+     link circula: nome, frase da peça e preço em uma linha. */
+  const descricao = [p.resumo, formatarPreco(p.preco)].filter(Boolean).join(" · ");
+  const capa = p.imagens[0] ? largest(p.imagens[0]) : undefined;
+
+  return {
+    /* O sufixo "| Serenou Beach" vem do template em app/layout.tsx. */
+    title: p.nome,
+    description: descricao,
+    alternates: { canonical: `/produto/${p.slug}` },
+    openGraph: {
+      title: `${p.nome} | ${MARCA.nome}`,
+      description: descricao,
+      type: "website",
+      locale: "pt_BR",
+      images: capa ? [{ url: capa, alt: p.imagens[0].alt }] : undefined,
+    },
+  };
 }
 
 /**
- * PÁGINA DE PRODUTO — esqueleto visual
+ * PÁGINA DE PRODUTO
  *
  * Fotografia à esquerda, decisão à direita. No desktop a coluna de decisão
  * fica presa: a galeria rola e o preço, os seletores e o CTA continuam ao
@@ -37,12 +75,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  */
 export default async function Produto({ params }: Props) {
   const { slug } = await params;
-  const produto = acharProduto(slug);
+  const produto = await buscarProduto(slug);
   if (!produto) notFound();
 
-  const relacionadas = produtosVisiveis()
-    .filter((p) => p.slug !== produto.slug && p.categoria === produto.categoria)
-    .slice(0, 3);
+  const daMesmaCategoria = await relacionadas(produto);
 
   return (
     <>
@@ -50,7 +86,10 @@ export default async function Produto({ params }: Props) {
       <main id="conteudo" className="bg-linho pb-[12svh] pt-[calc(var(--header-h)+5svh)]">
         <div className="mx-auto max-w-[112rem] px-5 md:px-8 lg:px-12">
           <nav aria-label="Trilha" className="mb-8 md:mb-12">
-            <Link href="/catalogo" className="t-eyebrow tap inline-block py-2 text-carvao-fraco transition-colors duration-200 hover:text-carvao">
+            <Link
+              href={`/catalogo?c=${produto.categoria}`}
+              className="t-eyebrow tap inline-block py-2 text-carvao-fraco transition-colors duration-200 hover:text-carvao"
+            >
               ← Catálogo
             </Link>
           </nav>
@@ -61,9 +100,6 @@ export default async function Produto({ params }: Props) {
               {produto.imagens.map((img, i) => (
                 <ProductImage key={img.id} slot={img} proporcao="3/4" priority={i === 0} />
               ))}
-              {/* Uma foto só ainda: o padrão da galeria depende do padrão das
-                  fotografias, que é ponto da call. O empilhamento já aceita
-                  quantas vierem. */}
             </div>
 
             {/* Decisão */}
@@ -72,10 +108,10 @@ export default async function Produto({ params }: Props) {
             </div>
           </div>
 
-          {relacionadas.length > 0 && (
+          {daMesmaCategoria.length > 0 && (
             <section className="mt-[14svh] border-t border-areia-forte pt-12 md:pt-16">
               <h2 className="t-eyebrow mb-10 text-carvao-fraco">Da mesma categoria</h2>
-              <ProductGrid produtos={relacionadas} prioritarias={0} />
+              <ProductGrid produtos={daMesmaCategoria} prioritarias={0} />
             </section>
           )}
         </div>

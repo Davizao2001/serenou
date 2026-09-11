@@ -4,24 +4,30 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { useGSAP } from "@/lib/gsap";
 import { headerScene } from "@/lib/scenes";
-import { linkWhatsApp } from "@/lib/loja";
+import { CATEGORIAS, COLECOES, linkWhatsApp } from "@/lib/loja";
 
-/* Destinos absolutos: o mesmo header serve home, catálogo e produto, e uma
-   âncora relativa não sai do lugar quando a pessoa já está em /catalogo.
-
-   `Novidades`, `Casual` e `Praia` apontavam para âncoras que não existem —
-   os capítulos correspondentes não foram construídos. Vão para o catálogo
-   até a call decidir a composição final do menu: `Casual` não está na lista
-   de categorias confirmadas, e `Calças`, `Blusas` e `Promoções` não estão
-   no menu. */
+/* O menu e a arquitetura comercial são a mesma coisa.
+ *
+ * Antes esta lista era escrita à mão e tinha saído de sincronia: trazia
+ * "Casual", que não é categoria, e não trazia Calças, Blusas nem Promoções.
+ * Duas entradas apontavam para o mesmo endereço, o que além de confuso
+ * repetia a chave de lista no React.
+ *
+ * Agora ela sai de `lib/loja.ts`. Cadastrar uma categoria nova lá coloca a
+ * entrada no menu do desktop e do telefone, e a sincronia deixa de depender
+ * de alguém lembrar.
+ *
+ * Novidades abre e Promoções fecha, com as categorias no meio: uma é o que a
+ * pessoa procura antes de saber que peça quer, a outra é o que ela procura
+ * quando o preço importa. As duas são flags no produto, não categorias — um
+ * vestido em promoção continua em Vestidos e aparece também em Promoções,
+ * sem cadastro duplicado.
+ */
 const NAV = [
-  { label: "Novidades", href: "/catalogo" },
-  { label: "Vestidos", href: "/#vestidos" },
-  { label: "Conjuntos", href: "/#conjuntos" },
-  { label: "Casual", href: "/catalogo" },
-  { label: "Praia", href: "/catalogo" },
-  { label: "Sobre", href: "/#sobre" },
-];
+  ...COLECOES.filter((c) => c.slug === "novidades"),
+  ...CATEGORIAS,
+  ...COLECOES.filter((c) => c.slug === "promocoes"),
+].map((c) => ({ label: c.nome, href: `/catalogo?c=${c.slug}` }));
 
 export function Header() {
   const header = useRef<HTMLElement>(null);
@@ -69,7 +75,7 @@ export function Header() {
           </Link>
 
           <nav aria-label="Principal" className="hidden lg:block">
-            <ul className="flex items-center gap-9">
+            <ul className="flex items-center gap-6 xl:gap-8">
               {NAV.map((item) => (
                 <li key={item.href}>
                   <Link
@@ -114,7 +120,11 @@ export function Header() {
       <div
         id="menu-mobile"
         hidden={!menuOpen}
-        className="fixed inset-0 z-40 bg-linho px-5 pt-[calc(var(--header-h)+2rem)] lg:hidden"
+        /* Sete entradas cabem em 360x640 com 37px de sobra — e a barra do
+            Safari no iPhone come mais que isso quando reaparece. `overflow-y`
+            e o respiro embaixo garantem que a última entrada continue
+            alcançável em qualquer altura de tela. */
+        className="fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-linho px-5 pb-16 pt-[calc(var(--header-h)+2rem)] lg:hidden"
       >
         <nav aria-label="Menu principal">
           <ul className="flex flex-col gap-1">

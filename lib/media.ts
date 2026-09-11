@@ -37,6 +37,18 @@ export type MediaSlot = {
   focus: string;
   /** object-position abaixo de 768px — o enquadramento do mobile é outro. */
   focusMobile: string;
+  /** Quando a fotografia vem de um CDN externo (o Sanity, no catálogo), as
+   *  URLs já chegam prontas e não são montadas a partir de `base`. Os
+   *  componentes não sabem a diferença: quem lê isto é `srcset()`. */
+  fontes?: {
+    /** Usados quando as variantes existem como arquivos distintos. */
+    avif?: string;
+    webp?: string;
+    /** srcset único, quando quem escolhe o formato é o CDN pelo Accept do
+     *  navegador — é o caso das fotos do catálogo, servidas pelo Sanity. */
+    auto?: string;
+    fallback: string;
+  } | null;
   /** Vídeo original, quando existir. Tem prioridade sobre a foto. */
   video?: string | null;
   poster?: string | null;
@@ -238,14 +250,29 @@ export const HERO_SLIDES: Array<{ slot: MediaSlot; tom: TomHero }> = [
 export const HERO_INTERVALO = 2.9;
 export const HERO_TROCA = 0.55;
 
-/** Monta o srcset de um formato a partir do caminho-base. */
+/** Monta o srcset de um formato: do CDN quando houver, senão do caminho-base. */
 export function srcset(slot: MediaSlot, ext: "avif" | "webp") {
+  if (slot.fontes) return slot.fontes[ext];
   if (!slot.base) return undefined;
   return slot.widths.map((w) => `${slot.base}-${w}.${ext} ${w}w`).join(", ");
 }
 
 /** Maior variante — usada como `src` de fallback. */
 export function largest(slot: MediaSlot, ext: "avif" | "webp" = "webp") {
+  if (slot.fontes) return slot.fontes.fallback;
   if (!slot.base) return undefined;
   return `${slot.base}-${slot.widths[slot.widths.length - 1]}.${ext}`;
+}
+
+/**
+ * srcset do próprio `<img>`.
+ *
+ * Existe para a fotografia que vem do CDN do Sanity: lá quem decide entre
+ * AVIF, WebP e JPEG é o servidor, pelo cabeçalho Accept do navegador. Nesse
+ * caso declarar `<source type="image/avif">` seria mentir sobre o que vai
+ * chegar, então o `<picture>` fica sem fontes e a negociação acontece uma vez
+ * só, no lugar certo.
+ */
+export function srcsetImg(slot: MediaSlot) {
+  return slot.fontes?.auto;
 }

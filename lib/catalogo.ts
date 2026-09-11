@@ -1,18 +1,19 @@
 /* ---------------------------------------------------------------------------
-   CATÁLOGO — tipos e dados de desenvolvimento
+   CATÁLOGO — o contrato de produto
 
-   Isto é a camada de APRESENTAÇÃO. Não há banco, CMS nem autenticação: os
-   produtos abaixo existem só para a UI ter o que desenhar enquanto as regras
-   e os dados reais não chegam.
+   `Produto` é o formato que TODOS os componentes do catálogo entendem:
+   ProductCard, ProductGrid, PainelProduto, SeletorCor, SeletorTamanho e
+   BotaoQuero. Ele não mudou quando o Sanity entrou — quem mudou foi a origem
+   dos dados. O adaptador em `sanity/lib/produtos.ts` recebe o documento do
+   painel e devolve exatamente este formato.
 
-   O que está aqui NÃO decide negócio:
-   - `promocao` é uma flag, não uma categoria — proposta, a confirmar;
-   - `indisponivel` tem um tratamento visual provisório;
-   - se cor e tamanho serão obrigatórios antes do WhatsApp ainda não foi
-     fechado, então o CTA funciona com ou sem escolha.
+   Por isso nenhum componente de catálogo precisou ser reescrito.
 
-   Quando os dados reais entrarem, o alvo é trocar `PRODUTOS_EXEMPLO` pela
-   fonte verdadeira e manter `Produto` como contrato.
+   Os produtos no fim do arquivo são REGISTROS DE DESENVOLVIMENTO. Eles só
+   aparecem enquanto não houver projeto do Sanity configurado, para o site
+   ficar de pé e o build passar. Não são catálogo — quando as fotografias
+   still chegarem e a Grazi cadastrar as peças de verdade, este array pode ser
+   apagado inteiro sem tocar em mais nada.
 --------------------------------------------------------------------------- */
 
 import type { MediaSlot } from "./media";
@@ -70,7 +71,7 @@ export function rotuloStatus(p: Produto): string | null {
 }
 
 /* -------------------------------------------------------------------------
-   Dados de desenvolvimento
+   REGISTROS DE DESENVOLVIMENTO — não são catálogo
 
    As fotografias são as mesmas da home — são de loja, não de still de
    produto. Servem para a UI ter peso e proporção reais; o padrão das fotos
@@ -112,7 +113,7 @@ const TAMANHOS_PADRAO: Tamanho[] = [
   { rotulo: "GG", disponivel: false },
 ];
 
-export const PRODUTOS_EXEMPLO: Produto[] = [
+export const PRODUTOS_DESENVOLVIMENTO: Produto[] = [
   {
     slug: "vestido-longo-plissado-oliva",
     nome: "Vestido longo plissado",
@@ -311,11 +312,14 @@ export const PRODUTOS_EXEMPLO: Produto[] = [
   },
 ];
 
-/** O que a vitrine mostra. `oculto` nunca chega ao cliente final. */
-export function produtosVisiveis(produtos = PRODUTOS_EXEMPLO): Produto[] {
+/**
+ * Última barreira contra peça oculta na tela.
+ *
+ * A barreira principal é a consulta: `sanity/lib/produtos.ts` filtra
+ * `status != "oculto"` dentro do GROQ, então uma peça oculta não chega nem a
+ * sair do servidor. Isto aqui é o cinto de segurança de quem desenha a
+ * vitrine, para o caso de a lista vir de outro lugar um dia.
+ */
+export function produtosVisiveis(produtos: Produto[]): Produto[] {
   return produtos.filter((p) => p.status !== "oculto");
-}
-
-export function acharProduto(slug: string): Produto | undefined {
-  return PRODUTOS_EXEMPLO.find((p) => p.slug === slug);
 }

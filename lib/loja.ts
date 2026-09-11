@@ -82,24 +82,58 @@ export type ContextoProduto = {
   nome: string;
   cor?: string;
   tamanho?: string;
+  /** Já formatado em reais. */
+  preco?: string;
+  /** URL absoluta da peça. Fica de fora quando ainda não se sabe o domínio. */
+  url?: string;
 };
 
 /**
- * A mensagem que a cliente final envia a partir de uma peça. A regra da
- * Grazi: nunca mandar mensagem genérica quando existir dado do produto.
- * Cor e tamanho entram só quando foram escolhidos — a frase se ajusta em vez
- * de mostrar campo vazio.
+ * A mensagem que a cliente final envia a partir de uma peça.
+ *
+ * A regra da Grazi: nunca mandar mensagem genérica quando existir dado do
+ * produto. Cada linha só existe se o dado existir — nada de "Cor: " vazio nem
+ * de marcador tipo [TAMANHO]. Se a pessoa não escolheu tamanho, a mensagem
+ * simplesmente não fala de tamanho, e a Grazi pergunta.
+ *
+ * O formato é de leitura rápida no telefone: uma frase, um bloco de dados,
+ * uma frase. Quem recebe bate o olho e já sabe qual peça é.
  */
-export function mensagemProduto({ nome, cor, tamanho }: ContextoProduto): string {
-  const detalhes = [
-    cor ? `na cor ${cor}` : null,
-    tamanho ? `tamanho ${tamanho}` : null,
+export function mensagemProduto({
+  nome,
+  cor,
+  tamanho,
+  preco,
+  url,
+}: ContextoProduto): string {
+  const dados = [
+    cor ? `Cor: ${cor}` : null,
+    tamanho ? `Tamanho: ${tamanho}` : null,
+    preco ? `Valor: ${preco}` : null,
   ].filter(Boolean);
 
-  const complemento = detalhes.length ? `, ${detalhes.join(" e ")}` : "";
+  const blocos = [
+    `Oi! Vim pelo site da Serenou e gostei do ${nome}.`,
+    dados.length ? dados.join("\n") : null,
+    "Queria saber mais sobre essa peça.",
+    url ? `Produto:\n${url}` : null,
+  ].filter(Boolean);
 
-  return `Oi! Vim pelo site da Serenou e gostei do ${nome}${complemento}. Queria saber mais sobre essa peça.`;
+  return blocos.join("\n\n");
 }
+
+/**
+ * O CTA exige cor e tamanho antes de abrir o WhatsApp?
+ *
+ * Fica aqui, em um lugar só, porque é decisão de negócio e ainda não foi
+ * fechada. Hoje é `false`: a conversa abre com o que a pessoa tiver
+ * escolhido, e a Grazi completa o resto — obrigar a escolher antes de falar
+ * é atrito num canal que existe justamente para conversar.
+ *
+ * Para passar a exigir, troque para `true`. Nada mais muda: o painel lê
+ * daqui para decidir se o botão fica desativado e o que dizer no aviso.
+ */
+export const EXIGIR_ESCOLHA = false;
 
 /* ---- Catálogo -------------------------------------------------------- */
 

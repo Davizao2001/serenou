@@ -3,15 +3,42 @@ import "@fontsource-variable/archivo/wdth.css";
 import "@fontsource-variable/instrument-sans/index.css";
 import "./globals.css";
 import { HERO_SLIDES } from "@/lib/media";
+import { MARCA } from "@/lib/loja";
+
+/* Título e descrição saem da identidade que já existe em `lib/loja.ts` —
+   nada foi inventado aqui. `metadataBase` fica de fora de propósito: sem
+   domínio definitivo, apontar para um endereço chutado geraria links
+   absolutos quebrados no compartilhamento. Com ele ausente, o Next monta os
+   links relativos ao domínio que estiver servindo, que é o certo tanto no
+   preview quanto no dia do lançamento. */
+const TITULO = `${MARCA.nome} | ${MARCA.assinatura.replace(/\.$/, "")}`;
+const DESCRICAO =
+  "Hoje, a Serenou veste diferentes momentos da mulher: vestidos, conjuntos, peças casuais e moda praia pensados para uma rotina real.";
+
+/* O domínio definitivo ainda não foi decidido, então nada é chutado aqui.
+   Quando existir, basta cadastrar NEXT_PUBLIC_SITE_URL. Fora isso, em deploy
+   a Vercel informa a própria URL, que é a correta para aquele ambiente. Sem
+   nenhuma das duas — rodando na máquina — fica indefinido e o Next resolve
+   relativo, que é o comportamento certo para desenvolvimento. */
+const ORIGEM =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : undefined);
 
 export const metadata: Metadata = {
-  title: "Serenou | Moda feminina para o dia inteiro",
-  description:
-    "Hoje, a Serenou veste diferentes momentos da mulher: vestidos, conjuntos, peças casuais e moda praia pensados para uma rotina real.",
+  metadataBase: ORIGEM ? new URL(ORIGEM) : undefined,
+  title: {
+    default: TITULO,
+    template: `%s | ${MARCA.nome}`,
+  },
+  description: DESCRICAO,
   openGraph: {
-    title: "Serenou | Moda feminina para o dia inteiro",
-    description:
-      "Hoje, a Serenou veste diferentes momentos da mulher: vestidos, conjuntos, peças casuais e moda praia pensados para uma rotina real.",
+    siteName: MARCA.nome,
+    title: TITULO,
+    description: DESCRICAO,
     locale: "pt_BR",
     type: "website",
   },
