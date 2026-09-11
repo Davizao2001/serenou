@@ -4,6 +4,9 @@ import { colorInput } from "@sanity/color-input";
 import { ptBRLocale } from "@sanity/locale-pt-br";
 import { schemaTypes } from "./sanity/schemas";
 import { apiVersion, dataset, projectId } from "./sanity/env";
+import { temaSerenou } from "./sanity/tema";
+import { traducoesSerenou } from "./sanity/i18n";
+import { MarcaSerenou } from "./sanity/MarcaSerenou";
 
 /* ---------------------------------------------------------------------------
    PAINEL DA SERENOU
@@ -57,6 +60,11 @@ export default defineConfig({
   title: "Painel da Serenou",
   basePath: "/admin",
 
+  /* A identidade da marca dentro da ferramenta: paleta, lettering e as
+     frases que a Grazi lê. Ver `sanity/tema.ts`. */
+  theme: temaSerenou,
+  icon: MarcaSerenou,
+
   projectId,
   dataset,
   apiVersion,
@@ -106,6 +114,10 @@ export default defineConfig({
     colorInput(),
     ptBRLocale(),
   ],
+
+  /* Os pacotes entram depois do pt-BR: o último a declarar uma chave vence,
+     e é assim que "documento" vira "peça". */
+  i18n: { bundles: traducoesSerenou },
 
   schema: { types: schemaTypes },
 

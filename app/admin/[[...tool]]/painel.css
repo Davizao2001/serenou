@@ -1,0 +1,98 @@
+/* ---------------------------------------------------------------------------
+   ACABAMENTO DO PAINEL
+
+   O tema em `sanity/tema.ts` resolve as cores — é ele que esquenta a
+   interface inteira de uma vez. O que sobra são os gestos tipográficos e de
+   forma que a marca tem e que um tema de cores não alcança:
+
+   - canto reto. O site inteiro é quadrado: hero, botão, moldura de foto,
+     card de produto. Um painel de cantos arredondados seria de outra marca;
+   - versalete espaçado nos rótulos, o mesmo `t-eyebrow` do site;
+   - Archivo no nome da peça, como nos títulos;
+   - fio fino no lugar de borda grossa.
+
+   As regras miram `data-ui`, o atributo que o Sanity UI coloca em cada
+   componente. É o gancho mais estável que eles oferecem — os nomes de classe
+   são gerados e mudam a cada build. Nada aqui depende de estrutura de DOM
+   ou de ordem de elementos.
+--------------------------------------------------------------------------- */
+
+.painel-serenou {
+  --serenou-linho: #f2ece2;
+  --serenou-linho-alto: #f8f4ed;
+  --serenou-areia: #e6dbcb;
+  --serenou-areia-forte: #d3c3ac;
+  --serenou-carvao: #16130f;
+  --serenou-carvao-fraco: #645b4f;
+  --serenou-oliva: #565e38;
+  --serenou-eyebrow: 0.12em;
+}
+
+/* ---- Forma: canto reto ---------------------------------------------------
+   Botões, campos, cards e menus. Avatar e indicador de presença ficam de
+   fora de propósito — são redondos por função, não por estilo. */
+.painel-serenou :is([data-ui="Button"], [data-ui="TextInput"], [data-ui="TextArea"], [data-ui="Select"], [data-ui="Menu"], [data-ui="MenuItem"], [data-ui="Dialog"], [data-ui="Popover"], [data-ui="Tab"], [data-ui="Autocomplete"]) {
+  border-radius: 0;
+}
+
+.painel-serenou :is([data-ui="Button"], [data-ui="TextInput"], [data-ui="TextArea"], [data-ui="Select"]) > * {
+  border-radius: 0;
+}
+
+/* ---- Barra do topo -------------------------------------------------------
+   Carvão, com um fio de areia embaixo em vez da sombra escura padrão. É a
+   mesma separação que o cabeçalho do site usa. */
+.painel-serenou [data-ui="Navbar"] {
+  border-bottom: 1px solid rgba(211, 195, 172, 0.18);
+  box-shadow: none;
+}
+
+/* ---- Rótulos em versalete ------------------------------------------------
+   O gesto tipográfico da marca: maiúscula pequena, bem espaçada. Vale para
+   os nomes dos campos do formulário e para os títulos de painel. */
+.painel-serenou :is([data-ui="Label"], [data-ui="FormFieldHeaderText"] [data-ui="Text"]) {
+  text-transform: uppercase;
+  letter-spacing: var(--serenou-eyebrow);
+  font-weight: 500;
+}
+
+/* ---- Nome da peça --------------------------------------------------------
+   Archivo, como todo título do site. Só no cabeçalho do documento aberto —
+   o corpo do formulário continua em Instrument Sans, que é o que se lê
+   confortavelmente em campo de texto. */
+.painel-serenou [data-ui="DocumentPanelHeader"] [data-ui="Text"] {
+  font-family: "Archivo Variable", "Archivo", "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+/* ---- Fio fino em vez de borda -------------------------------------------- */
+.painel-serenou [data-ui="Card"][data-as="hr"],
+.painel-serenou hr {
+  border-color: var(--serenou-areia-forte);
+  opacity: 0.6;
+}
+
+/* ---- Foco ----------------------------------------------------------------
+   Oliva, e visível: quem preenche formulário no teclado precisa saber onde
+   está. Dois pixels, sem brilho difuso. */
+.painel-serenou *:focus-visible {
+  outline: 2px solid var(--serenou-oliva);
+  outline-offset: 1px;
+}
+
+/* ---- Miniatura da peça na lista ------------------------------------------
+   A fotografia é o dado mais importante do catálogo. Um pouco maior e sem
+   canto arredondado, ela vira o que a Grazi bate o olho e reconhece. */
+.painel-serenou [data-ui="Preview"] [data-ui="Media"] img {
+  border-radius: 0;
+  object-fit: cover;
+}
+
+/* ---- Respiro -------------------------------------------------------------
+   O painel do documento ganha um pouco mais de ar em telas grandes. O site
+   é feito de espaço branco; o painel não precisa ser denso. */
+@media (min-width: 1024px) {
+  .painel-serenou [data-ui="DocumentPanel"] form {
+    padding-inline: 0.5rem;
+  }
+}
