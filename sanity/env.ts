@@ -1,15 +1,25 @@
 /* ---------------------------------------------------------------------------
    SANITY — variáveis de ambiente
 
-   Três valores, e só o token é secreto:
+   Duas variáveis, e nenhuma é secreta:
 
    NEXT_PUBLIC_SANITY_PROJECT_ID   id do projeto (aparece na URL do sanity.io)
-   NEXT_PUBLIC_SANITY_DATASET      normalmente "production"
-   SANITY_API_READ_TOKEN           opcional, só para preview de rascunho
+   NEXT_PUBLIC_SANITY_DATASET      "production"
 
-   Os dois primeiros são públicos de propósito: o Studio roda no navegador da
-   Grazi e precisa deles. Quem tem o id não consegue escrever nada — escrever
-   exige login, e o login é do Sanity.
+   Não existe token no projeto, e isso é escolha, não esquecimento.
+
+   Token de escrita não existe porque quem escreve é o Studio, autenticado
+   como a Grazi — um token de escrita no servidor seria uma segunda chave da
+   casa, guardada sem necessidade.
+
+   Token de leitura não existe porque o dataset é público. Dataset privado é
+   recurso do plano Growth; no Free a leitura é aberta, e ler o dataset devolve
+   exatamente o que o site já mostra. Sem token, não há segredo para vazar em
+   log, em variável de ambiente ou em bundle.
+
+   As duas variáveis são públicas de propósito: o Studio roda no navegador da
+   Grazi e precisa delas. Quem tem o id não consegue escrever nada — escrever
+   exige login.
 
    Enquanto o projeto não existir, `CONFIGURADO` é falso e o site cai nos
    registros de desenvolvimento de `lib/catalogo.ts`. Assim o build passa
