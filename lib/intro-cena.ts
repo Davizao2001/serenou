@@ -10,7 +10,7 @@
 --------------------------------------------------------------------------- */
 
 import { gsap, ScrollTrigger } from "./gsap";
-import { concluirIntro, liberarPagina, marcarComoVista } from "./intro";
+import { apagarNo, concluirIntro, liberarPagina, marcarComoVista } from "./intro";
 
 /** Quanto antes do fim do vídeo a cortina começa a sair. */
 const ANTECIPACAO = 0.6;
@@ -55,7 +55,7 @@ export function introScene(camada: HTMLElement, fontes: FontesIntro): Cleanup {
       .timeline({
         onComplete: () => {
           liberarPagina();
-          camada.remove();
+          apagarNo(camada);
           /* A rolagem estava travada enquanto a cortina existia; o ScrollTrigger
              remede tudo agora que a página soltou. */
           ScrollTrigger.refresh();
@@ -84,7 +84,7 @@ export function introScene(camada: HTMLElement, fontes: FontesIntro): Cleanup {
     selo.setAttribute("aria-hidden", "true");
     selo.setAttribute("data-intro-media", "");
     camada.prepend(selo);
-    pular?.remove();
+    apagarNo(pular);
     agendar(() => sair(true), TEMPO_SELO_REDUZIDO);
 
     return () => {

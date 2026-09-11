@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useGSAP } from "@/lib/gsap";
-import { introAtiva } from "@/lib/intro";
+import { apagarNo, introAtiva } from "@/lib/intro";
 import { escolherFontes, introScene } from "@/lib/intro-cena";
 
 /**
@@ -25,11 +25,12 @@ export function SerenouIntro() {
     const el = camada.current;
     if (!el) return;
 
-    /* Quem já viu a intro nesta sessão não precisa da cortina no documento.
-       O CSS já a esconde, mas um `display:none` ainda é um nó com um botão
-       dentro — some com ele, como a própria saída da intro faz ao terminar. */
+    /* Quem já viu a intro nesta sessão não precisa da cortina. O CSS já a
+       esconde; aqui o botão "Pular" também sai do alcance do teclado e do
+       leitor de tela. `apagarNo` e não `.remove()`: o nó é do React, e
+       arrancá-lo quebra o desmonte da home. Ver lib/intro.ts. */
     if (!introAtiva()) {
-      el.remove();
+      apagarNo(el);
       return;
     }
 
