@@ -2,19 +2,31 @@
    ACABAMENTO DO PAINEL
 
    O tema em `sanity/tema.ts` resolve as cores — é ele que esquenta a
-   interface inteira de uma vez. O que sobra são os gestos tipográficos e de
-   forma que a marca tem e que um tema de cores não alcança:
+   interface inteira de uma vez. O que sobra são os gestos de forma e de
+   plano que a marca tem e que um tema de cores não alcança.
 
-   - canto reto. O site inteiro é quadrado: hero, botão, moldura de foto,
-     card de produto. Um painel de cantos arredondados seria de outra marca;
-   - versalete espaçado nos rótulos, o mesmo `t-eyebrow` do site;
-   - Archivo no nome da peça, como nos títulos;
-   - fio fino no lugar de borda grossa.
+   O Studio nasce com tudo no mesmo off-white: barra, coluna e área de
+   trabalho na mesma cor. Fica calmo e fica raso — não dá para saber, de
+   relance, o que é navegação e o que é conteúdo. Aqui a tela ganha três
+   planos, do mais fixo ao mais vivo:
 
-   As regras miram `data-ui`, o atributo que o Sanity UI coloca em cada
-   componente. É o gancho mais estável que eles oferecem — os nomes de classe
-   são gerados e mudam a cada build. Nada aqui depende de estrutura de DOM
-   ou de ordem de elementos.
+     barra do topo     carvão     onde eu estou
+     coluna da esquerda areia     por onde eu ando
+     área de trabalho  linho      o que eu estou fazendo
+
+   É a mesma escada do site: rodapé escuro, fundo bege, papel claro.
+
+   SOBRE OS SELETORES
+   As regras miram `data-ui` e `data-testid`, os atributos que o Sanity UI
+   coloca em cada componente — é o gancho mais estável que eles oferecem,
+   porque os nomes de classe são gerados e mudam a cada build. Nada aqui
+   depende de estrutura de DOM ou de ordem de elementos.
+
+   SOBRE O MODO ESCURO
+   Toda regra que força cor está presa a `[data-scheme="light"]`. Este
+   desenho de planos é um desenho claro; se a Grazi preferir o Studio
+   escuro, ela recebe a versão escura que o próprio tema deriva da paleta
+   da marca, sem uma coluna bege presa no meio de uma tela preta.
 --------------------------------------------------------------------------- */
 
 .painel-serenou {
@@ -23,14 +35,88 @@
   --serenou-areia: #e6dbcb;
   --serenou-areia-forte: #d3c3ac;
   --serenou-carvao: #16130f;
-  --serenou-carvao-fraco: #645b4f;
   --serenou-oliva: #565e38;
-  --serenou-eyebrow: 0.12em;
+}
+
+/* ---- Plano 1: a barra do topo -------------------------------------------
+   Carvão, com um fio de areia embaixo em vez da sombra padrão. Tudo que
+   está dentro dela herda a tinta clara — menos o avatar, que tem cor
+   própria e é como a pessoa se reconhece na tela. */
+.painel-serenou [data-ui="Navbar"][data-scheme="light"] {
+  background-color: var(--serenou-carvao) !important;
+  color: var(--serenou-linho) !important;
+  border-bottom: 1px solid rgba(211, 195, 172, 0.16);
+  box-shadow: none;
+}
+
+.painel-serenou [data-ui="Navbar"][data-scheme="light"] *:not([data-ui="Avatar"]):not([data-ui="Avatar"] *) {
+  color: inherit !important;
+}
+
+.painel-serenou [data-ui="Navbar"][data-scheme="light"] :is([data-ui="Card"], [data-ui="Button"], [data-ui="Box"], [data-ui="MenuButton"]) {
+  background-color: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* O seletor de perspectiva ("Rascunhos") vem com fundo claro de fábrica —
+   viraria uma pastilha branca no meio da barra escura. Contorno fino. */
+.painel-serenou [data-ui="Navbar"][data-scheme="light"] [data-ui="ReleasesNav"] {
+  background-color: transparent !important;
+  border: 1px solid rgba(242, 236, 226, 0.22) !important;
+  box-shadow: none !important;
+}
+
+.painel-serenou [data-ui="Navbar"][data-scheme="light"] [data-ui="Button"]:hover {
+  background-color: rgba(242, 236, 226, 0.12) !important;
+}
+
+/* ---- Plano 2: a coluna da esquerda --------------------------------------
+   Areia. É o menu do painel: muda pouco, e por isso pode ser mais quente e
+   mais firme que a área onde se trabalha. */
+.painel-serenou [data-testid="structure-tool-list-pane"][data-scheme="light"],
+.painel-serenou [data-testid="structure-tool-list-pane"] [data-testid="pane-content"][data-scheme="light"],
+.painel-serenou [data-testid="structure-tool-list-pane"] [data-testid="pane-header"][data-scheme="light"],
+.painel-serenou [data-testid="structure-tool-list-pane"] [data-testid="pane-header"] [data-ui="Card"][data-scheme="light"] {
+  background-color: var(--serenou-areia) !important;
+}
+
+.painel-serenou [data-testid="structure-tool-list-pane"][data-scheme="light"] {
+  border-right: 1px solid var(--serenou-areia-forte);
+}
+
+.painel-serenou [data-testid="structure-tool-list-pane"] [data-ui="PreviewCard"][data-scheme="light"] {
+  background-color: transparent !important;
+}
+
+.painel-serenou [data-testid="structure-tool-list-pane"] [data-ui="PreviewCard"][data-scheme="light"]:hover {
+  background-color: rgba(22, 19, 15, 0.06) !important;
+}
+
+/* Onde a Grazi está agora: carvão sólido, o mesmo gesto do "QUERO ESSA
+   PEÇA". Sem isto o item selecionado sai quase branco sobre areia. */
+.painel-serenou [data-testid="structure-tool-list-pane"] [data-ui="PreviewCard"][data-scheme="light"][data-selected] {
+  background-color: var(--serenou-carvao) !important;
+}
+
+.painel-serenou [data-testid="structure-tool-list-pane"] [data-ui="PreviewCard"][data-scheme="light"][data-selected] :is([data-ui="Text"], svg) {
+  color: var(--serenou-linho) !important;
+}
+
+/* ---- Fios --------------------------------------------------------------- */
+.painel-serenou [data-testid="pane-header"][data-scheme="light"] {
+  border-bottom: 1px solid rgba(211, 195, 172, 0.55);
+}
+
+.painel-serenou hr {
+  border-color: var(--serenou-areia-forte);
+  opacity: 0.6;
 }
 
 /* ---- Forma: canto reto ---------------------------------------------------
-   Botões, campos, cards e menus. Avatar e indicador de presença ficam de
-   fora de propósito — são redondos por função, não por estilo. */
+   O site inteiro é quadrado: hero, botão, moldura de foto, card de produto.
+   Avatar e indicador de presença ficam de fora — ali o redondo é função,
+   não estilo. */
 .painel-serenou :is([data-ui="Button"], [data-ui="TextInput"], [data-ui="TextArea"], [data-ui="Select"], [data-ui="Menu"], [data-ui="MenuItem"], [data-ui="Dialog"], [data-ui="Popover"], [data-ui="Tab"], [data-ui="Autocomplete"]) {
   border-radius: 0;
 }
@@ -39,37 +125,15 @@
   border-radius: 0;
 }
 
-/* ---- Barra do topo -------------------------------------------------------
-   Carvão, com um fio de areia embaixo em vez da sombra escura padrão. É a
-   mesma separação que o cabeçalho do site usa. */
-.painel-serenou [data-ui="Navbar"] {
-  border-bottom: 1px solid rgba(211, 195, 172, 0.18);
-  box-shadow: none;
-}
-
-/* ---- Rótulos em versalete ------------------------------------------------
-   O gesto tipográfico da marca: maiúscula pequena, bem espaçada. Vale para
-   os nomes dos campos do formulário e para os títulos de painel. */
-.painel-serenou :is([data-ui="Label"], [data-ui="FormFieldHeaderText"] [data-ui="Text"]) {
-  text-transform: uppercase;
-  letter-spacing: var(--serenou-eyebrow);
-  font-weight: 500;
-}
-
 /* ---- Nome da peça --------------------------------------------------------
    Archivo, como todo título do site. Só no cabeçalho do documento aberto —
-   o corpo do formulário continua em Instrument Sans, que é o que se lê
-   confortavelmente em campo de texto. */
+   os campos continuam em Instrument Sans, que é o que se lê confortavelmente
+   preenchendo formulário. Pelo mesmo motivo os rótulos dos campos NÃO viram
+   versalete espaçado: o versalete é gesto de vitrine, e aqui a pessoa está
+   lendo para digitar. */
 .painel-serenou [data-ui="DocumentPanelHeader"] [data-ui="Text"] {
   font-family: "Archivo Variable", "Archivo", "Helvetica Neue", Arial, sans-serif;
   letter-spacing: 0.01em;
-}
-
-/* ---- Fio fino em vez de borda -------------------------------------------- */
-.painel-serenou [data-ui="Card"][data-as="hr"],
-.painel-serenou hr {
-  border-color: var(--serenou-areia-forte);
-  opacity: 0.6;
 }
 
 /* ---- Foco ----------------------------------------------------------------
@@ -80,19 +144,10 @@
   outline-offset: 1px;
 }
 
-/* ---- Miniatura da peça na lista ------------------------------------------
-   A fotografia é o dado mais importante do catálogo. Um pouco maior e sem
-   canto arredondado, ela vira o que a Grazi bate o olho e reconhece. */
+/* ---- A fotografia da peça ------------------------------------------------
+   É o dado que a Grazi reconhece de relance na lista. Sem canto arredondado
+   e preenchendo a moldura. */
 .painel-serenou [data-ui="Preview"] [data-ui="Media"] img {
   border-radius: 0;
   object-fit: cover;
-}
-
-/* ---- Respiro -------------------------------------------------------------
-   O painel do documento ganha um pouco mais de ar em telas grandes. O site
-   é feito de espaço branco; o painel não precisa ser denso. */
-@media (min-width: 1024px) {
-  .painel-serenou [data-ui="DocumentPanel"] form {
-    padding-inline: 0.5rem;
-  }
 }
