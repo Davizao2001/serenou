@@ -73,15 +73,27 @@ export default defineConfig({
     structureTool({
       name: "pecas",
       title: "Peças",
+      /* Três entradas, e cada uma responde a uma pergunta que a Grazi faz de
+         verdade: "o que está no site?", "o que eu tirei do ar?", "o que é
+         teste meu?".
+
+         A primeira se chama Catálogo porque é a mesma palavra que ela lê no
+         site — o menu do painel e o menu da loja falam a mesma língua. Ela
+         mostra tudo que está publicado, incluindo o que está marcado como
+         esgotado: peça esgotada continua no catálogo, é o que a cliente vê.
+
+         Não existe mais uma entrada "Todas as peças" separada: junto com as
+         outras duas, Catálogo já é tudo. Para achar uma peça específica sem
+         saber onde ela está, a busca da barra do topo procura em todas. */
       structure: (S) =>
         S.list()
           .title("Serenou")
           .items([
             S.listItem()
-              .title("Peças no site")
+              .title("Catálogo")
               .child(
                 S.documentTypeList("produto")
-                  .title("Peças no site")
+                  .title("Catálogo")
                   .filter('_type == "produto" && status != "oculto" && teste != true')
                   .defaultOrdering([{ field: "_createdAt", direction: "desc" }])
               ),
@@ -100,14 +112,6 @@ export default defineConfig({
                 S.documentTypeList("produto")
                   .title("Peças de teste")
                   .filter('_type == "produto" && teste == true')
-              ),
-            S.divider(),
-            S.listItem()
-              .title("Todas as peças")
-              .child(
-                S.documentTypeList("produto")
-                  .title("Todas as peças")
-                  .defaultOrdering([{ field: "_createdAt", direction: "desc" }])
               ),
           ]),
     }),
