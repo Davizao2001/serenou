@@ -49,12 +49,12 @@ const QUALIDADE = 90;
 
    VITRINE   grade de 2 colunas no telefone, 3 a partir de 768px, 4 a partir
              de 1280px, dentro de um container que para de crescer em 112rem.
-   PRODUTO   coluna com teto de 34rem no desktop, tela inteira no telefone.
+   PRODUTO   coluna com teto de 38rem no desktop, tela inteira no telefone.
              Era aqui que o valor da vitrine estava sendo reaproveitado, e o
              navegador pedia largura de card para uma moldura de página. */
 export const SIZES_VITRINE =
   "(min-width: 1792px) 420px, (min-width: 1280px) 24vw, (min-width: 768px) 31vw, 47vw";
-export const SIZES_PRODUTO = "(min-width: 1024px) 544px, 92vw";
+export const SIZES_PRODUTO = "(min-width: 1024px) 608px, 92vw";
 
 export type ImagemSanity = {
   _key?: string;

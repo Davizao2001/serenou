@@ -39,15 +39,15 @@ export function PecaEmFoco({ produto }: { produto: Produto }) {
     !!cor && alguemMarcaCor && !produto.imagens.some((i) => mesmaCor(i.cor, cor));
 
   return (
-    <div className="grid gap-10 lg:grid-cols-[34rem_1fr] lg:gap-16 xl:gap-20">
+    <div className="grid gap-10 lg:grid-cols-[38rem_1fr] lg:gap-16 xl:gap-20">
       {/* A fotografia tem teto de largura, e a coluna vale exatamente esse
           teto — assim não sobra vão morto entre a foto e a decisão.
           `aspect-ratio` com `max-height` não resolveria: num item de flex a
           largura vem do esticamento e a altura sai dela, então limitar a
-          altura não encolhe nada. 34rem dá uma foto de 544×725, que cabe
-          numa tela de notebook inteira — antes ela passava de 1300px de
-          altura e a pessoa rolava uma tela e meia por foto. */}
-      <div className="mx-auto flex w-full max-w-[34rem] flex-col gap-4 md:gap-6">
+          altura não encolhe nada. 38rem dá uma foto de 608×811, que ainda
+          cabe numa tela de notebook — antes ela passava de 1300px de altura
+          e a pessoa rolava uma tela e meia por foto. */}
+      <div className="mx-auto flex w-full max-w-[38rem] flex-col gap-4 md:gap-6">
         {fotos.map((img, i) => (
           <ProductImage
             key={img.id}
