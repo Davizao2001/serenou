@@ -31,10 +31,15 @@ export function PainelProduto({
   produto,
   cor,
   aoEscolherCor,
+  semFotoDaCor = false,
 }: {
   produto: Produto;
   cor: string | null;
   aoEscolherCor: (cor: string | null) => void;
+  /** A cor escolhida não tem fotografia marcada. O aviso mora aqui, ao lado
+   *  do seletor, e não no fim da galeria: é neste ponto da tela que a pessoa
+   *  acabou de clicar e está esperando a foto mudar. */
+  semFotoDaCor?: boolean;
 }) {
   const esgotado = produto.status === "indisponivel";
   const temCores = produto.cores.length > 0;
@@ -74,7 +79,16 @@ export function PainelProduto({
       {(temCores || temTamanhos) && (
         <div className="mt-10 space-y-10">
           {temCores && (
-            <SeletorCor cores={produto.cores} valor={cor} aoEscolher={aoEscolherCor} />
+            <div>
+              <SeletorCor cores={produto.cores} valor={cor} aoEscolher={aoEscolherCor} />
+              {semFotoDaCor && cor && (
+                <p className="t-body mt-4 max-w-[38ch] text-sm text-carvao-medio">
+                  Ainda não temos foto desta peça em {cor.toLowerCase()}. As
+                  fotografias são de outra cor — a peça existe em{" "}
+                  {cor.toLowerCase()} e você já pode pedir por ela.
+                </p>
+              )}
+            </div>
           )}
           {temTamanhos && (
             <SeletorTamanho

@@ -83,7 +83,11 @@ export default async function Produto({ params }: Props) {
     <>
       <Header />
       <main id="conteudo" className="bg-linho pb-[12svh] pt-[calc(var(--header-h)+5svh)]">
-        <div className="mx-auto max-w-[112rem] px-5 md:px-8 lg:px-12">
+        {/* Mais estreito que a vitrine de propósito. 112rem é largura de
+            grade — serve para alinhar quatro peças lado a lado. Aqui existe
+            uma peça só, e uma fotografia 3:4 esticada até 1000px passa da
+            altura da tela: a pessoa rola uma tela e meia por foto. */}
+        <div className="mx-auto max-w-[88rem] px-5 md:px-8 lg:px-12">
           <nav aria-label="Trilha" className="mb-8 md:mb-12">
             <Link
               href={`/catalogo?c=${produto.categoria}`}
