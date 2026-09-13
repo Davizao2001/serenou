@@ -76,6 +76,31 @@ export function formatarPreco(centavos: number): string {
 --------------------------------------------------------------------------- */
 export const GRADE_DENSA = 7;
 
+/* ---------------------------------------------------------------------------
+   UMA SELEÇÃO, UMA FONTE
+
+   Havia dois sistemas de filtro no catálogo: o menu do topo navegava com
+   `?c=`, e o trilho interno filtrava no cliente com estado do React. Dois
+   caminhos para o mesmo lugar são dois lugares onde a verdade pode divergir
+   — e divergiam: a contagem vinha do estado, o grid vinha do estado, mas
+   quem chegava por link vinha da URL.
+
+   Agora existe uma função só, e ela roda no servidor. `?c=` é a fonte: o
+   menu do desktop e o trilho do telefone apontam para o mesmo endereço, e
+   quem abre /catalogo?c=vestidos direto vê exatamente a mesma lista que
+   quem clicou para chegar lá.
+
+   Coleção não é categoria: "Novidades" e "Promoções" são marcas no produto
+   que atravessam as categorias, por isso são testadas antes.
+--------------------------------------------------------------------------- */
+export function filtrarPorSelecao(produtos: Produto[], selecao: string): Produto[] {
+  const visiveis = produtosVisiveis(produtos);
+  if (selecao === "tudo") return visiveis;
+  if (selecao === "novidades") return visiveis.filter((p) => p.novidade);
+  if (selecao === "promocoes") return visiveis.filter((p) => p.promocao);
+  return visiveis.filter((p) => p.categoria === selecao);
+}
+
 export function rotuloStatus(p: Produto): string | null {
   if (p.status === "indisponivel") return "Esgotado";
   if (p.promocao) return "Promoção";

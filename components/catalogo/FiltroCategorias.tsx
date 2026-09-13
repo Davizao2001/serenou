@@ -1,66 +1,57 @@
-"use client";
-
+import Link from "next/link";
 import { CATEGORIAS, COLECOES } from "@/lib/loja";
 
-export type FiltroAtivo = string;
-
-type Props = {
-  ativo: FiltroAtivo;
-  aoTrocar: (slug: FiltroAtivo) => void;
-  /** Quantas peças a seleção atual devolve. */
-  total: number;
-};
-
 /**
- * FILTROS / CATEGORIAS
+ * TRILHO DE CATEGORIAS — SÓ NO TELEFONE
  *
- * Uma fileira só, rolável no telefone. Sem acordeão, sem gaveta lateral, sem
- * painel de facetas: o acervo é pequeno e o que a cliente quer é ver as
- * peças, não configurar uma busca.
+ * No desktop este trilho não existe. O menu do topo já lista as mesmas oito
+ * categorias, a noventa pixels de distância na vertical, e repetir a mesma
+ * navegação duas vezes na mesma tela não é redundância inofensiva: são duas
+ * listas quase idênticas competindo pela mesma decisão, e a pessoa precisa
+ * ler as duas para descobrir que são a mesma coisa.
  *
- * A ORDEM TEM UM MOTIVO
+ * No telefone é o contrário: o menu do topo vive atrás do botão "Menu", e
+ * sem este trilho a cliente teria que abrir uma gaveta para trocar de
+ * categoria. Aqui ele é o único caminho, e por isso fica.
  *
- * Primeiro Todas e as categorias — que é como a pessoa pensa quando sabe o
- * que procura ("quero um vestido"). Depois, separadas por um fio, as
- * coleções: Novidades e Promoções não são tipos de roupa, são recortes que
- * atravessam todos eles. Misturá-las na mesma sequência fazia parecer que
- * "Promoções" era uma categoria de peça ao lado de "Calças".
+ * SÃO LINKS, NÃO BOTÕES
  *
- * O ativo é um fio embaixo da palavra, não uma pastilha preenchida. Pastilha
- * é peso de interface de sistema; aqui sete palavras em versalete já são uma
- * linha delicada, e sujá-la com sete caixas colocaria a navegação acima da
- * fotografia na ordem de atenção.
+ * Antes eram botões que mexiam em estado do React e reescreviam a URL por
+ * fora. Agora apontam para `?c=`, o mesmo endereço que o menu do desktop usa
+ * — a seleção tem uma fonte só. O `<Link>` do Next continua trocando a
+ * página sem recarregar, então não se perde velocidade; o que se ganha é
+ * que abrir /catalogo?c=vestidos direto e clicar em "Vestidos" passam a ser
+ * literalmente o mesmo caminho.
  */
-export function FiltroCategorias({ ativo, aoTrocar, total }: Props) {
+export function FiltroCategorias({ ativo }: { ativo: string }) {
   const categorias = [
     { slug: "tudo", nome: "Todas" },
     ...CATEGORIAS.map((c) => ({ slug: c.slug, nome: c.nome })),
   ];
   const colecoes = COLECOES.map((c) => ({ slug: c.slug, nome: c.nome }));
 
-  const botao = (item: { slug: string; nome: string }) => {
-    const selecionado = item.slug === ativo;
+  const item = (i: { slug: string; nome: string }) => {
+    const selecionado = i.slug === ativo;
     return (
-      <li key={item.slug}>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={selecionado}
-          onClick={() => aoTrocar(item.slug)}
-          className={`t-eyebrow tap whitespace-nowrap border-b py-2 text-[0.6875rem] transition-colors duration-200 focus-visible:outline-none focus-visible:text-carvao ${
+      <li key={i.slug}>
+        <Link
+          href={i.slug === "tudo" ? "/catalogo" : `/catalogo?c=${i.slug}`}
+          scroll={false}
+          aria-current={selecionado ? "page" : undefined}
+          className={`t-eyebrow tap block whitespace-nowrap border-b py-2 text-[0.6875rem] transition-colors duration-200 ${
             selecionado
               ? "border-carvao text-carvao"
-              : "border-transparent text-carvao-fraco hover:text-carvao"
+              : "border-transparent text-carvao-fraco"
           }`}
         >
-          {item.nome}
-        </button>
+          {i.nome}
+        </Link>
       </li>
     );
   };
 
   return (
-    <div>
+    <nav aria-label="Categorias" className="lg:hidden">
       {/* A rolagem lateral é do trilho, nunca da página: as margens negativas
           fazem o trilho sangrar até a borda da tela, para não parecer que a
           lista acabou onde o padding acaba.
@@ -69,24 +60,16 @@ export function FiltroCategorias({ ativo, aoTrocar, total }: Props) {
           um eixo deixa de ser `visible` o outro vira `auto` sozinho. Pedir só
           rolagem lateral ligava a vertical de brinde, e bastava 1px de
           diferença entre conteúdo e caixa para o Windows desenhar uma barra
-          com setas ao lado de "Promoções". */}
-      <div className="-mx-5 overflow-x-auto overflow-y-hidden px-5 md:-mx-8 md:px-8 lg:mx-0 lg:px-0">
-        <ul
-          role="tablist"
-          aria-label="Categorias"
-          className="flex w-max min-w-full items-center gap-6 pb-4 md:gap-8"
-        >
-          {categorias.map(botao)}
-
+          com setas ao lado de "Promoções". O respiro de baixo garante que não
+          sobre nada — com o eixo escondido, sobra vira corte, e o que seria
+          cortado é o anel de foco de quem navega por teclado. */}
+      <div className="-mx-5 overflow-x-auto overflow-y-hidden px-5 md:-mx-8 md:px-8">
+        <ul className="flex w-max min-w-full items-center gap-6 pb-4 md:gap-8">
+          {categorias.map(item)}
           <li aria-hidden="true" className="h-3 w-px shrink-0 bg-areia-forte" />
-
-          {colecoes.map(botao)}
+          {colecoes.map(item)}
         </ul>
       </div>
-
-      <p aria-live="polite" className="sr-only">
-        {total} {total === 1 ? "peça" : "peças"} nesta seleção.
-      </p>
-    </div>
+    </nav>
   );
 }

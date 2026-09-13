@@ -5,7 +5,7 @@ import { LojaFisica } from "@/components/site/LojaFisica";
 import { Fecho } from "@/components/site/Fecho";
 import { Vitrine } from "@/components/catalogo/Vitrine";
 import { listarProdutos } from "@/sanity/lib/produtos";
-import { produtosVisiveis, GRADE_DENSA } from "@/lib/catalogo";
+import { produtosVisiveis, filtrarPorSelecao, GRADE_DENSA } from "@/lib/catalogo";
 import { CATEGORIAS, COLECOES } from "@/lib/loja";
 
 /* O Next exige um literal aqui: o valor da configuração de segmento é lido
@@ -57,10 +57,16 @@ export default async function Catalogo({ searchParams }: Props) {
   const filtro = c && FILTROS.has(c) ? c : "tudo";
   const produtos = await listarProdutos();
 
+  /* A seleção é filtrada AQUI, no servidor. É o que faz desktop e telefone
+     mostrarem o mesmo conjunto: os dois leem `?c=`, e quem abre
+     /catalogo?c=vestidos direto recebe a mesma lista de quem clicou. */
+  const totalCatalogo = produtosVisiveis(produtos).length;
+  const lista = filtrarPorSelecao(produtos, filtro);
+
   /* A largura da página segue a mesma regra da grade. Com três colunas o
      grid efetivo fica em 1184px: ocupar 1440 só porque a tela tem 1440
      espalharia cinco peças por uma página grande demais para elas. */
-  const denso = produtosVisiveis(produtos).length >= GRADE_DENSA;
+  const denso = totalCatalogo >= GRADE_DENSA;
 
   return (
     <>
@@ -75,7 +81,7 @@ export default async function Catalogo({ searchParams }: Props) {
               precisa seguir o filtro, e o filtro é estado do cliente. Deixar
               o número no servidor faria a página dizer "5 peças" com uma
               peça na tela depois de filtrar por Vestidos. */}
-          <Vitrine produtos={produtos} filtroInicial={filtro} />
+          <Vitrine lista={lista} totalCatalogo={totalCatalogo} filtro={filtro} />
         </div>
       </main>
       <ASerenou />
