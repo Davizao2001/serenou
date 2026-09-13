@@ -28,6 +28,9 @@ type Props = {
  * Sem `base`, o Frame desenha a placa tonal anotada — o espaço da fotografia
  * que ainda não chegou continua ocupando o lugar certo.
  */
+/* O corte por movimento reduzido não está aqui: mora em app/globals.css, numa
+   regra só que vale para a página inteira. A classe `motion-reduce:` do
+   Tailwind estava escrita aqui e não gerava CSS nenhum. */
 export function ProductImage({
   slot,
   proporcao = "4/5",
@@ -47,7 +50,7 @@ export function ProductImage({
         slot={slotFinal}
         priority={priority}
         className="h-full w-full"
-        mediaClassName={`transition-[transform,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none group-hover:scale-[1.03] ${
+        mediaClassName={`transition-[transform,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03] ${
           esmaecida ? "opacity-70 saturate-[0.55]" : ""
         }`}
       />

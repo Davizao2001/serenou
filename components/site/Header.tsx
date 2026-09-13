@@ -97,12 +97,14 @@ export function Header() {
           </nav>
 
           <div className="col-start-3 flex items-center justify-end gap-6">
-            <button
-              type="button"
-              className="t-eyebrow tap py-3 tracking-[0.14em] opacity-80 transition-opacity duration-200 hover:opacity-100"
-            >
-              Buscar
-            </button>
+            {/* Existia um "Buscar" aqui. Era um botão sem função nenhuma:
+                sem clique, sem rota, sem tela. Botão que não faz nada é pior
+                que ausência de botão — a pessoa clica, nada acontece, e ela
+                passa a duvidar do resto da página.
+                Busca não estava no que foi combinado com a Grazi. Quando
+                entrar, entra com tela e resultado; até lá, não fica de
+                enfeite. O menu já dá conta: Catálogo mostra tudo e as
+                categorias recortam. */}
             <a
               href={linkWhatsApp()}
               className="t-eyebrow tap hidden py-3 tracking-[0.14em] opacity-80 transition-opacity duration-200 hover:opacity-100 sm:inline-block"

@@ -87,6 +87,22 @@ function rotacaoHero(q: (s: string) => HTMLElement[], root: HTMLElement): Cleanu
   };
 }
 
+/* ---------------------------------------------------------------------------
+   ANIMAR SÓ O QUE EXISTE
+
+   `q()` devolve lista vazia quando a seção não tem aquele elemento — e é
+   normal que não tenha: as três seções que compartilham a cena do rodapé têm
+   marcações diferentes. O GSAP aceita a lista vazia, não anima nada e imprime
+   "GSAP target not found" no console.
+
+   O aviso não quebra nada, mas enche o console de ruído e esconde um erro de
+   verdade no meio. `existindo()` simplesmente não cria o tween quando não há
+   o que animar.
+--------------------------------------------------------------------------- */
+function existindo<T>(alvos: T[] | null | undefined): T[] | null {
+  return alvos && alvos.length > 0 ? alvos : null;
+}
+
 export function openingScene(root: HTMLElement): Cleanup {
   const { q, one } = scoped(root);
   const mm = gsap.matchMedia();
@@ -127,8 +143,13 @@ export function openingScene(root: HTMLElement): Cleanup {
 
     saida
       .to(one("[data-hero-copy]"), { autoAlpha: 0, y: -TRAVEL.lg, ease: EASE.linear }, 0)
-      .to(q("[data-plate] .plate-media"), { scale: 1.04, ease: EASE.linear }, 0)
-      .to(one("[data-plate-scrim]"), { autoAlpha: 0, ease: EASE.linear }, 0);
+      .to(q("[data-plate] .plate-media"), { scale: 1.04, ease: EASE.linear }, 0);
+
+    /* O véu sobre a fotografia da hero nem sempre está no DOM — depende da
+       composição da vez. Sem esta guarda o GSAP recebe `undefined` e imprime
+       "GSAP target undefined not found" no console da home. */
+    const veu = one("[data-plate-scrim]");
+    if (veu) saida.to(veu, { autoAlpha: 0, ease: EASE.linear }, 0);
 
     if (desktop) {
       /* A janela fecha sobre a modelo, não sobre um lado fixo: ela está no
@@ -652,8 +673,9 @@ export function fechoScene(root: HTMLElement): Cleanup {
       );
     }
 
-    gsap.fromTo(
-      q("[data-fecho-line]"),
+    const linhas = existindo(q("[data-fecho-line]"));
+    if (linhas) gsap.fromTo(
+      linhas,
       { yPercent: 108, y: 0 },
       {
         yPercent: 0,
@@ -665,8 +687,9 @@ export function fechoScene(root: HTMLElement): Cleanup {
       }
     );
 
-    gsap.fromTo(
-      q("[data-reveal]"),
+    const reveals = existindo(q("[data-reveal]"));
+    if (reveals) gsap.fromTo(
+      reveals,
       { autoAlpha: 0, y: TRAVEL.md },
       {
         autoAlpha: 1,

@@ -588,3 +588,29 @@ picture {
     height: auto !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   MOVIMENTO REDUZIDO — O CORTE GERAL
+
+   As regras acima cuidam das cenas da home, que são do GSAP. Faltava o outro
+   lado: as transições e animações declaradas em CSS — o zoom no hover do
+   cartão, o crossfade da segunda fotografia, os fades de foco.
+
+   A classe `motion-reduce:transition-none` do Tailwind estava escrita nos
+   componentes mas não gerava regra nenhuma no CSS final; era intenção sem
+   efeito, que é o pior tipo de código de acessibilidade, porque parece
+   resolvido. Aqui o corte é declarado uma vez e vale para a página toda.
+
+   `0.01ms` em vez de `0s` de propósito: o evento `transitionend` continua
+   disparando, então nada que dependa dele trava. O GSAP não é afetado — ele
+   escreve estilo inline quadro a quadro e não usa transição de CSS.
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

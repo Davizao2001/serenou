@@ -83,14 +83,11 @@ export default async function Produto({ params }: Props) {
     <>
       <Header />
       <main id="conteudo" className="bg-linho pb-[12svh] pt-[calc(var(--header-h)+5svh)]">
-        {/* Encostado à esquerda, não centralizado.
-            Centralizar um bloco de duas colunas numa tela larga deixa margem
-            igual dos dois lados e faz a peça flutuar no meio do nada. À
-            esquerda ela alinha com o logotipo e com o "← Catálogo", e a
-            leitura começa onde o olho já está.
-            Também mais estreito que a vitrine: 112rem é largura de grade,
-            serve para alinhar quatro peças lado a lado. Aqui existe uma. */}
-        <div className="max-w-[92rem] px-5 md:px-8 lg:px-12">
+        {/* Container central de 1280px, mais estreito que a vitrine.
+            112rem é largura de grade — serve para alinhar quatro peças lado a
+            lado. Aqui existe uma peça, e ocupar a tela inteira só porque ela
+            está lá deixa a fotografia maior que a janela e a leitura solta. */}
+        <div className="mx-auto max-w-[80rem] px-5 md:px-8 lg:px-12">
           <nav aria-label="Trilha" className="mb-8 md:mb-12">
             <Link
               href={`/catalogo?c=${produto.categoria}`}

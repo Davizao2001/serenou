@@ -1,72 +1,89 @@
 "use client";
 
 import { useState } from "react";
-import { ProductImage } from "./ProductImage";
+import { Galeria } from "./Galeria";
 import { PainelProduto } from "./PainelProduto";
 import { ordenarPorCor, mesmaCor } from "@/lib/media";
-import { SIZES_PRODUTO } from "@/sanity/lib/imagem";
 import type { Produto } from "@/lib/catalogo";
 
 /**
  * A PEÇA EM FOCO
  *
- * As duas colunas da página de produto — galeria e decisão — passam a ser um
- * componente só porque compartilham uma coisa: a cor escolhida.
+ * As duas colunas da página de produto — galeria e decisão — vivem juntas
+ * porque compartilham uma coisa: a cor escolhida.
  *
- * Antes a cor vivia dentro do painel de decisão, e a galeria não ficava
- * sabendo. A cliente clicava em "Marrom" e continuava olhando a foto preta.
- * Agora a escolha sobe um nível: o painel continua desenhando o seletor, e a
- * galeria reordena para mostrar aquela cor primeiro.
+ * A CONVERSA ENTRE COR E FOTOGRAFIA ANDA NOS DOIS SENTIDOS
  *
- * Reordena, não filtra. A foto de costas, a de detalhe e a de uma cor que a
- * loja ainda não marcou continuam na página — só deixam de ser as primeiras.
- * Esconder fotografia de roupa para ser coerente com um filtro seria trocar
- * informação por arrumação.
+ *   escolher a cor       →  a galeria pula para a primeira foto daquela cor
+ *   escolher a foto      →  se a foto tem cor marcada, a cor acompanha
+ *
+ * O segundo caminho só existe quando a associação é inequívoca, isto é,
+ * quando a própria loja marcou aquela fotografia com uma cor no painel.
+ * Fotografia de costas, de detalhe ou de uma cor ainda não confirmada não
+ * mexe na escolha de ninguém.
+ *
+ * A ORDEM NO TELEFONE
+ *
+ * No desktop são duas colunas. No telefone é uma só, e a ordem passa a ser a
+ * de quem compra: fotografia, nome, preço, descrição, cor, tamanho, botão,
+ * detalhes. Antes a galeria inteira caía por cima da coluna de decisão e a
+ * cliente rolava quatro fotografias em tamanho cheio antes de ver o preço.
+ * Foi a galeria com miniaturas que resolveu isso — não um segundo layout.
  */
 export function PecaEmFoco({ produto }: { produto: Produto }) {
   const [cor, setCor] = useState<string | null>(
     produto.cores.length === 1 ? produto.cores[0].nome : null
   );
+  /* A foto ativa é guardada pelo ID, não pela posição.
+     Pela posição dava um bug bonito: clicar na miniatura 2 adotava a cor
+     daquela foto, adotar a cor reordenava a galeria, e a posição 2 passava a
+     apontar para outra fotografia — a tela trocava e voltava no mesmo quadro.
+     O ID não se move quando a lista se reordena. */
+  const [fotoId, setFotoId] = useState<string | null>(null);
 
   const fotos = ordenarPorCor(produto.imagens, cor);
 
-  /* A loja marcou alguma foto com esta cor? Se marcou nenhuma, a galeria não
-     tem como responder à escolha, e a página precisa dizer isso — senão a
+  /* A loja marcou alguma foto com esta cor? Se não marcou nenhuma, a galeria
+     não tem como responder à escolha, e a página precisa dizer isso — senão a
      pessoa lê "Cor: Amarelo" olhando para a peça azul e conclui, com razão,
      que o site está errado. */
   const alguemMarcaCor = produto.imagens.some((i) => i.cor);
   const semFotoDaCor =
     !!cor && alguemMarcaCor && !produto.imagens.some((i) => mesmaCor(i.cor, cor));
 
-  return (
-    <div className="grid gap-10 lg:grid-cols-[38rem_1fr] lg:gap-16 xl:gap-20">
-      {/* A fotografia tem teto de largura, e a coluna vale exatamente esse
-          teto — assim não sobra vão morto entre a foto e a decisão.
-          `aspect-ratio` com `max-height` não resolveria: num item de flex a
-          largura vem do esticamento e a altura sai dela, então limitar a
-          altura não encolhe nada. 38rem dá uma foto de 608×811, que ainda
-          cabe numa tela de notebook — antes ela passava de 1300px de altura
-          e a pessoa rolava uma tela e meia por foto. */}
-      <div className="mx-auto flex w-full max-w-[38rem] flex-col gap-4 md:gap-6">
-        {fotos.map((img, i) => (
-          <ProductImage
-            key={img.id}
-            slot={img}
-            proporcao="3/4"
-            sizes={SIZES_PRODUTO}
-            priority={i === 0}
-          />
-        ))}
-      </div>
+  /* Sem escolha explícita, a ativa é a primeira da ordem atual — que já é a
+     foto da cor escolhida, porque `ordenarPorCor` a trouxe para a frente. */
+  const ativa = Math.max(0, fotos.findIndex((f) => f.id === fotoId));
 
-      {/* A coluna da decisão também tem teto. Sem ele o "QUERO ESSA PEÇA"
-          esticava por quase 700px numa tela larga — botão de largura de
-          banner para uma ação de uma linha. */}
+  function escolherCor(nova: string | null) {
+    setCor(nova);
+    /* Solta a escolha manual: a galeria volta a seguir a cor. */
+    setFotoId(null);
+  }
+
+  function escolherFoto(indice: number) {
+    const escolhida = fotos[indice];
+    if (!escolhida) return;
+    setFotoId(escolhida.id);
+    if (escolhida.cor && !mesmaCor(escolhida.cor, cor)) setCor(escolhida.cor);
+  }
+
+  return (
+    <div className="grid gap-8 md:gap-10 lg:grid-cols-[33rem_1fr] lg:gap-14 xl:gap-20">
+      <Galeria
+        fotos={fotos}
+        ativa={ativa}
+        aoEscolher={escolherFoto}
+        nome={produto.nome}
+      />
+
+      {/* Teto de largura: sem ele o "QUERO ESSA PEÇA" estica por toda a coluna
+          e vira botão de largura de banner para uma ação de uma linha. */}
       <div className="w-full max-w-[30rem] lg:sticky lg:top-[calc(var(--header-h)+4svh)] lg:self-start">
         <PainelProduto
           produto={produto}
           cor={cor}
-          aoEscolherCor={setCor}
+          aoEscolherCor={escolherCor}
           semFotoDaCor={semFotoDaCor}
         />
       </div>
