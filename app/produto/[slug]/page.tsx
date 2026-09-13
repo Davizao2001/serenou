@@ -6,11 +6,11 @@ import { Header } from "@/components/site/Header";
 import { ASerenou } from "@/components/site/ASerenou";
 import { LojaFisica } from "@/components/site/LojaFisica";
 import { Fecho } from "@/components/site/Fecho";
-import { ProductGrid } from "@/components/catalogo/ProductGrid";
+import { ProductCard } from "@/components/catalogo/ProductCard";
 import { buscarProduto, listarSlugs, relacionadas } from "@/sanity/lib/produtos";
 import { largest } from "@/lib/media";
 import { formatarPreco } from "@/lib/catalogo";
-import { MARCA } from "@/lib/loja";
+import { MARCA, CATEGORIAS } from "@/lib/loja";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -34,6 +34,12 @@ export const dynamicParams = true;
 export async function generateStaticParams() {
   const slugs = await listarSlugs();
   return slugs.map((slug) => ({ slug }));
+}
+
+/** Rótulo humano da categoria, para a trilha. Cai no slug se um dia alguém
+ *  cadastrar uma categoria que não esteja em CATEGORIAS. */
+function nomeCategoria(slug: string): string {
+  return CATEGORIAS.find((c) => c.slug === slug)?.nome ?? "Catálogo";
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -77,33 +83,74 @@ export default async function Produto({ params }: Props) {
   const produto = await buscarProduto(slug);
   if (!produto) notFound();
 
-  const daMesmaCategoria = await relacionadas(produto);
+  const daMesmaCategoria = await relacionadas(produto, 4);
 
   return (
     <>
       <Header />
       <main id="conteudo" className="bg-linho pb-[12svh] pt-[calc(var(--header-h)+5svh)]">
-        {/* 1180px, mais estreito que a vitrine e mais estreito que os 1280
-            de antes. Largura de grade serve para alinhar quatro peças lado a
-            lado; aqui existe uma peça, e quanto mais larga a caixa, mais a
-            fotografia e o painel se afastam até parecerem dois assuntos. Em
-            1180 os dois somam a linha inteira e leem como um bloco só. */}
-        <div className="mx-auto max-w-[73.75rem] px-5 md:px-8 lg:px-12">
-          <nav aria-label="Trilha" className="mb-6 md:mb-9">
-            <Link
-              href={`/catalogo?c=${produto.categoria}`}
-              className="t-eyebrow tap inline-block py-2 text-carvao-fraco transition-colors duration-200 hover:text-carvao"
-            >
-              ← Catálogo
-            </Link>
+        {/* 1280px. Com três colunas a caixa precisa ser mais larga do que era
+            com duas: em 1180 a fotografia cairia para 300px para a ficha
+            caber. Largura de grade serve para alinhar peças lado a lado, e
+            aqui é exatamente isso que acontece na linha de baixo. */}
+        <div className="mx-auto max-w-[80rem] px-5 md:px-8 lg:px-12">
+          {/* TRILHA COMPLETA, NÃO SÓ "VOLTAR"
+              Início > Categoria > Peça. Os três degraus são dado real — a
+              categoria vem do Sanity e o rótulo de CATEGORIAS — e o do meio é
+              o mais útil: quem chegou por link do WhatsApp costuma querer
+              "mais blusas", não "o catálogo inteiro". No telefone só o degrau
+              da categoria fica, porque três degraus e um nome longo quebram
+              em duas linhas numa tela de 360. */}
+          <nav aria-label="Trilha" className="mb-6 md:mb-8">
+            <ol className="t-eyebrow flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[0.625rem] text-carvao-fraco">
+              <li className="hidden sm:block">
+                <Link
+                  href="/"
+                  className="tap inline-block py-1.5 transition-colors duration-200 hover:text-carvao"
+                >
+                  Início
+                </Link>
+              </li>
+              <li aria-hidden="true" className="hidden sm:block text-carvao-fraco/50">
+                /
+              </li>
+              <li>
+                <Link
+                  href={`/catalogo?c=${produto.categoria}`}
+                  className="tap inline-block py-1.5 transition-colors duration-200 hover:text-carvao"
+                >
+                  {nomeCategoria(produto.categoria)}
+                </Link>
+              </li>
+              <li aria-hidden="true" className="text-carvao-fraco/50">
+                /
+              </li>
+              <li aria-current="page" className="text-carvao">
+                {produto.nome}
+              </li>
+            </ol>
           </nav>
 
           <PecaEmFoco produto={produto} />
 
+          {/* RELACIONADOS — MESMA CATEGORIA, SEM ALGORITMO
+              A lista é literal: as outras peças da mesma categoria, na ordem
+              em que estão no catálogo, sem a peça atual. Com o acervo de hoje
+              isso dá de uma a três peças; a fileira enche sozinha conforme a
+              Grazi cadastra. Cartões menores que os da vitrine — aqui eles
+              são convite, não a grade principal. */}
           {daMesmaCategoria.length > 0 && (
-            <section className="mt-[14svh] border-t border-areia-forte pt-12 md:pt-16">
-              <h2 className="t-eyebrow mb-10 text-carvao-fraco">Da mesma categoria</h2>
-              <ProductGrid produtos={daMesmaCategoria} prioritarias={0} />
+            <section className="mt-16 border-t border-areia-forte pt-10 md:mt-20 md:pt-12">
+              <h2 className="t-eyebrow mb-8 text-carvao-fraco">
+                Você também pode gostar
+              </h2>
+              <ul className="grid grid-cols-2 gap-x-4 gap-y-9 sm:gap-x-5 lg:grid-cols-4 lg:gap-x-6">
+                {daMesmaCategoria.map((p) => (
+                  <li key={p.slug}>
+                    <ProductCard produto={p} />
+                  </li>
+                ))}
+              </ul>
             </section>
           )}
         </div>

@@ -50,13 +50,31 @@ export function BotaoQuero({ nome, slug, preco, cor, tamanho, bloqueado }: Props
     url: origem ? `${origem}/produto/${slug}` : undefined,
   });
 
+  /* A seta é decoração, e é declarada como tal: quem lê por leitor de tela
+     ouve "QUERO ESSA PEÇA", não "QUERO ESSA PEÇA seta para a direita". Ela
+     anda 2px no hover — o suficiente para o botão responder ao mouse sem
+     virar animação. */
+  const seta = (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className="h-3.5 w-3.5 shrink-0 fill-none stroke-current transition-transform duration-200 ease-out group-hover/cta:translate-x-0.5"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 12h15M13.5 6.5 19.5 12l-6 5.5" />
+    </svg>
+  );
+
   if (bloqueado) {
     return (
       <span
         aria-disabled="true"
-        className="t-eyebrow block w-full cursor-not-allowed bg-carvao/25 px-8 py-5 text-center text-linho-alto"
+        className="t-eyebrow flex h-[3.25rem] w-full cursor-not-allowed items-center justify-center gap-3 bg-carvao/25 px-6 text-[0.6875rem] text-linho-alto"
       >
         {CTA_PRODUTO}
+        {seta}
       </span>
     );
   }
@@ -66,9 +84,10 @@ export function BotaoQuero({ nome, slug, preco, cor, tamanho, bloqueado }: Props
       href={linkWhatsApp(mensagem)}
       target="_blank"
       rel="noreferrer"
-      className="t-eyebrow block w-full bg-carvao px-8 py-5 text-center text-linho-alto transition-colors duration-200 hover:bg-[#241f19]"
+      className="t-eyebrow group/cta flex h-[3.25rem] w-full items-center justify-center gap-3 bg-carvao px-6 text-[0.6875rem] text-linho-alto transition-colors duration-200 hover:bg-[#241f19] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva focus-visible:ring-offset-2 focus-visible:ring-offset-linho"
     >
       {CTA_PRODUTO}
+      {seta}
     </a>
   );
 }

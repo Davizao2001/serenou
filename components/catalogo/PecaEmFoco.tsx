@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Galeria } from "./Galeria";
 import { PainelProduto } from "./PainelProduto";
+import { FichaLateral } from "./FichaLateral";
+import { CardEditorial } from "./CardEditorial";
 import { ordenarPorCor, mesmaCor } from "@/lib/media";
 import type { Produto } from "@/lib/catalogo";
 
@@ -80,18 +82,16 @@ export function PecaEmFoco({ produto }: { produto: Produto }) {
   }
 
   return (
-    /* AS DUAS COLUNAS SOMAM A LARGURA INTEIRA — ESSE É O PONTO
-       Antes a segunda coluna era `1fr` com o painel limitado a 30rem dentro
-       dela: em 1440px sobravam 96px de vazio à direita do painel, e a página
-       lia como "FOTO  vazio  INFORMAÇÕES". Agora a coluna É a largura do
-       painel (25rem), e o que sobra vai todo para a fotografia. Não há vazio
-       porque não há coluna sem dono.
+    /* TRÊS COLUNAS, E NENHUMA SEM DONO
+       GALERIA | DECISÃO | FICHA. As três larguras somam a linha inteira: a
+       ficha tem 17,5rem, a decisão 21,25rem, e o que sobra é da fotografia.
+       Colunas com `1fr` e um teto de largura por dentro foram o que criava,
+       na versão anterior, 96px de vazio à direita do painel.
 
-       O painel também deixou de ser `sticky`. Com ele compacto, o CTA já cabe
-       na primeira dobra — que era o motivo do sticky — e grudar o painel
-       enquanto a fotografia rola desmancharia justamente a relação entre os
-       dois que este layout existe para construir. */
-    <div className="grid gap-8 md:gap-10 lg:grid-cols-[1fr_22rem] lg:gap-14 xl:grid-cols-[1fr_25rem] xl:gap-24">
+       Abaixo de `xl` a ficha desce para o fim do bloco e a página volta a
+       duas colunas: 280px de acordeão espremido ao lado de uma foto de 340
+       não é densidade, é aperto. */
+    <div className="grid gap-8 md:gap-10 lg:grid-cols-[1fr_21.25rem] lg:gap-12 xl:grid-cols-[1fr_21.25rem_17.5rem] xl:gap-11">
       <Galeria
         fotos={fotos}
         ativa={ativa}
@@ -105,6 +105,19 @@ export function PecaEmFoco({ produto }: { produto: Produto }) {
         aoEscolherCor={escolherCor}
         semFotoDaCor={semFotoDaCor}
       />
+
+      {/* Fora de `xl` esta coluna atravessa as duas de cima.
+
+          Em `xl` ela é uma coluna flex e o card editorial cresce para ocupar
+          o que sobra até o pé da fotografia. A ficha da Bata de Poá tem duas
+          seções e termina na metade da altura da foto — sem isso, o canto
+          inferior direito da primeira dobra ficava vazio. Não é preenchimento
+          com texto: é o mesmo card esticado, com a frase no alto e o
+          grafismo embaixo. */}
+      <div className="flex flex-col gap-5 lg:col-span-2 xl:col-span-1">
+        <FichaLateral produto={produto} cor={cor} />
+        <CardEditorial className="xl:flex-1" />
+      </div>
     </div>
   );
 }

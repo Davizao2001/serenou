@@ -23,7 +23,7 @@ export function SeletorTamanho({ tamanhos, valor, aoEscolher }: Props) {
 
   return (
     <fieldset>
-      <legend className="t-eyebrow mb-4 text-carvao-fraco">Tamanho</legend>
+      <legend className="t-eyebrow mb-3 text-carvao-fraco">Tamanho</legend>
 
       <div className="flex flex-wrap gap-2">
         {tamanhos.map((t) => {
@@ -35,11 +35,15 @@ export function SeletorTamanho({ tamanhos, valor, aoEscolher }: Props) {
               disabled={!t.disponivel}
               aria-pressed={escolhido}
               onClick={() => aoEscolher(t.rotulo)}
-              className={`t-eyebrow min-w-[3.25rem] px-4 py-4 transition-colors duration-200 ${
+              /* Escolhido = borda escura e fundo levemente quente, não bloco
+                 preto. Invertido, o tamanho selecionado ficava mais pesado
+                 que o próprio CTA logo abaixo, e a peça passava a ter dois
+                 retângulos pretos disputando o olho. */
+              className={`t-eyebrow grid h-11 min-w-[3rem] place-items-center px-3 text-[0.6875rem] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva focus-visible:ring-offset-2 focus-visible:ring-offset-linho ${
                 escolhido
-                  ? "bg-carvao text-linho-alto"
+                  ? "bg-areia/60 text-carvao ring-1 ring-carvao"
                   : t.disponivel
-                    ? "bg-transparent text-carvao ring-1 ring-carvao/25 hover:ring-carvao"
+                    ? "bg-transparent text-carvao-medio ring-1 ring-carvao/20 hover:text-carvao hover:ring-carvao/50"
                     : "cursor-not-allowed text-carvao-fraco line-through ring-1 ring-carvao/10"
               }`}
             >

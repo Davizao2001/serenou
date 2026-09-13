@@ -66,8 +66,12 @@ const QUALIDADE = 90;
 export const SIZES_VITRINE =
   "(min-width: 1280px) 376px, (min-width: 1024px) 31vw, 46vw";
 export const SIZES_PRODUTO =
-  "(min-width: 1280px) 504px, (min-width: 1024px) 436px, 92vw";
-export const SIZES_MINIATURA = "(min-width: 768px) 84px, 72px";
+  "(min-width: 1280px) 402px, (min-width: 1024px) 340px, 92vw";
+export const SIZES_MINIATURA = "(min-width: 1024px) 60px, 64px";
+/* A foto ampliada do modal ocupa a altura da janela; em 3:4 isso dá uns
+   700px de largura numa tela comum, e o teto nativo das fotos da Grazi é
+   1200. Pedir `100vw` faria o navegador baixar o arquivo maior sempre. */
+export const SIZES_AMPLIADA = "(min-width: 768px) 720px, 96vw";
 
 export type ImagemSanity = {
   _key?: string;

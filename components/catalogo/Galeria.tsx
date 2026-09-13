@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { Frame } from "@/components/media/Frame";
-import { SIZES_PRODUTO, SIZES_MINIATURA } from "@/sanity/lib/imagem";
+import { Modal } from "@/components/ui/Modal";
+import { SIZES_PRODUTO, SIZES_MINIATURA, SIZES_AMPLIADA } from "@/sanity/lib/imagem";
 import type { MediaSlot } from "@/lib/media";
 
 /**
@@ -19,31 +21,25 @@ import type { MediaSlot } from "@/lib/media";
  * dentro do próprio limite, com a barra escondida. Nenhuma seta, nenhum
  * botão — e nenhuma fileira crescendo para fora do quadro.
  *
- * No telefone continua tudo como estava: uma fileira horizontal embaixo da
- * fotografia. Esta etapa é de desktop; a ordem no HTML é foto → miniaturas,
- * que é a ordem certa nos dois layouts e também para quem lê por leitor de
- * tela.
+ * No telefone a mesma faixa é horizontal, embaixo da fotografia. A ordem no
+ * HTML é foto → miniaturas, que é a certa nos dois layouts e também para
+ * quem lê por leitor de tela.
  *
  * A PROPORÇÃO É A DO ARQUIVO, NÃO UMA CONSTANTE
  *
  * O quadro vem de `width/height` da PRIMEIRA fotografia e vale para todas.
  * Duas razões: a peça não é esticada para caber num 3:4 decidido no código, e
  * o quadro não muda de formato quando a cliente troca de foto — o que faria a
- * página inteira pular a cada clique. A Bata de Poá tem um arquivo de
- * 1201×1600 no meio de dois 1200×1600; seguir cada arquivo faria o quadro
- * tremer meio pixel sem motivo.
+ * página inteira pular a cada clique.
  *
  * O CRUZAMENTO ENTRE UMA FOTO E OUTRA
  *
  * Todas as fotografias ficam empilhadas no mesmo quadro e só a ativa está
  * opaca. Trocar a cor é trocar qual delas aparece, com 280ms de dissolvência
- * — as duas na tela ao mesmo tempo, que é o que "crossfade" quer dizer.
- *
- * Antes havia um `key` que remontava o quadro a cada troca: a imagem sumia,
- * o fundo de areia aparecia, e a nova entrava quando terminasse de baixar. O
- * custo de empilhar é baixar as outras fotos antes de serem pedidas; só a
- * primeira é prioritária, e numa página de produto elas vão ser vistas de
- * qualquer forma.
+ * — as duas na tela ao mesmo tempo, que é o que "crossfade" quer dizer. A
+ * lista NÃO se reordena: mover um nó no DOM cancela a transição em curso, e
+ * a foto que saía pulava de 1 para 0 num quadro só, deixando o fundo de
+ * areia aparecer. Quem reordena é só a escolha da foto ativa, em PecaEmFoco.
  *
  * Sob `prefers-reduced-motion` a dissolvência vira corte seco sozinha — o
  * corte geral de app/globals.css zera a duração de toda transição.
@@ -59,6 +55,8 @@ export function Galeria({
   aoEscolher: (indice: number) => void;
   nome: string;
 }) {
+  const [ampliada, setAmpliada] = useState(false);
+
   const principal = fotos[ativa] ?? fotos[0];
   if (!principal) return null;
 
@@ -66,11 +64,11 @@ export function Galeria({
 
   return (
     <div className="relative">
-      {/* A margem abre a faixa das miniaturas: 4,25rem de miniatura + 1,25rem
+      {/* A margem abre a faixa das miniaturas: 3,75rem de miniatura + 0,875rem
           de respiro. Só no desktop — no telefone a foto ocupa a largura toda. */}
-      <div className="lg:ml-[5.5rem]">
+      <div className="lg:ml-[4.625rem]">
         <div
-          className="relative overflow-hidden bg-areia"
+          className="group relative overflow-hidden bg-areia"
           style={{ aspectRatio: razao }}
         >
           {fotos.map((foto, i) => {
@@ -93,13 +91,34 @@ export function Galeria({
               </div>
             );
           })}
+
+          {/* Ampliar. Discreto no desktop — aparece no hover e no foco — e
+              sempre visível no telefone, onde hover não existe e um botão
+              que só responde ao mouse é um botão que ninguém encontra. */}
+          <button
+            type="button"
+            onClick={() => setAmpliada(true)}
+            aria-label={`Ampliar a fotografia de ${nome}`}
+            className="tap absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full bg-linho-alto/90 text-carvao backdrop-blur-[2px] transition-opacity duration-200 hover:bg-linho-alto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva lg:opacity-0 lg:group-hover:opacity-100 lg:focus-visible:opacity-100"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="h-4 w-4 fill-none stroke-current"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M14 4h6v6M20 4l-7.5 7.5M10 20H4v-6M4 20l7.5-7.5" />
+            </svg>
+          </button>
         </div>
       </div>
 
       {fotos.length > 1 && (
         <ul
           aria-label={`Fotos de ${nome}`}
-          className="galeria-trilho mt-3 flex gap-2 overflow-x-auto lg:absolute lg:inset-y-0 lg:left-0 lg:mt-0 lg:w-[4.25rem] lg:flex-col lg:gap-3 lg:overflow-x-hidden lg:overflow-y-auto"
+          className="galeria-trilho mt-2.5 flex gap-2 overflow-x-auto lg:absolute lg:inset-y-0 lg:left-0 lg:mt-0 lg:w-[3.75rem] lg:flex-col lg:gap-2.5 lg:overflow-x-hidden lg:overflow-y-auto"
         >
           {fotos.map((foto, i) => {
             const atual = i === ativa;
@@ -112,16 +131,18 @@ export function Galeria({
                     foto.cor ? `, cor ${foto.cor.toLowerCase()}` : ""
                   }`}
                   aria-current={atual ? "true" : undefined}
-                  /* Sem caixa e sem borda: a miniatura ativa se distingue por
-                     estar cheia enquanto as outras estão esmaecidas. Um anel
-                     em volta de três quadros de 68px viraria mais desenho que
-                     fotografia. */
-                  className={`tap block w-[4.5rem] transition-opacity duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva focus-visible:ring-offset-2 focus-visible:ring-offset-linho lg:w-full ${
-                    atual ? "opacity-100" : "opacity-45 hover:opacity-80"
+                  /* O estado ativo é dito duas vezes, e de propósito: a
+                     esmaecida some do olhar periférico, o fio em volta marca
+                     qual é. Só a opacidade era sutil demais entre duas fotos
+                     da mesma peça no mesmo provador. */
+                  className={`tap block w-[4rem] transition-opacity duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva focus-visible:ring-offset-2 focus-visible:ring-offset-linho lg:w-full ${
+                    atual ? "opacity-100" : "opacity-40 hover:opacity-75"
                   }`}
                 >
                   <div
-                    className="relative overflow-hidden bg-areia"
+                    className={`relative overflow-hidden bg-areia transition-[box-shadow] duration-200 ${
+                      atual ? "ring-1 ring-carvao ring-offset-2 ring-offset-linho" : ""
+                    }`}
                     style={{ aspectRatio: razao }}
                   >
                     <Frame
@@ -136,6 +157,46 @@ export function Galeria({
           })}
         </ul>
       )}
+
+      <Modal
+        aberto={ampliada}
+        aoFechar={() => setAmpliada(false)}
+        titulo={`Fotografia ampliada — ${nome}`}
+        className="modal-foto"
+      >
+        <div className="relative">
+          {/* `width`/`height` nativos, e não só as classes: sem eles o
+              navegador não sabe a proporção antes do arquivo chegar e a
+              imagem entra com 0 de altura — no teste ela abriu com 27px,
+              uma tarja. Com as dimensões declaradas o quadro já nasce certo
+              e a foto preenche quando chega. */}
+          <img
+            src={principal.fontes?.fallback ?? undefined}
+            srcSet={principal.fontes?.auto}
+            sizes={SIZES_AMPLIADA}
+            alt={principal.alt}
+            width={principal.width}
+            height={principal.height}
+            className="block h-auto max-h-[88svh] w-auto max-w-full object-contain"
+          />
+          <button
+            type="button"
+            onClick={() => setAmpliada(false)}
+            aria-label="Fechar a fotografia ampliada"
+            className="tap absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-linho-alto/90 text-carvao transition-colors duration-200 hover:bg-linho-alto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="h-4 w-4 fill-none stroke-current"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+            >
+              <path d="M5 5l14 14M19 5L5 19" />
+            </svg>
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }
