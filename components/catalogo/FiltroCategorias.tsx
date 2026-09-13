@@ -63,12 +63,18 @@ export function FiltroCategorias({ ativo, aoTrocar, total }: Props) {
     <div>
       {/* A rolagem lateral é do trilho, nunca da página: as margens negativas
           fazem o trilho sangrar até a borda da tela, para não parecer que a
-          lista acabou onde o padding acaba. */}
-      <div className="-mx-5 overflow-x-auto px-5 md:-mx-8 md:px-8 lg:mx-0 lg:px-0">
+          lista acabou onde o padding acaba.
+
+          `overflow-y-hidden` explícito, e não por capricho: pelo CSS, quando
+          um eixo deixa de ser `visible` o outro vira `auto` sozinho. Pedir só
+          rolagem lateral ligava a vertical de brinde, e bastava 1px de
+          diferença entre conteúdo e caixa para o Windows desenhar uma barra
+          com setas ao lado de "Promoções". */}
+      <div className="-mx-5 overflow-x-auto overflow-y-hidden px-5 md:-mx-8 md:px-8 lg:mx-0 lg:px-0">
         <ul
           role="tablist"
           aria-label="Categorias"
-          className="flex w-max min-w-full items-center gap-6 pb-3 md:gap-8"
+          className="flex w-max min-w-full items-center gap-6 pb-4 md:gap-8"
         >
           {categorias.map(botao)}
 

@@ -117,8 +117,13 @@ export function ProductCard({ produto, priority = false }: Props) {
         />
       </div>
 
-      <div className="mt-3 md:mt-3.5">
-        <h3 className="text-[0.875rem] leading-snug md:text-[0.9375rem]">
+      {/* Foto, respiro curto, e o bloco de informação como uma unidade só.
+          Antes o nome, o preço e as cores tinham o mesmo espaço entre si que
+          o conjunto tinha da fotografia, e os três flutuavam soltos embaixo
+          do cartão. Agora o respiro depois da foto é maior que o respiro
+          interno: a informação gruda na peça a que pertence. */}
+      <div className="mt-3.5 md:mt-4">
+        <h3 className="text-[0.9375rem] leading-snug md:text-[1rem]">
           <Link
             href={`/produto/${produto.slug}`}
             onMouseEnter={entrar}
@@ -129,7 +134,7 @@ export function ProductCard({ produto, priority = false }: Props) {
           </Link>
         </h3>
 
-        <p className="mt-1 flex flex-wrap items-baseline gap-x-2 text-[0.8125rem] md:text-[0.875rem]">
+        <p className="mt-[0.1875rem] flex flex-wrap items-baseline gap-x-2 text-[0.875rem] md:text-[0.9375rem]">
           {produto.precoAnterior && (
             <span className="text-carvao-fraco line-through">
               {formatarPreco(produto.precoAnterior)}
@@ -141,7 +146,7 @@ export function ProductCard({ produto, priority = false }: Props) {
         </p>
 
         {cores.length > 0 && (
-          <ul className="mt-2.5 flex flex-wrap items-center gap-1.5" aria-label="Cores">
+          <ul className="mt-2 flex flex-wrap items-center gap-1.5" aria-label="Cores">
             {visiveis.map((c) => {
               const ativa = mesmaCor(cor, c.nome);
               const clicavel =

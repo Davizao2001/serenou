@@ -63,6 +63,19 @@ export function formatarPreco(centavos: number): string {
 }
 
 /** Rótulo visível de um estado. `disponivel` não recebe selo. */
+/* ---------------------------------------------------------------------------
+   QUANDO A GRADE GANHA A QUARTA COLUNA
+
+   Abaixo disto a vitrine fica em três colunas, mesmo num monitor largo.
+   Sete é o primeiro número em que a quarta coluna fecha pelo menos uma
+   fileira cheia e ainda sobra gente para a segunda — com seis, a quarta
+   coluna só serviria para deixar duas peças órfãs embaixo.
+
+   Não é sobre "cinco produtos": é sobre a fileira nunca terminar com uma
+   peça solitária num espaço grande demais para ela.
+--------------------------------------------------------------------------- */
+export const GRADE_DENSA = 7;
+
 export function rotuloStatus(p: Produto): string | null {
   if (p.status === "indisponivel") return "Esgotado";
   if (p.promocao) return "Promoção";

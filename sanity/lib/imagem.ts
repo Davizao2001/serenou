@@ -51,17 +51,18 @@ const QUALIDADE = 90;
    qual largura do srcset o navegador baixa: um `sizes` que mente para menos
    faz o navegador escolher um arquivo pequeno e a foto sai mole.
 
-   VITRINE   2 colunas até 1024px, 3 até 1280px, 4 daí para cima, dentro de
-             um container que para de crescer em 90rem. Em 1440px cada
-             cartão tem 318px — pedir 1200 para ele seria baixar quinze
-             vezes mais bytes do que a tela mostra.
+   VITRINE   2 colunas até 1024px e 3 daí para cima; a quarta só entra em
+             catálogo grande (ver GRADE_DENSA). No estado de três colunas o
+             cartão tem 376px, que é o maior dos dois — e é por ele que o
+             `sizes` se guia, porque pedir de menos deixa a foto mole e
+             pedir de mais só gasta banda.
    PRODUTO   a fotografia principal da peça: 33rem no desktop, tela inteira
              no telefone.
    MINIATURA a fileira embaixo da principal. Pequena de verdade — pedir 1200px
              para um quadro de 84px seria baixar 20x mais bytes do que a tela
              mostra. */
 export const SIZES_VITRINE =
-  "(min-width: 1440px) 318px, (min-width: 1280px) 23vw, (min-width: 1024px) 31vw, 46vw";
+  "(min-width: 1280px) 376px, (min-width: 1024px) 31vw, 46vw";
 export const SIZES_PRODUTO = "(min-width: 1024px) 528px, 92vw";
 export const SIZES_MINIATURA = "(min-width: 768px) 84px, 72px";
 

@@ -5,6 +5,7 @@ import { LojaFisica } from "@/components/site/LojaFisica";
 import { Fecho } from "@/components/site/Fecho";
 import { Vitrine } from "@/components/catalogo/Vitrine";
 import { listarProdutos } from "@/sanity/lib/produtos";
+import { produtosVisiveis, GRADE_DENSA } from "@/lib/catalogo";
 import { CATEGORIAS, COLECOES } from "@/lib/loja";
 
 /* O Next exige um literal aqui: o valor da configuração de segmento é lido
@@ -56,28 +57,24 @@ export default async function Catalogo({ searchParams }: Props) {
   const filtro = c && FILTROS.has(c) ? c : "tudo";
   const produtos = await listarProdutos();
 
+  /* A largura da página segue a mesma regra da grade. Com três colunas o
+     grid efetivo fica em 1184px: ocupar 1440 só porque a tela tem 1440
+     espalharia cinco peças por uma página grande demais para elas. */
+  const denso = produtosVisiveis(produtos).length >= GRADE_DENSA;
+
   return (
     <>
       <Header />
       <main id="conteudo" className="bg-linho pb-[14svh] pt-[calc(var(--header-h)+6svh)]">
-        {/* 90rem, um pouco mais largo que a página de produto: lá existe uma
-            peça, aqui existem quatro por fileira e a grade precisa de ar. */}
-        <div className="mx-auto max-w-[90rem] px-5 md:px-8 lg:px-12">
-          {/* Abertura curta de propósito.
-              Antes era uma headline de capítulo — "TODAS AS PEÇAS." em corpo
-              de manchete — e ela empurrava a primeira fileira de fotos para
-              fora da tela. Na home a tipografia grande é o conteúdo; aqui o
-              conteúdo é a roupa, e o cabeçalho só precisa dizer onde a
-              pessoa está antes de sair da frente. */}
-          <header className="mb-8 md:mb-10">
-            <h1 className="t-display text-[1.375rem] tracking-[0.02em] md:text-[1.625rem]">
-              Catálogo
-            </h1>
-            <p className="t-body mt-2 max-w-[38ch] text-[0.9375rem] text-carvao-medio">
-              Peças para acompanhar todos os seus momentos.
-            </p>
-          </header>
-
+        <div
+          className={`mx-auto px-5 md:px-8 lg:px-12 ${
+            denso ? "max-w-[90rem]" : "max-w-[80rem]"
+          }`}
+        >
+          {/* O título e a contagem moram na Vitrine, não aqui: a contagem
+              precisa seguir o filtro, e o filtro é estado do cliente. Deixar
+              o número no servidor faria a página dizer "5 peças" com uma
+              peça na tela depois de filtrar por Vestidos. */}
           <Vitrine produtos={produtos} filtroInicial={filtro} />
         </div>
       </main>

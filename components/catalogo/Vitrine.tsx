@@ -3,8 +3,7 @@
 import { useMemo, useState } from "react";
 import { FiltroCategorias } from "./FiltroCategorias";
 import { ProductGrid } from "./ProductGrid";
-import { produtosVisiveis, type Produto } from "@/lib/catalogo";
-import { CATEGORIAS, COLECOES } from "@/lib/loja";
+import { produtosVisiveis, GRADE_DENSA, type Produto } from "@/lib/catalogo";
 import { linkWhatsApp } from "@/lib/loja";
 
 /**
@@ -18,14 +17,6 @@ import { linkWhatsApp } from "@/lib/loja";
  * "Promoções" para alguém. O servidor entrega o filtro inicial; daí em diante
  * quem manda é o clique, e a URL é reescrita sem recarregar.
  */
-/** O nome da seleção atual, como ela aparece no filtro. */
-function nomeDoFiltro(slug: string): string {
-  if (slug === "tudo") return "Todas as peças";
-  const colecao = COLECOES.find((c) => c.slug === slug);
-  if (colecao) return colecao.nome;
-  return CATEGORIAS.find((c) => c.slug === slug)?.nome ?? "Todas as peças";
-}
-
 export function Vitrine({
   produtos,
   filtroInicial = "tudo",
@@ -49,10 +40,11 @@ export function Vitrine({
      Sem esta distinção, uma loja que ainda não cadastrou nenhuma peça
      manda a pessoa "escolher outra categoria" — e todas estão vazias.
      Quando não há nada, os filtros somem e a mensagem diz a verdade. */
-  const temCatalogo = useMemo(
-    () => produtosVisiveis(produtos).length > 0,
-    [produtos]
-  );
+  const visiveis = useMemo(() => produtosVisiveis(produtos), [produtos]);
+  const temCatalogo = visiveis.length > 0;
+  /* Densidade pelo tamanho do catálogo, não pelo do filtro: a largura da
+     página não pode mudar a cada categoria clicada. */
+  const denso = visiveis.length >= GRADE_DENSA;
 
   const lista = useMemo(() => {
     const visiveis = produtosVisiveis(produtos);
@@ -74,28 +66,29 @@ export function Vitrine({
 
   return (
     <>
+      {/* Abertura curta de propósito. Na home a tipografia grande é o
+          conteúdo; aqui o conteúdo é a roupa, e o cabeçalho só precisa dizer
+          onde a pessoa está antes de sair da frente. Título e contagem
+          dividem uma linha — duas informações curtas não justificam dois
+          blocos, e a contagem acompanha o filtro. */}
+      <header className="mb-6 flex items-baseline justify-between gap-4 md:mb-7">
+        <h1 className="t-display text-[1.375rem] tracking-[0.02em] md:text-[1.5rem]">
+          Catálogo
+        </h1>
+        {temCatalogo && (
+          <p aria-live="polite" className="t-eyebrow text-[0.6875rem] text-carvao-fraco">
+            {lista.length} {lista.length === 1 ? "peça" : "peças"}
+          </p>
+        )}
+      </header>
+
       {temCatalogo ? (
         <FiltroCategorias ativo={filtro} aoTrocar={trocar} total={lista.length} />
       ) : null}
 
-      {/* A linha entre o filtro e a grade: onde estou, e quanta coisa tem
-          aqui. Duas informações que a pessoa procura logo depois de filtrar
-          e que, sem esta linha, ela só descobre contando os cartões.
-          Nada de "ordenar por": não existe ordenação para a cliente escolher
-          hoje — a vitrine mostra as peças da mais nova para a mais antiga —
-          e um seletor que não ordena nada seria outro botão de enfeite. */}
-      {temCatalogo && lista.length > 0 && (
-        <div className="mt-7 flex items-baseline justify-between gap-4 border-t border-areia-forte pt-4 md:mt-9">
-          <h2 className="t-eyebrow text-[0.6875rem] text-carvao">{nomeDoFiltro(filtro)}</h2>
-          <p className="t-eyebrow text-[0.6875rem] text-carvao-fraco">
-            {lista.length} {lista.length === 1 ? "peça" : "peças"}
-          </p>
-        </div>
-      )}
-
-      <div className="mt-8 md:mt-10">
+      <div className="mt-9 md:mt-11">
         {lista.length > 0 ? (
-          <ProductGrid produtos={lista} />
+          <ProductGrid produtos={lista} denso={denso} />
         ) : (
           <p className="t-body max-w-[46ch] py-[8svh] text-carvao-medio">
             {temCatalogo ? (
