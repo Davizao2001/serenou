@@ -34,14 +34,22 @@ export function PecaEmFoco({ produto }: { produto: Produto }) {
   const [cor, setCor] = useState<string | null>(
     produto.cores.length === 1 ? produto.cores[0].nome : null
   );
-  /* A foto ativa é guardada pelo ID, não pela posição.
-     Pela posição dava um bug bonito: clicar na miniatura 2 adotava a cor
-     daquela foto, adotar a cor reordenava a galeria, e a posição 2 passava a
-     apontar para outra fotografia — a tela trocava e voltava no mesmo quadro.
-     O ID não se move quando a lista se reordena. */
+  /* A foto escolhida à mão, guardada pelo ID. `null` = ninguém escolheu foto
+     nenhuma, e quem manda é a cor. */
   const [fotoId, setFotoId] = useState<string | null>(null);
 
-  const fotos = ordenarPorCor(produto.imagens, cor);
+  /* A GALERIA NÃO SE REORDENA MAIS — E É POR ISSO QUE A DISSOLVÊNCIA EXISTE
+     `ordenarPorCor` continua, mas só para responder UMA pergunta: qual foto
+     passa a ser a ativa quando a cliente escolhe uma cor. A lista exibida é
+     sempre a ordem que a loja cadastrou.
+
+     Reordenar custava caro de dois jeitos. O React movia os nós no DOM, e
+     mover um nó cancela a transição de opacidade em curso: a foto que saía
+     pulava de 1 para 0 num quadro só, aparecia o fundo de areia por 40ms e a
+     nova entrava por cima. Medido, não suposto. E as miniaturas dançavam de
+     posição a cada cor escolhida, o que faz a pessoa procurar de novo a foto
+     que ela estava olhando. */
+  const fotos = produto.imagens;
 
   /* A loja marcou alguma foto com esta cor? Se não marcou nenhuma, a galeria
      não tem como responder à escolha, e a página precisa dizer isso — senão a
@@ -51,9 +59,12 @@ export function PecaEmFoco({ produto }: { produto: Produto }) {
   const semFotoDaCor =
     !!cor && alguemMarcaCor && !produto.imagens.some((i) => mesmaCor(i.cor, cor));
 
-  /* Sem escolha explícita, a ativa é a primeira da ordem atual — que já é a
-     foto da cor escolhida, porque `ordenarPorCor` a trouxe para a frente. */
-  const ativa = Math.max(0, fotos.findIndex((f) => f.id === fotoId));
+  /* Sem escolha explícita de foto, a ativa é a primeira da cor escolhida —
+     que é justamente o que `ordenarPorCor` põe na frente. Sem cor, ou sem
+     foto daquela cor, cai na primeira do cadastro. */
+  const daCor = ordenarPorCor(fotos, cor)[0];
+  const alvo = fotoId ?? daCor?.id ?? null;
+  const ativa = Math.max(0, fotos.findIndex((f) => f.id === alvo));
 
   function escolherCor(nova: string | null) {
     setCor(nova);
@@ -69,7 +80,18 @@ export function PecaEmFoco({ produto }: { produto: Produto }) {
   }
 
   return (
-    <div className="grid gap-8 md:gap-10 lg:grid-cols-[33rem_1fr] lg:gap-14 xl:gap-20">
+    /* AS DUAS COLUNAS SOMAM A LARGURA INTEIRA — ESSE É O PONTO
+       Antes a segunda coluna era `1fr` com o painel limitado a 30rem dentro
+       dela: em 1440px sobravam 96px de vazio à direita do painel, e a página
+       lia como "FOTO  vazio  INFORMAÇÕES". Agora a coluna É a largura do
+       painel (25rem), e o que sobra vai todo para a fotografia. Não há vazio
+       porque não há coluna sem dono.
+
+       O painel também deixou de ser `sticky`. Com ele compacto, o CTA já cabe
+       na primeira dobra — que era o motivo do sticky — e grudar o painel
+       enquanto a fotografia rola desmancharia justamente a relação entre os
+       dois que este layout existe para construir. */
+    <div className="grid gap-8 md:gap-10 lg:grid-cols-[1fr_22rem] lg:gap-14 xl:grid-cols-[1fr_25rem] xl:gap-24">
       <Galeria
         fotos={fotos}
         ativa={ativa}
@@ -77,16 +99,12 @@ export function PecaEmFoco({ produto }: { produto: Produto }) {
         nome={produto.nome}
       />
 
-      {/* Teto de largura: sem ele o "QUERO ESSA PEÇA" estica por toda a coluna
-          e vira botão de largura de banner para uma ação de uma linha. */}
-      <div className="w-full max-w-[30rem] lg:sticky lg:top-[calc(var(--header-h)+4svh)] lg:self-start">
-        <PainelProduto
-          produto={produto}
-          cor={cor}
-          aoEscolherCor={escolherCor}
-          semFotoDaCor={semFotoDaCor}
-        />
-      </div>
+      <PainelProduto
+        produto={produto}
+        cor={cor}
+        aoEscolherCor={escolherCor}
+        semFotoDaCor={semFotoDaCor}
+      />
     </div>
   );
 }

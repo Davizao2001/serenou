@@ -56,14 +56,17 @@ const QUALIDADE = 90;
              cartão tem 376px, que é o maior dos dois — e é por ele que o
              `sizes` se guia, porque pedir de menos deixa a foto mole e
              pedir de mais só gasta banda.
-   PRODUTO   a fotografia principal da peça: 33rem no desktop, tela inteira
-             no telefone.
+   PRODUTO   a fotografia principal da peça. Ela não tem largura fixa: é o
+             que sobra do container depois do painel e da faixa de
+             miniaturas — 504px a partir de 1280, 436px entre 1024 e 1280,
+             tela inteira no telefone.
    MINIATURA a fileira embaixo da principal. Pequena de verdade — pedir 1200px
              para um quadro de 84px seria baixar 20x mais bytes do que a tela
              mostra. */
 export const SIZES_VITRINE =
   "(min-width: 1280px) 376px, (min-width: 1024px) 31vw, 46vw";
-export const SIZES_PRODUTO = "(min-width: 1024px) 528px, 92vw";
+export const SIZES_PRODUTO =
+  "(min-width: 1280px) 504px, (min-width: 1024px) 436px, 92vw";
 export const SIZES_MINIATURA = "(min-width: 768px) 84px, 72px";
 
 export type ImagemSanity = {

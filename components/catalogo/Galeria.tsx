@@ -1,23 +1,52 @@
 "use client";
 
-import { ProductImage } from "./ProductImage";
+import { Frame } from "@/components/media/Frame";
 import { SIZES_PRODUTO, SIZES_MINIATURA } from "@/sanity/lib/imagem";
 import type { MediaSlot } from "@/lib/media";
 
 /**
  * GALERIA DA PEÇA
  *
- * Uma fotografia grande e uma fileira de miniaturas. Antes as fotos eram
- * empilhadas em tamanho cheio, uma embaixo da outra, e isso custava caro nos
- * dois lados: no desktop a peça ficava mais alta que a janela, e no telefone
- * a cliente rolava quatro fotografias antes de chegar ao nome e ao preço.
+ * MINIATURAS À ESQUERDA, NÃO EMBAIXO
  *
- * Com principal + miniaturas a página inteira cabe de uma vez, e continua
- * óbvio que existem outras fotos — que é justamente o que um carrossel com
- * seta esconde.
+ * No desktop as miniaturas ocupam uma faixa estreita colada à esquerda da
+ * fotografia — posicionada em absoluto justamente para herdar a altura dela.
+ * É o que faz as duas lerem como uma peça só: a faixa começa e termina onde a
+ * foto começa e termina, sem caixa, sem moldura, sem barra.
  *
- * As miniaturas só aparecem quando há mais de uma foto. Uma peça com uma
- * fotografia só não ganha uma fileira de um item.
+ * Herdar a altura também resolve o excesso sem inventar controle: se um dia
+ * uma peça tiver mais fotos do que cabem ao lado da principal, a faixa rola
+ * dentro do próprio limite, com a barra escondida. Nenhuma seta, nenhum
+ * botão — e nenhuma fileira crescendo para fora do quadro.
+ *
+ * No telefone continua tudo como estava: uma fileira horizontal embaixo da
+ * fotografia. Esta etapa é de desktop; a ordem no HTML é foto → miniaturas,
+ * que é a ordem certa nos dois layouts e também para quem lê por leitor de
+ * tela.
+ *
+ * A PROPORÇÃO É A DO ARQUIVO, NÃO UMA CONSTANTE
+ *
+ * O quadro vem de `width/height` da PRIMEIRA fotografia e vale para todas.
+ * Duas razões: a peça não é esticada para caber num 3:4 decidido no código, e
+ * o quadro não muda de formato quando a cliente troca de foto — o que faria a
+ * página inteira pular a cada clique. A Bata de Poá tem um arquivo de
+ * 1201×1600 no meio de dois 1200×1600; seguir cada arquivo faria o quadro
+ * tremer meio pixel sem motivo.
+ *
+ * O CRUZAMENTO ENTRE UMA FOTO E OUTRA
+ *
+ * Todas as fotografias ficam empilhadas no mesmo quadro e só a ativa está
+ * opaca. Trocar a cor é trocar qual delas aparece, com 280ms de dissolvência
+ * — as duas na tela ao mesmo tempo, que é o que "crossfade" quer dizer.
+ *
+ * Antes havia um `key` que remontava o quadro a cada troca: a imagem sumia,
+ * o fundo de areia aparecia, e a nova entrava quando terminasse de baixar. O
+ * custo de empilhar é baixar as outras fotos antes de serem pedidas; só a
+ * primeira é prioritária, e numa página de produto elas vão ser vistas de
+ * qualquer forma.
+ *
+ * Sob `prefers-reduced-motion` a dissolvência vira corte seco sozinha — o
+ * corte geral de app/globals.css zera a duração de toda transição.
  */
 export function Galeria({
   fotos,
@@ -33,27 +62,44 @@ export function Galeria({
   const principal = fotos[ativa] ?? fotos[0];
   if (!principal) return null;
 
+  const razao = `${fotos[0].width} / ${fotos[0].height}`;
+
   return (
-    /* No tablet a coluna ainda é única, e sem teto a fotografia ia a 704px de
-       largura e 939 de altura — mais alta que a janela, o mesmo problema que
-       o desktop tinha. Teto de 33rem centralizado a partir de 768px; no
-       telefone ela ocupa a largura toda, que ali é o certo. */
-    <div className="mx-auto w-full max-w-[33rem] lg:mx-0">
-      {/* `key` força a troca de fotografia a remontar o quadro: sem isso o
-          navegador mantém a imagem antiga na tela enquanto a nova carrega, e
-          a troca de cor parecia não ter acontecido. */}
-      <ProductImage
-        key={principal.id}
-        slot={principal}
-        proporcao="3/4"
-        sizes={SIZES_PRODUTO}
-        priority
-      />
+    <div className="relative">
+      {/* A margem abre a faixa das miniaturas: 4,25rem de miniatura + 1,25rem
+          de respiro. Só no desktop — no telefone a foto ocupa a largura toda. */}
+      <div className="lg:ml-[5.5rem]">
+        <div
+          className="relative overflow-hidden bg-areia"
+          style={{ aspectRatio: razao }}
+        >
+          {fotos.map((foto, i) => {
+            const atual = i === ativa;
+            return (
+              <div
+                key={foto.id}
+                /* As inativas saem da árvore de acessibilidade: senão o leitor
+                   de tela anuncia três fotografias onde a tela mostra uma. */
+                aria-hidden={!atual}
+                className={`absolute inset-0 transition-opacity duration-[280ms] ease-out ${
+                  atual ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <Frame
+                  slot={{ ...foto, sizes: SIZES_PRODUTO }}
+                  priority={i === 0}
+                  className="h-full w-full"
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       {fotos.length > 1 && (
         <ul
-          className="mt-3 flex gap-2 overflow-x-auto pb-1 md:mt-4 md:gap-3"
           aria-label={`Fotos de ${nome}`}
+          className="galeria-trilho mt-3 flex gap-2 overflow-x-auto lg:absolute lg:inset-y-0 lg:left-0 lg:mt-0 lg:w-[4.25rem] lg:flex-col lg:gap-3 lg:overflow-x-hidden lg:overflow-y-auto"
         >
           {fotos.map((foto, i) => {
             const atual = i === ativa;
@@ -66,17 +112,24 @@ export function Galeria({
                     foto.cor ? `, cor ${foto.cor.toLowerCase()}` : ""
                   }`}
                   aria-current={atual ? "true" : undefined}
-                  className={`tap block w-[4.5rem] transition-opacity duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva focus-visible:ring-offset-2 focus-visible:ring-offset-linho md:w-[5.25rem] ${
-                    atual ? "opacity-100" : "opacity-55 hover:opacity-85"
+                  /* Sem caixa e sem borda: a miniatura ativa se distingue por
+                     estar cheia enquanto as outras estão esmaecidas. Um anel
+                     em volta de três quadros de 68px viraria mais desenho que
+                     fotografia. */
+                  className={`tap block w-[4.5rem] transition-opacity duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva focus-visible:ring-offset-2 focus-visible:ring-offset-linho lg:w-full ${
+                    atual ? "opacity-100" : "opacity-45 hover:opacity-80"
                   }`}
                 >
-                  <ProductImage slot={foto} proporcao="3/4" sizes={SIZES_MINIATURA} />
-                  <span
-                    aria-hidden="true"
-                    className={`mt-1.5 block h-px w-full transition-colors duration-200 ${
-                      atual ? "bg-carvao" : "bg-transparent"
-                    }`}
-                  />
+                  <div
+                    className="relative overflow-hidden bg-areia"
+                    style={{ aspectRatio: razao }}
+                  >
+                    <Frame
+                      slot={{ ...foto, sizes: SIZES_MINIATURA }}
+                      className="h-full w-full"
+                      decorative
+                    />
+                  </div>
                 </button>
               </li>
             );

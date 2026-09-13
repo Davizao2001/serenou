@@ -670,3 +670,40 @@ picture {
     animation: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   GALERIA DA PEÇA — A FAIXA DE MINIATURAS
+
+   A faixa herda a altura da fotografia principal (está em absoluto ao lado
+   dela). Se um dia uma peça tiver mais fotos do que cabem nessa altura, ela
+   rola dentro do próprio limite — e a barra de rolagem não aparece, porque
+   uma barra de sistema ao lado de três fotografias de 68px é mais interface
+   do que a informação que ela carrega. O gesto continua inteiro: roda do
+   mouse, trackpad, arrasto no touch e as setas do teclado.
+
+   Vale para os dois eixos: no telefone a mesma faixa é horizontal.
+--------------------------------------------------------------------------- */
+.galeria-trilho {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.galeria-trilho::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
+   DETALHES — O TRIÂNGULO NATIVO SAI DE CENA
+
+   O `<details>` faz o trabalho todo sozinho: abre sem JavaScript, é focável
+   pelo teclado e anuncia o estado para o leitor de tela. O que não serve é o
+   triângulo padrão do navegador, que é de sistema operacional, não da marca.
+   Some, e o + que vira × ocupa o lugar dele.
+--------------------------------------------------------------------------- */
+.detalhe > summary {
+  list-style: none;
+}
+
+.detalhe > summary::-webkit-details-marker {
+  display: none;
+}

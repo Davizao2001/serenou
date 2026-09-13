@@ -83,12 +83,13 @@ export default async function Produto({ params }: Props) {
     <>
       <Header />
       <main id="conteudo" className="bg-linho pb-[12svh] pt-[calc(var(--header-h)+5svh)]">
-        {/* Container central de 1280px, mais estreito que a vitrine.
-            112rem é largura de grade — serve para alinhar quatro peças lado a
-            lado. Aqui existe uma peça, e ocupar a tela inteira só porque ela
-            está lá deixa a fotografia maior que a janela e a leitura solta. */}
-        <div className="mx-auto max-w-[80rem] px-5 md:px-8 lg:px-12">
-          <nav aria-label="Trilha" className="mb-8 md:mb-12">
+        {/* 1180px, mais estreito que a vitrine e mais estreito que os 1280
+            de antes. Largura de grade serve para alinhar quatro peças lado a
+            lado; aqui existe uma peça, e quanto mais larga a caixa, mais a
+            fotografia e o painel se afastam até parecerem dois assuntos. Em
+            1180 os dois somam a linha inteira e leem como um bloco só. */}
+        <div className="mx-auto max-w-[73.75rem] px-5 md:px-8 lg:px-12">
+          <nav aria-label="Trilha" className="mb-6 md:mb-9">
             <Link
               href={`/catalogo?c=${produto.categoria}`}
               className="t-eyebrow tap inline-block py-2 text-carvao-fraco transition-colors duration-200 hover:text-carvao"
