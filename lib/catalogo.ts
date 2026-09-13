@@ -64,29 +64,53 @@ export function formatarPreco(centavos: number): string {
 }
 
 /**
- * PARCELAMENTO — UMA CONTA, UM LUGAR
+ * PARCELAMENTO — E O CENTAVO QUE NÃO FECHA
  *
- * "3x de R$ 19,67 sem juros". O catálogo, a página de produto e os
- * relacionados chamam esta função; nenhum deles divide preço por conta
- * própria, e nenhum valor de parcela é cadastrado peça por peça.
+ * "Em até 3x sem juros" ou "3x de R$ 23,00 sem juros". As duas frases saem
+ * daqui, e só daqui: vitrine, página de produto e relacionados chamam esta
+ * função. Nenhum deles divide preço, nenhum valor de parcela é cadastrado
+ * peça por peça, e trocar 3x por 2x é mexer em `PARCELAS`, em lib/loja.ts.
  *
- * A divisão é feita em centavos e o arredondamento é o do próprio
- * `toLocaleString`, que arredonda para o mais próximo. Confere com os três
- * exemplos que a Grazi mandou:
+ * O PROBLEMA
  *
- *   R$ 109,00 → 10900/3 = 3633,33 → R$ 36,33
- *   R$  59,00 →  5900/3 = 1966,67 → R$ 19,67
- *   R$  89,99 →  8999/3 = 2999,67 → R$ 30,00
+ * R$ 89,99 dividido por 3 dá R$ 29,996… Arredondado vira R$ 30,00, e três
+ * vezes R$ 30,00 são R$ 90,00 — um centavo a mais do que a peça custa. Toda
+ * loja grande escreve assim porque o checkout dela ajusta a última parcela
+ * na hora da cobrança. Este site não cobra nada: quem fecha a conta é a
+ * Grazi, no WhatsApp, e um número que não fecha vira discussão com a cliente
+ * por um centavo.
  *
- * 3 × 19,67 dá 59,01, um centavo a mais que o preço. Isso é como toda loja
- * apresenta parcela, e aqui não tem consequência nenhuma: o site não cobra.
- * Quem fecha a conta é a Grazi no WhatsApp.
+ * A REGRA
+ *
+ *   CARTÃO (vitrine e relacionados)
+ *     sempre "Em até 3x sem juros". Ali a linha é um sinal de que existe
+ *     parcelamento, não uma conta — e o cartão já disputa espaço com a
+ *     fotografia da peça de baixo.
+ *
+ *   PRODUTO
+ *     só mostra o valor da parcela quando a divisão fecha exata em centavos,
+ *     isto é, quando `centavos % PARCELAS === 0`. Fechando, a soma das
+ *     parcelas é exatamente o preço. Não fechando, cai na mesma frase do
+ *     cartão — dizer menos é melhor que dizer um número que não bate.
+ *
+ * No acervo de hoje: R$ 69,00 e R$ 129,00 fecham (3x de R$ 23,00 e de
+ * R$ 43,00); R$ 59,00, R$ 89,99 e R$ 109,00 não fecham e ficam com "Em até".
  *
  * Peça de graça não ganha parcelamento — "3x de R$ 0,00" não é informação.
  */
-export function parcelamento(centavos: number): string | null {
+export function parcelamento(
+  centavos: number,
+  contexto: "cartao" | "produto" = "cartao"
+): string | null {
   if (!centavos || centavos <= 0) return null;
-  return `${PARCELAS}x de ${formatarPreco(centavos / PARCELAS)} sem juros`;
+
+  const ateTres = `Em até ${PARCELAS}x sem juros`;
+  if (contexto === "cartao") return ateTres;
+
+  /* Resto zero é a condição inteira: em centavos, sem resto significa que as
+     três parcelas somam o preço exato, sem sobra e sem ajuste na última. */
+  if (centavos % PARCELAS !== 0) return ateTres;
+  return `ou ${PARCELAS}x de ${formatarPreco(centavos / PARCELAS)} sem juros`;
 }
 
 /** Rótulo visível de um estado. `disponivel` não recebe selo. */

@@ -3,15 +3,13 @@ import { parcelamento } from "@/lib/catalogo";
 /**
  * PARCELAMENTO
  *
- * Uma linha, três lugares: vitrine, página de produto e relacionados. O texto
- * inteiro vem de `parcelamento()`, em lib/catalogo.ts — nenhum destes três
- * divide preço por conta própria.
+ * Casca fina: a frase inteira — inclusive o "ou" da página de produto e a
+ * decisão de mostrar ou não o valor da parcela — vem de `parcelamento()`, em
+ * lib/catalogo.ts. Aqui só se resolve o tamanho e a cor.
  *
- * Sempre mais discreto que o preço, e é isso que a prop `variante` guarda:
- * na página de produto começa com "ou" e acompanha um preço maior; no cartão
- * é só a conta, porque ali cada linha disputa espaço com a fotografia da peça
- * de baixo. Nos dois casos a cor é `carvao-fraco` e o corpo é menor — quem
- * decide comprar decide pelo preço, não pela parcela.
+ * Sempre mais discreto que o preço. Quem decide comprar decide pelo preço; a
+ * parcela é a facilidade que vem depois, e quando ela compete em peso a
+ * cliente guarda o número errado.
  */
 export function Parcelamento({
   preco,
@@ -23,7 +21,7 @@ export function Parcelamento({
   variante?: "cartao" | "produto";
   className?: string;
 }) {
-  const texto = parcelamento(preco);
+  const texto = parcelamento(preco, variante);
   if (!texto) return null;
 
   return (
@@ -32,7 +30,7 @@ export function Parcelamento({
         variante === "produto" ? "text-[0.8125rem]" : "text-[0.75rem]"
       } ${className}`}
     >
-      {variante === "produto" ? `ou ${texto}` : texto}
+      {texto}
     </p>
   );
 }

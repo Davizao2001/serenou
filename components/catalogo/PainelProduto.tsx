@@ -4,7 +4,6 @@ import { useState } from "react";
 import { SeletorCor } from "./SeletorCor";
 import { SeletorTamanho } from "./SeletorTamanho";
 import { BotaoQuero } from "./BotaoQuero";
-import { BotaoFavorito } from "./BotaoFavorito";
 import { GuiaMedidas } from "@/components/ui/GuiaMedidas";
 import { Parcelamento } from "./Parcelamento";
 import { Microinformacoes } from "./Microinformacoes";
@@ -130,17 +129,20 @@ export function PainelProduto({
           </div>
         ) : (
           <>
-            <div className="flex items-stretch gap-2.5">
-              <BotaoQuero
-                nome={produto.nome}
-                slug={produto.slug}
-                preco={produto.preco}
-                cor={cor}
-                tamanho={tamanho}
-                bloqueado={faltando.length > 0}
-              />
-              <BotaoFavorito slug={produto.slug} nome={produto.nome} />
-            </div>
+            {/* Havia um coração ao lado, salvando a peça no `localStorage`.
+                Funcionava — e não levava a lugar nenhum: não existe tela que
+                liste o que foi salvo, e nada atravessa do telefone para o
+                computador. Um botão que guarda algo que ninguém consegue ver
+                depois é promessa sem continuação, e saiu inteiro daqui e do
+                repositório. Volta no dia em que existir a lista. */}
+            <BotaoQuero
+              nome={produto.nome}
+              slug={produto.slug}
+              preco={produto.preco}
+              cor={cor}
+              tamanho={tamanho}
+              bloqueado={faltando.length > 0}
+            />
 
             {/* Duas frases com pesos diferentes de propósito. "Escolha a cor"
                 é instrução: sem ela a pessoa não sai do lugar, e some assim
