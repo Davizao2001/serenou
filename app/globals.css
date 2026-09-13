@@ -614,3 +614,59 @@ picture {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   TRILHO DE CATEGORIAS — A MÁSCARA DA BORDA DIREITA
+
+   Só no telefone: o `<nav>` que usa esta classe é `lg:hidden`, então nada
+   daqui chega ao desktop.
+
+   O trilho rola para o lado e termina na beirada da tela. Sem nenhum sinal,
+   o corte seco lê como fim da lista — e "Promoções" fica escondida atrás de
+   um gesto que a pessoa não sabe que existe. Um esmaecido de 2rem resolve:
+   não ocupa espaço, não é mais um alvo de toque, e diz a única coisa que
+   precisa ser dita, que é "continua".
+
+   A máscara desaparece no fim da rolagem. Isso é uma animação de linha do
+   tempo de rolagem — sem JavaScript, sem estado, sem componente de cliente:
+   o progresso da animação É a posição da barra. Fica parada nos primeiros
+   85% do percurso e só então abre, para o esmaecido não ir sumindo aos
+   poucos enquanto ainda há categoria adiante.
+
+   Onde `animation-timeline` não existe (Firefox, hoje), fica a máscara fixa
+   do bloco de cima — o indicador continua certo, só não sabe reconhecer o
+   fim. É a degradação boa: ninguém perde navegação por causa dela.
+--------------------------------------------------------------------------- */
+.trilho-fim {
+  mask-image: linear-gradient(to right, #000 calc(100% - 2rem), rgba(0, 0, 0, 0) 100%);
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+}
+
+@keyframes trilho-fim-abre {
+  0%,
+  85% {
+    mask-image: linear-gradient(to right, #000 calc(100% - 2rem), rgba(0, 0, 0, 0) 100%);
+  }
+  100% {
+    mask-image: linear-gradient(to right, #000 calc(100% - 0rem), rgba(0, 0, 0, 0) 100%);
+  }
+}
+
+@supports (animation-timeline: scroll(self inline)) {
+  .trilho-fim {
+    animation: trilho-fim-abre linear both;
+    animation-timeline: scroll(self inline);
+  }
+}
+
+/* O corte geral de movimento reduzido zera a duração de toda animação com
+   `!important`. Numa animação de rolagem a duração não é tempo, é fração do
+   percurso — 0.01ms faria a máscara abrir no primeiro pixel de arrasto e o
+   indicador sumiria justamente para quem rola devagar. Aqui ela sai de cena
+   por inteiro e sobra a máscara fixa, que é estática por natureza. */
+@media (prefers-reduced-motion: reduce) {
+  .trilho-fim {
+    animation: none;
+  }
+}

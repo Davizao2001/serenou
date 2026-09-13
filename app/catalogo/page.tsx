@@ -71,7 +71,14 @@ export default async function Catalogo({ searchParams }: Props) {
   return (
     <>
       <Header />
-      <main id="conteudo" className="bg-linho pb-[14svh] pt-[calc(var(--header-h)+6svh)]">
+      <main
+        id="conteudo"
+        /* O respiro entre o header e o bloco do título é mais curto no
+           telefone: ali a tela inteira tem a altura de uma folha, e 6svh
+           de vazio empurram a primeira fotografia para fora da primeira
+           dobra. No desktop sobra altura, e o valor original fica. */
+        className="bg-linho pb-[14svh] pt-[calc(var(--header-h)+4.25svh)] lg:pt-[calc(var(--header-h)+6svh)]"
+      >
         <div
           className={`mx-auto px-5 md:px-8 lg:px-12 ${
             denso ? "max-w-[90rem]" : "max-w-[80rem]"

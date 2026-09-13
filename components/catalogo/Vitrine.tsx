@@ -55,7 +55,7 @@ export function Vitrine({
       {/* No desktop o respiro entre o título e a grade é maior, porque ali
           não há trilho de categorias no meio — e sem esse espaço o título
           ficaria colado na primeira fileira de fotos. */}
-      <div className="mt-9 lg:mt-14">
+      <div className="mt-7 lg:mt-14">
         {lista.length > 0 ? (
           <ProductGrid produtos={lista} denso={denso} />
         ) : (

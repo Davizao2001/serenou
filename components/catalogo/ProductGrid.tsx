@@ -38,7 +38,7 @@ export function ProductGrid({ produtos, prioritarias = 2, denso = false }: Props
 
   return (
     <ul
-      className={`grid grid-cols-2 gap-x-4 gap-y-11 sm:gap-x-5 md:gap-y-14 lg:grid-cols-3 lg:gap-x-7 lg:gap-y-[3.75rem] ${
+      className={`grid grid-cols-2 gap-x-4 gap-y-9 sm:gap-x-5 md:gap-y-14 lg:grid-cols-3 lg:gap-x-7 lg:gap-y-[3.75rem] ${
         denso ? "xl:grid-cols-4" : ""
       }`}
     >

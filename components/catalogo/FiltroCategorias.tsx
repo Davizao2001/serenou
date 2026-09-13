@@ -62,8 +62,17 @@ export function FiltroCategorias({ ativo }: { ativo: string }) {
           diferença entre conteúdo e caixa para o Windows desenhar uma barra
           com setas ao lado de "Promoções". O respiro de baixo garante que não
           sobre nada — com o eixo escondido, sobra vira corte, e o que seria
-          cortado é o anel de foco de quem navega por teclado. */}
-      <div className="-mx-5 overflow-x-auto overflow-y-hidden px-5 md:-mx-8 md:px-8">
+          cortado é o anel de foco de quem navega por teclado.
+
+          A borda direita ganha uma máscara curta: sem ela, a lista termina
+          num corte seco na beirada da tela e não há nada dizendo que existe
+          mais categoria adiante. É só um esmaecido — nada de seta nem de
+          botão, que seriam mais um alvo de toque para uma informação que o
+          dedo já resolve. */}
+      {/* `trilho-fim` é só a máscara da borda direita — a regra mora em
+          globals.css porque depende de uma animação de rolagem, que o
+          Tailwind não escreve. Ver o bloco TRILHO por lá. */}
+      <div className="trilho-fim -mx-5 overflow-x-auto overflow-y-hidden px-5 md:-mx-8 md:px-8">
         <ul className="flex w-max min-w-full items-center gap-6 pb-4 md:gap-8">
           {categorias.map(item)}
           <li aria-hidden="true" className="h-3 w-px shrink-0 bg-areia-forte" />
