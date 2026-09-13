@@ -32,7 +32,13 @@ export function ProductGrid({ produtos, prioritarias = 2 }: Props) {
        encolhe junto: espaço de galeria, não de ensaio.
        No telefone continuam 2. Três numa tela de 390px deixaria o corpo da
        roupa com menos de 120px, e aí não dá para ver o que se está olhando. */
-    <ul className="grid grid-cols-2 gap-x-3 gap-y-9 sm:gap-x-4 md:grid-cols-3 md:gap-x-5 md:gap-y-12 xl:grid-cols-4 xl:gap-x-6 xl:gap-y-14">
+    /* 2 colunas no telefone e no tablet, 3 no desktop médio, 4 no grande.
+       Duas no telefone e não uma: a fotografia da Serenou é vertical e em
+       coluna única cada peça vira uma tela inteira — a cliente rola muito e
+       compara nada. O respiro vertical é o triplo do horizontal de
+       propósito: é ele que separa uma fileira da outra sem precisar de
+       borda, e é o que faz a grade parecer vitrine em vez de planilha. */
+    <ul className="grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-5 md:gap-y-14 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-16 xl:grid-cols-4">
       {produtos.map((p, i) => (
         <li key={p.slug}>
           <ProductCard produto={p} priority={i < prioritarias} />

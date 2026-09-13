@@ -4,124 +4,152 @@ import { useState } from "react";
 import Link from "next/link";
 import { ProductImage } from "./ProductImage";
 import { ordenarPorCor, mesmaCor } from "@/lib/media";
-import { formatarPreco, rotuloStatus, type Produto } from "@/lib/catalogo";
+import { formatarPreco, type Produto } from "@/lib/catalogo";
 
 type Props = {
   produto: Produto;
-  /** Primeira fila da vitrine. */
+  /** Primeiras peças da vitrine — carregam sem esperar o scroll. */
   priority?: boolean;
 };
+
+/** Quantas bolinhas de cor cabem antes de virar poluição. O resto vira "+2". */
+const CORES_VISIVEIS = 4;
 
 /**
  * PRODUCT CARD
  *
- * A vitrine é para olhar, não para decidir: fotografia grande, nome, preço, e
- * nada mais. Quem decide comprar decide na página de produto.
+ * Fotografia, nome, preço, cores. Nada mais.
  *
- * Três gestos de movimento, e cada um responde a uma pergunta real de quem
- * está passando o olho:
+ * Sem caixa, sem sombra, sem borda: o cartão é a fotografia, e o que segura o
+ * conjunto é o alinhamento da grade e o espaço em volta. Caixa com sombra é
+ * vocabulário de marketplace — resolve a vida de quem tem mil produtos de mil
+ * vendedores e precisa separar um do outro. Aqui as peças são da mesma marca e
+ * foram fotografadas no mesmo lugar; separá-las com moldura seria inventar uma
+ * divisão que não existe.
  *
- *   "é essa mesmo?"        a segunda foto entra no hover, sem clique
- *   "tem na minha cor?"    a bolinha troca a fotografia para aquela cor
- *   "ainda tem?"           o selo de esgotado fica sobre a foto
+ * TRÊS GESTOS, CADA UM RESPONDENDO A UMA PERGUNTA REAL
  *
- * A troca por cor só acontece quando a loja marcou de que cor é cada foto no
- * painel. Sem marcação, as bolinhas continuam ali como informação — é o que
- * já eram — e não fingem uma interação que não existe.
+ *   "é essa mesmo?"      a segunda fotografia entra no hover, sem clique
+ *   "tem na minha cor?"  a bolinha troca a fotografia do cartão
+ *   "ainda tem?"         o selo de indisponível fica sobre a foto
+ *
+ * A segunda fotografia só é montada depois do primeiro hover. Com quatro
+ * peças na tela isso seria o dobro das imagens baixadas para um gesto que a
+ * maioria não faz — e no telefone, onde hover não existe, seria desperdício
+ * puro. Depois do primeiro hover ela fica montada, e a troca é instantânea.
  *
  * SOBRE O LINK
- * O cartão inteiro é clicável por uma camada sobre a fotografia, e o nome é
- * um link de verdade. Assim as bolinhas podem ser botões sem ficarem presas
- * dentro de um link — botão dentro de link é HTML inválido e, na prática,
- * impossível de usar no teclado.
+ * A área de clique cobre a fotografia, e o nome é um link de verdade. Assim
+ * as bolinhas podem ser botões sem ficarem presas dentro de um link — botão
+ * dentro de link é HTML inválido e, na prática, intratável no teclado.
  */
 export function ProductCard({ produto, priority = false }: Props) {
-  const esgotado = produto.status === "indisponivel";
-  const selo = rotuloStatus(produto);
+  const indisponivel = produto.status === "indisponivel";
 
   const [cor, setCor] = useState<string | null>(null);
   const [sobre, setSobre] = useState(false);
+  const [jaPassou, setJaPassou] = useState(false);
 
-  /* Só vale oferecer troca por cor se existir foto marcada com cor. */
-  const temFotoPorCor = produto.imagens.some((i) => i.cor);
   const fotos = ordenarPorCor(produto.imagens, cor);
   const capa = fotos[0];
-  /* A segunda foto do conjunto atual — a que entra no hover. */
   const verso = fotos[1];
 
-  return (
-    <article className="group relative">
-      <div className="relative overflow-hidden bg-areia">
-        <ProductImage slot={capa} priority={priority} esmaecida={esgotado} />
+  /* Só vale oferecer troca por cor onde a loja marcou de que cor é a foto. */
+  const trocaPorCor = produto.imagens.some((i) => i.cor);
+  const cores = produto.cores;
+  const visiveis = cores.slice(0, CORES_VISIVEIS);
+  const restantes = cores.length - visiveis.length;
 
-        {/* A segunda fotografia, por cima, revelada no hover. Fica montada
-            desde o início para não piscar em branco na primeira passada, e
-            sai do caminho de quem prefere menos movimento. */}
-        {verso && (
+  /* O selo do cartão tem vocabulário próprio, separado do da página de
+     produto: aqui ele é lido de relance, no meio de outras peças. */
+  const selo = indisponivel
+    ? "Indisponível"
+    : produto.promocao
+      ? "Promoção"
+      : produto.novidade
+        ? "Novidade"
+        : null;
+
+  function entrar() {
+    setSobre(true);
+    setJaPassou(true);
+  }
+
+  return (
+    <article className="group">
+      <div className="relative overflow-hidden bg-areia">
+        <ProductImage slot={capa} priority={priority} esmaecida={indisponivel} />
+
+        {verso && jaPassou && (
           <div
             aria-hidden="true"
-            className={`absolute inset-0 transition-opacity duration-500 ease-out motion-reduce:transition-none ${
+            className={`absolute inset-0 transition-opacity duration-300 ease-out ${
               sobre ? "opacity-100" : "opacity-0"
             }`}
           >
-            <ProductImage slot={verso} esmaecida={esgotado} />
+            <ProductImage slot={verso} esmaecida={indisponivel} />
           </div>
         )}
 
         {selo && (
           <span
-            className={`t-eyebrow absolute left-2.5 top-2.5 z-20 px-2.5 py-1.5 text-[0.625rem] md:left-3 md:top-3 ${
-              esgotado ? "bg-carvao/85 text-linho-alto" : "bg-linho-alto/95 text-carvao"
+            className={`t-eyebrow absolute left-2.5 top-2.5 z-20 px-2 py-1 text-[0.5625rem] tracking-[0.16em] md:left-3 md:top-3 ${
+              indisponivel
+                ? "bg-carvao/85 text-linho-alto"
+                : "bg-linho-alto/95 text-carvao"
             }`}
           >
             {selo}
           </span>
         )}
 
-        {/* A camada de clique. `aria-hidden` + `tabIndex -1` porque o nome
-            abaixo já é o link que o leitor de tela e o teclado usam. */}
+        {/* A camada de clique sobre a fotografia. `aria-hidden` e fora da
+            ordem de tabulação porque o nome abaixo já é o link que o teclado
+            e o leitor de tela usam — dois links para o mesmo lugar seriam
+            duas paradas para a mesma coisa. */}
         <Link
           href={`/produto/${produto.slug}`}
           aria-hidden="true"
           tabIndex={-1}
-          className="absolute inset-0 z-10"
-          onMouseEnter={() => setSobre(true)}
+          className="absolute inset-0 z-10 cursor-pointer"
+          onMouseEnter={entrar}
           onMouseLeave={() => setSobre(false)}
-          onFocus={() => setSobre(true)}
-          onBlur={() => setSobre(false)}
         />
       </div>
 
-      <div className="mt-3">
-        <h3 className="t-display text-[0.9375rem] leading-snug tracking-[0.01em] md:text-[1.0625rem]">
+      <div className="mt-3 md:mt-3.5">
+        <h3 className="text-[0.875rem] leading-snug md:text-[0.9375rem]">
           <Link
             href={`/produto/${produto.slug}`}
-            className="transition-colors duration-200 hover:text-carvao-medio focus-visible:outline-none focus-visible:underline focus-visible:underline-offset-4"
+            onMouseEnter={entrar}
+            onMouseLeave={() => setSobre(false)}
+            className="underline-offset-[0.3em] transition-colors duration-200 hover:underline focus-visible:underline focus-visible:outline-none"
           >
             {produto.nome}
           </Link>
         </h3>
 
-        <p className="mt-1 flex flex-wrap items-baseline gap-x-2 text-[0.875rem]">
-          <span className={esgotado ? "text-carvao-fraco" : "text-carvao"}>
-            {formatarPreco(produto.preco)}
-          </span>
+        <p className="mt-1 flex flex-wrap items-baseline gap-x-2 text-[0.8125rem] md:text-[0.875rem]">
           {produto.precoAnterior && (
-            <span className="text-[0.8125rem] text-carvao-fraco line-through">
+            <span className="text-carvao-fraco line-through">
               {formatarPreco(produto.precoAnterior)}
             </span>
           )}
+          <span className={indisponivel ? "text-carvao-fraco" : "text-carvao-medio"}>
+            {formatarPreco(produto.preco)}
+          </span>
         </p>
 
-        {produto.cores.length > 1 && (
+        {cores.length > 0 && (
           <ul className="mt-2.5 flex flex-wrap items-center gap-1.5" aria-label="Cores">
-            {produto.cores.map((c) => {
+            {visiveis.map((c) => {
               const ativa = mesmaCor(cor, c.nome);
-              const clicavel = temFotoPorCor && produto.imagens.some((i) => mesmaCor(i.cor, c.nome));
+              const clicavel =
+                trocaPorCor && produto.imagens.some((i) => mesmaCor(i.cor, c.nome));
               const bolinha = (
                 <span
                   aria-hidden="true"
-                  className="block h-3.5 w-3.5 rounded-full ring-1 ring-carvao/20"
+                  className="block h-[0.9375rem] w-[0.9375rem] rounded-full ring-1 ring-carvao/15"
                   style={{
                     background: Array.isArray(c.amostra)
                       ? `linear-gradient(135deg, ${c.amostra[0]} 50%, ${c.amostra[1]} 50%)`
@@ -136,16 +164,19 @@ export function ProductCard({ produto, priority = false }: Props) {
                       type="button"
                       onClick={() => setCor(ativa ? null : c.nome)}
                       aria-pressed={ativa}
-                      title={c.nome}
-                      className={`tap flex items-center justify-center rounded-full p-1 transition-[box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva ${
-                        ativa ? "ring-1 ring-carvao" : "hover:ring-1 hover:ring-carvao/40"
+                      aria-label={c.nome}
+                      className={`tap flex items-center justify-center rounded-full p-[3px] transition-shadow duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva ${
+                        ativa ? "ring-1 ring-carvao" : "hover:ring-1 hover:ring-carvao/30"
                       }`}
                     >
                       {bolinha}
-                      <span className="sr-only">Ver na cor {c.nome}</span>
                     </button>
                   ) : (
-                    <span className="flex items-center justify-center p-1" title={c.nome}>
+                    /* Sem foto daquela cor a bolinha não vira botão: ela
+                       continua sendo informação e não finge uma interação
+                       que não existe. O nome vai junto para quem não
+                       distingue a cor pela bolinha. */
+                    <span className="flex items-center justify-center p-[3px]">
                       {bolinha}
                       <span className="sr-only">{c.nome}</span>
                     </span>
@@ -153,6 +184,15 @@ export function ProductCard({ produto, priority = false }: Props) {
                 </li>
               );
             })}
+            {restantes > 0 && (
+              <li className="ml-0.5 text-[0.6875rem] text-carvao-fraco">
+                +{restantes}
+                <span className="sr-only">
+                  {" "}
+                  outras cores: {cores.slice(CORES_VISIVEIS).map((c) => c.nome).join(", ")}
+                </span>
+              </li>
+            )}
           </ul>
         )}
       </div>

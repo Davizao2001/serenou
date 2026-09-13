@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { FiltroCategorias } from "./FiltroCategorias";
 import { ProductGrid } from "./ProductGrid";
 import { produtosVisiveis, type Produto } from "@/lib/catalogo";
+import { CATEGORIAS, COLECOES } from "@/lib/loja";
 import { linkWhatsApp } from "@/lib/loja";
 
 /**
@@ -17,6 +18,14 @@ import { linkWhatsApp } from "@/lib/loja";
  * "Promoções" para alguém. O servidor entrega o filtro inicial; daí em diante
  * quem manda é o clique, e a URL é reescrita sem recarregar.
  */
+/** O nome da seleção atual, como ela aparece no filtro. */
+function nomeDoFiltro(slug: string): string {
+  if (slug === "tudo") return "Todas as peças";
+  const colecao = COLECOES.find((c) => c.slug === slug);
+  if (colecao) return colecao.nome;
+  return CATEGORIAS.find((c) => c.slug === slug)?.nome ?? "Todas as peças";
+}
+
 export function Vitrine({
   produtos,
   filtroInicial = "tudo",
@@ -68,7 +77,23 @@ export function Vitrine({
       {temCatalogo ? (
         <FiltroCategorias ativo={filtro} aoTrocar={trocar} total={lista.length} />
       ) : null}
-      <div className="mt-12 md:mt-16">
+
+      {/* A linha entre o filtro e a grade: onde estou, e quanta coisa tem
+          aqui. Duas informações que a pessoa procura logo depois de filtrar
+          e que, sem esta linha, ela só descobre contando os cartões.
+          Nada de "ordenar por": não existe ordenação para a cliente escolher
+          hoje — a vitrine mostra as peças da mais nova para a mais antiga —
+          e um seletor que não ordena nada seria outro botão de enfeite. */}
+      {temCatalogo && lista.length > 0 && (
+        <div className="mt-7 flex items-baseline justify-between gap-4 border-t border-areia-forte pt-4 md:mt-9">
+          <h2 className="t-eyebrow text-[0.6875rem] text-carvao">{nomeDoFiltro(filtro)}</h2>
+          <p className="t-eyebrow text-[0.6875rem] text-carvao-fraco">
+            {lista.length} {lista.length === 1 ? "peça" : "peças"}
+          </p>
+        </div>
+      )}
+
+      <div className="mt-8 md:mt-10">
         {lista.length > 0 ? (
           <ProductGrid produtos={lista} />
         ) : (
