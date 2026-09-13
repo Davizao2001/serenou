@@ -17,6 +17,7 @@
 --------------------------------------------------------------------------- */
 
 import type { MediaSlot } from "./media";
+import { PARCELAS } from "./loja";
 import type { Categoria, StatusProduto } from "./loja";
 
 export type Cor = {
@@ -60,6 +61,32 @@ export function formatarPreco(centavos: number): string {
     currency: "BRL",
     minimumFractionDigits: 2,
   });
+}
+
+/**
+ * PARCELAMENTO — UMA CONTA, UM LUGAR
+ *
+ * "3x de R$ 19,67 sem juros". O catálogo, a página de produto e os
+ * relacionados chamam esta função; nenhum deles divide preço por conta
+ * própria, e nenhum valor de parcela é cadastrado peça por peça.
+ *
+ * A divisão é feita em centavos e o arredondamento é o do próprio
+ * `toLocaleString`, que arredonda para o mais próximo. Confere com os três
+ * exemplos que a Grazi mandou:
+ *
+ *   R$ 109,00 → 10900/3 = 3633,33 → R$ 36,33
+ *   R$  59,00 →  5900/3 = 1966,67 → R$ 19,67
+ *   R$  89,99 →  8999/3 = 2999,67 → R$ 30,00
+ *
+ * 3 × 19,67 dá 59,01, um centavo a mais que o preço. Isso é como toda loja
+ * apresenta parcela, e aqui não tem consequência nenhuma: o site não cobra.
+ * Quem fecha a conta é a Grazi no WhatsApp.
+ *
+ * Peça de graça não ganha parcelamento — "3x de R$ 0,00" não é informação.
+ */
+export function parcelamento(centavos: number): string | null {
+  if (!centavos || centavos <= 0) return null;
+  return `${PARCELAS}x de ${formatarPreco(centavos / PARCELAS)} sem juros`;
 }
 
 /** Rótulo visível de um estado. `disponivel` não recebe selo. */

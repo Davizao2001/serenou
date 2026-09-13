@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ProductImage } from "./ProductImage";
 import { ordenarPorCor, mesmaCor } from "@/lib/media";
 import { formatarPreco, type Produto } from "@/lib/catalogo";
+import { Parcelamento } from "./Parcelamento";
 
 type Props = {
   produto: Produto;
@@ -144,6 +145,12 @@ export function ProductCard({ produto, priority = false }: Props) {
             {formatarPreco(produto.preco)}
           </span>
         </p>
+
+        {/* Peça esgotada não mostra parcela: parcelamento de uma peça que não
+            dá para comprar é informação sobre nada. */}
+        {!indisponivel && (
+          <Parcelamento preco={produto.preco} className="mt-[0.1875rem]" />
+        )}
 
         {cores.length > 0 && (
           <ul className="mt-2 flex flex-wrap items-center gap-1.5" aria-label="Cores">

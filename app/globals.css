@@ -764,3 +764,27 @@ picture {
 .modal[open]::backdrop {
   animation: modal-entra 220ms ease;
 }
+
+/* ---------------------------------------------------------------------------
+   AÇÃO DO HEADER — A PÍLULA DO WHATSAPP
+
+   O header troca de tinta conforme a fotografia por baixo (`header-tinta`):
+   claro sobre a hero escura, carvão depois dela. Um botão sólido que herdasse
+   essa tinta ficaria carvão-sobre-carvão em cima da hero e sumiria.
+
+   Aqui o par fundo/texto é declarado junto e invertido no estado claro, então
+   o contraste é o mesmo nos dois — sem cor nova, só os dois tons que o site
+   já tem.
+--------------------------------------------------------------------------- */
+.header-acao {
+  background: var(--color-carvao);
+  color: var(--color-linho-alto);
+}
+
+/* Só enquanto o header está transparente SOBRE uma hero escura. Depois de
+   `data-solido="sim"` — e em catálogo e produto, onde ele já nasce sólido —
+   vale a regra de cima. */
+[data-hero-tom="escuro"] .header-tinta:not([data-solido="sim"]) .header-acao {
+  background: var(--color-linho-alto);
+  color: var(--color-carvao);
+}

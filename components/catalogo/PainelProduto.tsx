@@ -5,7 +5,8 @@ import { SeletorCor } from "./SeletorCor";
 import { SeletorTamanho } from "./SeletorTamanho";
 import { BotaoQuero } from "./BotaoQuero";
 import { BotaoFavorito } from "./BotaoFavorito";
-import { GuiaMedidas } from "./GuiaMedidas";
+import { GuiaMedidas } from "@/components/ui/GuiaMedidas";
+import { Parcelamento } from "./Parcelamento";
 import { Microinformacoes } from "./Microinformacoes";
 import { formatarPreco, rotuloStatus, type Produto } from "@/lib/catalogo";
 import { EXIGIR_ESCOLHA } from "@/lib/loja";
@@ -80,6 +81,11 @@ export function PainelProduto({
         )}
       </p>
 
+      {/* Logo abaixo do preço e visivelmente menor que ele. A parcela é uma
+          facilidade, não o valor da peça — quando ela compete em peso com o
+          preço, a cliente guarda o número errado. */}
+      <Parcelamento preco={produto.preco} variante="produto" className="mt-1" />
+
       <p className="t-body mt-4 max-w-[38ch] text-[0.9375rem]">{produto.resumo}</p>
 
       {(temCores || temTamanhos) && (
@@ -110,7 +116,7 @@ export function PainelProduto({
           e existe mesmo quando a peça não tem tamanho cadastrado, porque a
           dúvida "será que serve em mim?" não depende de haver grade. */}
       <div className="mt-4">
-        <GuiaMedidas nome={produto.nome} cor={cor} />
+        <GuiaMedidas nome={produto.nome} />
       </div>
 
       {/* Esgotado não vira outro botão. A cliente vê o estado e para por aí —

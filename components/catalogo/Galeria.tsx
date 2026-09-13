@@ -170,15 +170,17 @@ export function Galeria({
               imagem entra com 0 de altura — no teste ela abriu com 27px,
               uma tarja. Com as dimensões declaradas o quadro já nasce certo
               e a foto preenche quando chega. */}
-          <img
-            src={principal.fontes?.fallback ?? undefined}
-            srcSet={principal.fontes?.auto}
-            sizes={SIZES_AMPLIADA}
-            alt={principal.alt}
-            width={principal.width}
-            height={principal.height}
-            className="block h-auto max-h-[88svh] w-auto max-w-full object-contain"
-          />
+          <picture>
+            <img
+              src={principal.fontes?.fallback ?? undefined}
+              srcSet={principal.fontes?.auto}
+              sizes={SIZES_AMPLIADA}
+              alt={principal.alt}
+              width={principal.width}
+              height={principal.height}
+              className="block h-auto max-h-[88svh] w-auto max-w-full object-contain"
+            />
+          </picture>
           <button
             type="button"
             onClick={() => setAmpliada(false)}

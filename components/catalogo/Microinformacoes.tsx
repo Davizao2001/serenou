@@ -1,4 +1,4 @@
-import { LOJA, WHATSAPP_EXIBICAO, INSTAGRAM } from "@/lib/loja";
+import { LOJA, WHATSAPP_EXIBICAO, ENTREGAS_CURTO } from "@/lib/loja";
 
 /**
  * MICROINFORMAÇÕES — A FAIXA ABAIXO DO CTA
@@ -9,10 +9,10 @@ import { LOJA, WHATSAPP_EXIBICAO, INSTAGRAM } from "@/lib/loja";
  * quem responde por elas no WhatsApp é a Grazi.
  *
  * O que entra aqui é só o que já está em lib/loja.ts, que é o registro do que
- * a cliente confirmou — atendimento por WhatsApp, endereço da loja física e
- * o Instagram. Três itens verdadeiros valem mais que quatro inventados, e
- * cada um é um caminho de verdade: o número atende, o endereço existe, o
- * perfil está no ar.
+ * a cliente confirmou — atendimento por WhatsApp, endereço da loja física e,
+ * desde 13/09, as três formas de entrega. Três itens verdadeiros valem mais
+ * que quatro inventados, e cada um responde a uma pergunta real de quem está
+ * com o dedo em cima do botão: quem atende, onde fica, como chega.
  *
  * EM LINHAS, NÃO EM COLUNAS
  *
@@ -57,13 +57,17 @@ const ITENS: Item[] = [
     ),
   },
   {
-    rotulo: "No Instagram",
-    detalhe: INSTAGRAM.usuario,
+    /* Entrou no lugar do Instagram em 13/09, quando a Grazi confirmou as três
+       formas. Aqui, ao lado do botão de comprar, a pergunta é "como isso
+       chega até mim?" — e o Instagram não responde essa. Ele continua no
+       rodapé, que é o lugar dele. */
+    rotulo: "Entregas",
+    detalhe: ENTREGAS_CURTO,
     icone: (
       <svg viewBox="0 0 24 24" aria-hidden="true" className={traco} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="4" y="4" width="16" height="16" rx="4.5" />
-        <circle cx="12" cy="12" r="3.4" />
-        <path d="M16.9 7.2h.01" />
+        <path d="M3 7.5h10v9H3zM13 10.5h4.5L21 13.5v3h-8z" />
+        <circle cx="7" cy="17.5" r="1.6" />
+        <circle cx="16.5" cy="17.5" r="1.6" />
       </svg>
     ),
   },

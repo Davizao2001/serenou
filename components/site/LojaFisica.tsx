@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { useGSAP } from "@/lib/gsap";
 import { fechoScene } from "@/lib/scenes";
-import { LOJA, googleMapsUrl, wazeUrl } from "@/lib/loja";
+import { HORARIO, LOJA, googleMapsUrl, wazeUrl } from "@/lib/loja";
 
 /**
  * LOJA FÍSICA
@@ -71,6 +71,22 @@ export function LojaFisica() {
                 </span>
               ))}
             </address>
+
+            {/* O horário entrou aqui em 13/09 junto com o endereço: é a
+                mesma decisão. Ninguém vai até uma loja sem saber a que horas
+                ela abre, e mandar a pessoa procurar isso no rodapé depois de
+                já ter clicado em "Como chegar" é tarde demais.
+
+                Domingo, segunda e feriado não aparecem, e não viram
+                "Fechado" — ver o comentário de HORARIO em lib/loja.ts. */}
+            <dl data-reveal className="mt-8 flex flex-wrap gap-x-12 gap-y-4">
+              {HORARIO.map((h) => (
+                <div key={h.dias}>
+                  <dt className="t-eyebrow text-[0.625rem] text-linho-alto/55">{h.dias}</dt>
+                  <dd className="t-body mt-2 text-linho-alto/85">{h.horas}</dd>
+                </div>
+              ))}
+            </dl>
 
             <div data-reveal className="mt-8">
               <p className="t-eyebrow mb-4 text-linho-alto/55">Como chegar</p>

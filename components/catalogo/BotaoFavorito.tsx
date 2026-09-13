@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 const CHAVE = "serenou:favoritos";
+/** Aviso interno: o `storage` do navegador só dispara em OUTRAS abas. */
+const EVENTO = "serenou:favoritos-mudou";
 
 /**
  * FAVORITO — UMA MARCA NESTE NAVEGADOR, E SÓ
@@ -16,45 +18,71 @@ const CHAVE = "serenou:favoritos";
  * sincroniza entre o telefone e o computador, não sobrevive a limpar o
  * histórico, e hoje não existe tela nenhuma que liste o que foi marcado.
  * Prometer mais do que isso no rótulo seria a mesma invenção que o resto
- * desta página evita — por isso o texto é "Salvar nesta peça neste
- * navegador", e não "Adicionar aos favoritos".
+ * desta página evita — por isso o texto é "Salvar neste navegador", e não
+ * "Adicionar aos favoritos".
  *
- * PRIMEIRO RENDER IGUAL NOS DOIS LADOS
+ * POR QUE `useSyncExternalStore` E NÃO `useState` + `useEffect`
  *
- * O servidor não tem `localStorage`. Se o primeiro render do navegador já
- * lesse o disco, o HTML das duas pontas seria diferente e a hidratação
- * quebraria. Então começa sempre vazio e o efeito corrige depois — uma
- * troca de estado que ninguém vê, em vez de um erro no console.
+ * O servidor não tem `localStorage`. A versão anterior começava em `false` e
+ * corrigia num efeito — o que funciona, mas dispara um segundo render em
+ * cascata a cada montagem, e o lint do projeto reprova com razão.
+ *
+ * Este hook existe exatamente para isto: ler de uma fonte que vive fora do
+ * React. `getServerSnapshot` devolve o que o servidor sabe (nada), a
+ * hidratação bate, e o valor real entra sem render extra. De brinde, o
+ * `subscribe` mantém duas abas em dia — marcar a peça numa e voltar para a
+ * outra mostra o coração cheio.
+ *
+ * A leitura devolve a STRING crua do armazenamento, não um array. Um array
+ * novo a cada chamada teria identidade nova a cada render e o React entraria
+ * em laço infinito achando que a fonte mudou; a string é igual a si mesma
+ * enquanto ninguém escrever.
  *
  * `try/catch` em toda leitura e escrita: em aba anônima, com cookies de site
- * bloqueados ou com a cota cheia, o acesso simplesmente lança. Um coração
- * que não salva é um detalhe; uma página que não carrega por causa dele,
- * não.
+ * bloqueados ou com a cota cheia, o acesso simplesmente lança. Um coração que
+ * não salva é um detalhe; uma página que não carrega por causa dele, não.
  */
-export function BotaoFavorito({ slug, nome }: { slug: string; nome: string }) {
-  const [salvo, setSalvo] = useState(false);
+function assinar(mudou: () => void) {
+  window.addEventListener("storage", mudou);
+  window.addEventListener(EVENTO, mudou);
+  return () => {
+    window.removeEventListener("storage", mudou);
+    window.removeEventListener(EVENTO, mudou);
+  };
+}
 
-  useEffect(() => {
-    try {
-      const lista: string[] = JSON.parse(localStorage.getItem(CHAVE) ?? "[]");
-      setSalvo(lista.includes(slug));
-    } catch {
-      /* Sem armazenamento, o coração vira enfeite inofensivo. */
-    }
-  }, [slug]);
+function lerBruto(): string | null {
+  try {
+    return localStorage.getItem(CHAVE);
+  } catch {
+    return null;
+  }
+}
+
+function lista(bruto: string | null): string[] {
+  if (!bruto) return [];
+  try {
+    const v = JSON.parse(bruto);
+    return Array.isArray(v) ? v : [];
+  } catch {
+    return [];
+  }
+}
+
+export function BotaoFavorito({ slug, nome }: { slug: string; nome: string }) {
+  const bruto = useSyncExternalStore(assinar, lerBruto, () => null);
+  const salvo = lista(bruto).includes(slug);
 
   function alternar() {
-    const proximo = !salvo;
-    setSalvo(proximo);
+    const atual = lista(lerBruto());
+    const nova = salvo ? atual.filter((s) => s !== slug) : [...new Set([...atual, slug])];
     try {
-      const lista: string[] = JSON.parse(localStorage.getItem(CHAVE) ?? "[]");
-      const nova = proximo
-        ? [...new Set([...lista, slug])]
-        : lista.filter((s) => s !== slug);
       localStorage.setItem(CHAVE, JSON.stringify(nova));
     } catch {
-      /* Estado visual mantido; só não atravessa a sessão. */
+      /* Sem armazenamento o coração não guarda — e não quebra nada. */
     }
+    /* Avisa esta aba: `storage` só fala com as outras. */
+    window.dispatchEvent(new Event(EVENTO));
   }
 
   return (

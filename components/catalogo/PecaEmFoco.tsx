@@ -115,7 +115,7 @@ export function PecaEmFoco({ produto }: { produto: Produto }) {
           com texto: é o mesmo card esticado, com a frase no alto e o
           grafismo embaixo. */}
       <div className="flex flex-col gap-5 lg:col-span-2 xl:col-span-1">
-        <FichaLateral produto={produto} cor={cor} />
+        <FichaLateral produto={produto} />
         <CardEditorial className="xl:flex-1" />
       </div>
     </div>

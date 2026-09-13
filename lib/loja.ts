@@ -5,8 +5,13 @@
    endereço, CTA, categorias. Nenhum componente deve escrever um número de
    telefone, um endereço ou um rótulo de categoria à mão.
 
-   Só entra aqui o que está CONFIRMADO. CEP, cidade, horário de funcionamento
-   e formas de entrega ainda não foram fechados — não inventar.
+   Só entra aqui o que está CONFIRMADO. Em 13/09 a Grazi fechou horário de
+   funcionamento, formas de entrega, parcelamento e a tabela de tamanhos —
+   tudo isso entrou abaixo e já pode aparecer no site.
+
+   Continuam EM ABERTO, e por isso continuam fora daqui: CEP e cidade da
+   loja, política de troca, prazo e preço de frete, prazo do motoboy e
+   condições de retirada. Não inventar nenhum deles.
 --------------------------------------------------------------------------- */
 
 /* ---- Marca ----------------------------------------------------------- */
@@ -47,6 +52,93 @@ export const LOJA = {
   linhas: ["Rua Samuel Laurence, 177 —", "Parque Maria Fernandes"],
   busca: "Rua Samuel Laurence, 177, Parque Maria Fernandes",
 };
+
+/* ---- Horário --------------------------------------------------------
+
+   Confirmado pela Grazi em 13/09. Terça a sexta e sábado, só.
+
+   Domingo, segunda e feriado NÃO estão aqui, e não viram "Fechado" por
+   dedução: a loja pode abrir em data especial, e um "Fechado" escrito no
+   site manda a cliente embora num dia em que a porta estava aberta. O que
+   não foi dito não é dito.
+--------------------------------------------------------------------- */
+
+export const HORARIO = [
+  { dias: "Terça a sexta", horas: "11:00 às 19:00" },
+  { dias: "Sábado", horas: "11:00 às 15:00" },
+] as const;
+
+/* ---- Entregas -------------------------------------------------------
+
+   Confirmado em 13/09: as três formas existem. Prazo, preço, frete grátis,
+   janela do motoboy e condições de retirada NÃO foram ditos — e são
+   exatamente o que a cliente final pergunta no WhatsApp. Ficam com a Grazi.
+
+   `curto` é para a faixa estreita da página de produto, onde a linha inteira
+   não cabe. É abreviação do mesmo fato, nunca fato diferente.
+--------------------------------------------------------------------- */
+
+export const ENTREGAS = [
+  "Sedex para todo o Brasil",
+  "Motoboy para a cidade de São Paulo",
+  "Retirada na loja física",
+] as const;
+
+export const ENTREGAS_CURTO = "Sedex · Motoboy SP · Retirada";
+
+/* ---- Parcelamento ---------------------------------------------------
+
+   Três vezes sem juros, confirmado em 13/09.
+
+   É INFORMAÇÃO COMERCIAL, não checkout: o site não cobra, não divide e não
+   processa nada. Ele só diz em quantas vezes a Grazi aceita, e a venda
+   continua inteira no WhatsApp.
+
+   O número mora aqui e em nenhum outro lugar. Se virar 2x ou 6x, muda esta
+   linha e muda no catálogo, na página de produto e nos relacionados ao
+   mesmo tempo. Quem formata é `parcelamento()`, em lib/catalogo.ts.
+--------------------------------------------------------------------- */
+
+export const PARCELAS = 3;
+
+/* ---- Guia de medidas ------------------------------------------------
+
+   Texto e tabela confirmados pela Grazi em 13/09, nas palavras dela.
+
+   A tabela é EQUIVALÊNCIA DE TAMANHO, não medida do corpo: a Grazi mandou
+   P = 36/38 e assim por diante, e não mandou busto, cintura nem quadril.
+   Traduzir isso para centímetros seria inventar o número que decide se a
+   peça serve — e o erro volta como devolução, não como bug.
+--------------------------------------------------------------------- */
+
+export const GUIA_MEDIDAS = {
+  titulo: "Guia de medidas",
+  texto:
+    "Cada corpo veste de um jeito e cada peça também.\n\nUse as medidas abaixo como referência para encontrar o tamanho que mais combina com você. Se ainda ficar em dúvida, fale com a gente no WhatsApp e ajudamos na escolha.",
+  chamada: "Ainda está em dúvida?",
+  cta: "Falar no WhatsApp",
+} as const;
+
+export const TABELA_TAMANHOS = [
+  { tamanho: "P", referencia: "36/38" },
+  { tamanho: "M", referencia: "38/40" },
+  { tamanho: "G", referencia: "42/44" },
+  { tamanho: "GG", referencia: "44/46" },
+  { tamanho: "G1", referencia: "46/48" },
+] as const;
+
+/**
+ * A mensagem de quem abriu o guia e continuou em dúvida.
+ *
+ * Com o nome da peça quando o guia foi aberto de dentro de uma página de
+ * produto; sem ele quando veio do menu, onde não existe peça nenhuma. A
+ * Grazi recebe a pergunta já sabendo do que se trata.
+ */
+export function mensagemTamanho(nome?: string | null): string {
+  return nome
+    ? `Oi! Vim pelo site da Serenou e queria ajuda para escolher o tamanho da ${nome}.`
+    : "Oi! Vim pelo site da Serenou e queria ajuda para escolher meu tamanho.";
+}
 
 /* ---- Rotas -----------------------------------------------------------
 
