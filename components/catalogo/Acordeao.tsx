@@ -25,8 +25,8 @@ export function Acordeao({
   children: React.ReactNode;
 }) {
   return (
-    <details className="detalhe group border-b border-areia-forte last:border-b-0" open={aberto}>
-      <summary className="t-eyebrow flex cursor-pointer items-center justify-between gap-3 py-4 text-[0.6875rem] text-carvao transition-colors duration-200 hover:text-carvao-medio focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva focus-visible:ring-offset-2 focus-visible:ring-offset-linho">
+    <details className="detalhe group border-b border-areia-forte/70 last:border-b-0" open={aberto}>
+      <summary className="t-eyebrow flex cursor-pointer items-center justify-between gap-3 py-[1.125rem] text-[0.71875rem] text-carvao transition-colors duration-200 hover:text-carvao-medio focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva focus-visible:ring-offset-2 focus-visible:ring-offset-linho">
         {titulo}
         <svg
           viewBox="0 0 16 16"
@@ -39,7 +39,7 @@ export function Acordeao({
           <path d="m3.5 6 4.5 4.5L12.5 6" />
         </svg>
       </summary>
-      <div className="pb-5">{children}</div>
+      <div className="pb-6">{children}</div>
     </details>
   );
 }

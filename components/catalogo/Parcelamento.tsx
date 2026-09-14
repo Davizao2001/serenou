@@ -27,7 +27,7 @@ export function Parcelamento({
   return (
     <p
       className={`text-carvao-fraco ${
-        variante === "produto" ? "text-[0.8125rem]" : "text-[0.75rem]"
+        variante === "produto" ? "text-[0.875rem]" : "text-[0.75rem]"
       } ${className}`}
     >
       {texto}

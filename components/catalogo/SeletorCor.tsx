@@ -14,19 +14,49 @@ type Props = {
  * Amostra redonda com o nome ao lado, não um <select>. A cor é a primeira
  * coisa que a cliente decide e precisa ser vista, não lida.
  *
- * O nome escolhido aparece por extenso acima das amostras: é ele que vai
- * dentro da mensagem do WhatsApp, então precisa estar visível na hora de
- * apertar o botão — ninguém confere uma bolinha selecionada.
+ * O ANEL COM FOLGA, E POR QUE O ANTERIOR ERA GROSSO
+ *
+ * Antes o estado escolhido era `ring-1` + `ring-offset-3`. O "offset" do
+ * Tailwind não é espaço vazio: é um SEGUNDO anel, pintado na cor do fundo da
+ * página. Então o que parecia "bolinha + folga + fio" era, na prática, três
+ * círculos concêntricos — e em volta de uma amostra de 22px isso vira um alvo
+ * de tiro, não uma seleção.
+ *
+ * Aqui a folga é uma sombra só, em duas paradas: a primeira na cor do papel,
+ * a segunda com 1px de carvão. Mesma leitura, um anel de verdade, e o
+ * desenho não engorda.
+ *
+ * SELEÇÃO E FOCO NÃO PODEM SE PARECER
+ *
+ * São dois estados independentes — dá para estar focado sem estar escolhido,
+ * e vice-versa. Por isso eles usam propriedades, cores e distâncias
+ * diferentes: a seleção é `box-shadow` em carvão a 3px; o foco é `outline`
+ * em oliva a 6px, por fora. Focando numa amostra já escolhida aparecem os
+ * dois, e continuam distinguíveis.
+ *
+ * O CÍRCULO ENCOLHEU, O ALVO NÃO
+ *
+ * A amostra desenhada tem 28px; o botão em volta tem 44px. Quem toca acerta
+ * num alvo de dedo, quem olha vê um ponto de cor — e não uma bola.
  */
 export function SeletorCor({ cores, valor, aoEscolher }: Props) {
   return (
     <fieldset>
-      <legend className="t-eyebrow mb-3 flex flex-wrap items-baseline gap-x-3 text-carvao-fraco">
+      <legend className="t-eyebrow mb-3.5 flex flex-wrap items-baseline gap-x-2.5 text-carvao-fraco">
         Cor
-        {valor && <span className="normal-case tracking-normal text-carvao">{valor}</span>}
+        {valor && (
+          <>
+            <span aria-hidden="true" className="text-carvao-fraco/60">
+              —
+            </span>
+            <span className="text-[0.8125rem] normal-case tracking-normal text-carvao">
+              {valor}
+            </span>
+          </>
+        )}
       </legend>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1">
         {cores.map((c) => {
           const escolhida = c.nome === valor;
           return (
@@ -36,17 +66,12 @@ export function SeletorCor({ cores, valor, aoEscolher }: Props) {
               aria-pressed={escolhida}
               onClick={() => aoEscolher(c.nome)}
               title={c.nome}
-              /* O alvo de toque continua com 40px; o que encolheu foi o
-                 desenho. Bolinha de 28px com anel afastado 4px virava um
-                 elemento de 44px por cor, e três cores viravam uma faixa
-                 gráfica maior que o nome da peça. */
-              className={`grid h-10 w-10 place-items-center rounded-full transition-shadow duration-200 ${
-                escolhida ? "ring-1 ring-carvao ring-offset-[3px] ring-offset-linho" : ""
-              }`}
+              className="amostra-cor grid h-11 w-11 place-items-center rounded-full"
             >
               <span
                 aria-hidden="true"
-                className="block h-[1.375rem] w-[1.375rem] rounded-full ring-1 ring-carvao/20"
+                data-escolhida={escolhida ? "sim" : undefined}
+                className="amostra-cor-disco block h-7 w-7 rounded-full"
                 style={{
                   background: Array.isArray(c.amostra)
                     ? `linear-gradient(135deg, ${c.amostra[0]} 50%, ${c.amostra[1]} 50%)`

@@ -56,6 +56,20 @@
   --hero-tinta-fraca: #2a251e;
   --hero-papel: #f8f4ed;
 
+  /* ---- Raios ----------------------------------------------------------
+     O canto arredondado é proporcional ao tamanho da superfície, não um
+     valor só repetido. Uma fotografia de 400px e uma miniatura de 64px com
+     o mesmo raio leem diferente: na miniatura ele vira pastilha, na foto
+     some. A escala abaixo mantém a MESMA curvatura aparente em cada escala.
+
+     Contenção proposital: nada aqui passa de 1rem. O que se quer é tirar a
+     rigidez do canto vivo, não virar cápsula. */
+  --r-foto: 1rem;        /* 16px — fotografia principal */
+  --r-painel: 0.8125rem; /* 13px — ficha lateral, card editorial, modais  */
+  --r-card: 0.75rem;     /* 12px — cartão de produto, foto de relacionado */
+  --r-acao: 0.6875rem;   /* 11px — CTA, botões de tamanho               */
+  --r-mini: 0.5rem;      /* 8px  — miniatura da galeria                 */
+
   /* Altura real do header, usada por âncoras e pelo estado sólido */
   --header-h: 4.5rem;
 }
@@ -752,6 +766,12 @@ picture {
 .modal-folha {
   width: min(34rem, calc(100vw - 2.5rem));
   background: var(--color-linho-alto);
+  border-radius: var(--r-painel);
+  overflow: hidden;
+}
+
+.modal-foto picture img {
+  border-radius: var(--r-foto);
 }
 
 /* A entrada é curta e sem deslocamento grande: um modal que sobe muito lê
@@ -794,4 +814,137 @@ picture {
 [data-hero-tom="escuro"] .header-tinta:not([data-solido="sim"]) .header-acao {
   background: var(--color-linho-alto);
   color: var(--color-carvao);
+}
+
+/* ---------------------------------------------------------------------------
+   MENU DO CATÁLOGO — UMA GAVETA SEM JAVASCRIPT
+
+   O painel abre com `:hover` no conjunto e com `:focus-within`. Não há estado
+   no React, não há `useEffect`, não há escuta de clique fora — e é por isso
+   que ele funciona no teclado sem nenhum trabalho extra: quem chega em
+   CATÁLOGO com Tab já abriu a gaveta, e quem sai dela com Tab já fechou.
+
+   Um dropdown com estado precisaria de aria-expanded correto, Escape, clique
+   fora, foco preso e devolução de foco. Tudo isso para reproduzir o que duas
+   pseudo-classes fazem de graça.
+
+   No toque não existe hover: ali CATÁLOGO é apenas o link para a vitrine
+   inteira, que é o destino certo. As categorias moram no menu do telefone.
+
+   `:hover` só vale onde há ponteiro fino — sem a consulta, um toque no
+   Android deixa a gaveta presa aberta até o próximo toque em outro lugar.
+--------------------------------------------------------------------------- */
+.gaveta-painel {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-0.25rem);
+  transition:
+    opacity 0.18s var(--ease-out),
+    transform 0.18s var(--ease-out),
+    visibility 0s linear 0.18s;
+}
+
+.gaveta:focus-within .gaveta-painel {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .gaveta:hover .gaveta-painel {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0s;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   ITENS DO MENU
+
+   Escala própria, menor que `.t-eyebrow`: o menu não é um rótulo de seção, é
+   navegação secundária que acompanha o logotipo sem competir com ele. 10px
+   seria ilegível em caixa alta com tracking largo; 10,5px com tracking mais
+   curto que o do eyebrow mantém a leitura e tira o peso.
+--------------------------------------------------------------------------- */
+.menu-item {
+  font-family: var(--font-sans);
+  font-size: 0.65625rem; /* 10,5px */
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.075em;
+  line-height: 1;
+  opacity: 0.72;
+  transition: opacity 0.2s var(--ease-out);
+  white-space: nowrap;
+}
+
+.menu-item:hover {
+  opacity: 1;
+}
+
+/* Dentro da gaveta o fundo é sempre linho, nunca a fotografia da hero — então
+   ali a tipografia pode ser de leitura, em caixa baixa, e não mais um rótulo
+   em versalete. É a diferença entre a barra (navegação) e a lista (conteúdo). */
+.menu-gaveta-item {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.2;
+  color: var(--color-carvao-medio);
+  transition:
+    background-color 0.18s var(--ease-out),
+    color 0.18s var(--ease-out);
+}
+
+.menu-gaveta-item:hover {
+  background-color: var(--color-areia);
+  color: var(--color-carvao);
+}
+
+/* ---------------------------------------------------------------------------
+   AMOSTRA DE COR
+
+   Três estados que nunca se confundem, porque usam propriedades diferentes:
+
+     repouso    fio interno de 1px, só para dar borda a cor clara sobre papel
+                claro — sem ele um amarelo-manteiga não tem contorno nenhum
+     escolhida  anel externo: uma parada na cor do papel (a folga) e outra em
+                carvão (o fio). Uma sombra só, não dois anéis empilhados
+     foco       `outline` em oliva, 6px por fora — outra propriedade, outra
+                cor, outra distância. Focar numa amostra já escolhida mostra
+                os dois ao mesmo tempo, e eles continuam legíveis
+
+   O disco tem 28px; o botão em volta, 44px. O alvo de toque não encolheu.
+--------------------------------------------------------------------------- */
+.amostra-cor-disco {
+  box-shadow: inset 0 0 0 1px rgb(22 19 15 / 0.14);
+  transition: box-shadow 0.2s var(--ease-out);
+}
+
+/* `:not([data-escolhida])` é obrigatório, não estilo: `.amostra-cor:hover
+   .amostra-cor-disco` tem especificidade maior que `.amostra-cor-disco[data-
+   escolhida]`, então passar o mouse sobre a amostra JÁ ESCOLHIDA apagava o
+   anel dela. Pego no teste — a cor selecionada perdia a marcação justamente
+   quando a pessoa ia clicar de novo. */
+.amostra-cor:hover .amostra-cor-disco:not([data-escolhida]) {
+  box-shadow: inset 0 0 0 1px rgb(22 19 15 / 0.3);
+}
+
+.amostra-cor-disco[data-escolhida] {
+  box-shadow:
+    inset 0 0 0 1px rgb(22 19 15 / 0.14),
+    0 0 0 3px var(--color-linho),
+    0 0 0 4px var(--color-carvao);
+}
+
+.amostra-cor:focus-visible {
+  outline: 2px solid var(--color-oliva);
+  outline-offset: -3px;
+  border-radius: 9999px;
+}
+
+.botao-tamanho:focus-visible {
+  outline: 2px solid var(--color-oliva);
+  outline-offset: 3px;
 }

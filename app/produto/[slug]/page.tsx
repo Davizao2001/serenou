@@ -93,7 +93,7 @@ export default async function Produto({ params }: Props) {
             com duas: em 1180 a fotografia cairia para 300px para a ficha
             caber. Largura de grade serve para alinhar peças lado a lado, e
             aqui é exatamente isso que acontece na linha de baixo. */}
-        <div className="mx-auto max-w-[80rem] px-5 md:px-8 lg:px-12">
+        <div className="mx-auto max-w-[80rem] px-5 md:px-8 lg:px-12 xl:px-10">
           {/* TRILHA COMPLETA, NÃO SÓ "VOLTAR"
               Início > Categoria > Peça. Os três degraus são dado real — a
               categoria vem do Sanity e o rótulo de CATEGORIAS — e o do meio é
@@ -141,7 +141,7 @@ export default async function Produto({ params }: Props) {
               são convite, não a grade principal. */}
           {daMesmaCategoria.length > 0 && (
             <section className="mt-16 border-t border-areia-forte pt-10 md:mt-20 md:pt-12">
-              <h2 className="t-eyebrow mb-8 text-carvao-fraco">
+              <h2 className="t-eyebrow mb-9 text-[0.75rem] text-carvao-fraco">
                 Você também pode gostar
               </h2>
               <ul className="grid grid-cols-2 gap-x-4 gap-y-9 sm:gap-x-5 lg:grid-cols-4 lg:gap-x-6">

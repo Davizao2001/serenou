@@ -62,17 +62,17 @@ export function PainelProduto({
 
   return (
     <div>
-      {selo && <p className="t-eyebrow mb-3 text-carvao-fraco">{selo}</p>}
+      {selo && <p className="t-eyebrow mb-3.5 text-carvao-fraco">{selo}</p>}
 
       {/* Escala de peça, não de manchete. O display da home existe para ser
           lido do outro lado da sala; aqui o nome está a 40cm dos olhos, ao
           lado da própria fotografia, e não precisa competir com ela. */}
-      <h1 className="t-display text-[1.75rem] tracking-[0.01em] md:text-[1.875rem]">
+      <h1 className="t-display text-[1.875rem] tracking-[0.01em] md:text-[2.0625rem]">
         {produto.nome}
       </h1>
 
       <p className="mt-2.5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="text-[1.0625rem]">{formatarPreco(produto.preco)}</span>
+        <span className="text-[1.1875rem]">{formatarPreco(produto.preco)}</span>
         {produto.precoAnterior && (
           <span className="text-sm text-carvao-fraco line-through">
             {formatarPreco(produto.precoAnterior)}
@@ -85,10 +85,10 @@ export function PainelProduto({
           preço, a cliente guarda o número errado. */}
       <Parcelamento preco={produto.preco} variante="produto" className="mt-1" />
 
-      <p className="t-body mt-4 max-w-[38ch] text-[0.9375rem]">{produto.resumo}</p>
+      <p className="t-body mt-[1.125rem] max-w-[38ch] text-[1rem] leading-[1.55]">{produto.resumo}</p>
 
       {(temCores || temTamanhos) && (
-        <div className="mt-7 space-y-6">
+        <div className="mt-8 space-y-7">
           {temCores && (
             <div>
               <SeletorCor cores={produto.cores} valor={cor} aoEscolher={aoEscolherCor} />
@@ -114,7 +114,7 @@ export function PainelProduto({
       {/* O guia acompanha a decisão de tamanho, então mora logo abaixo dela —
           e existe mesmo quando a peça não tem tamanho cadastrado, porque a
           dúvida "será que serve em mim?" não depende de haver grade. */}
-      <div className="mt-4">
+      <div className="mt-5">
         <GuiaMedidas nome={produto.nome} />
       </div>
 
@@ -122,9 +122,9 @@ export function PainelProduto({
           um CTA de aviso de reposição prometeria uma função que não existe.
           A regra confirmada é outra: quando a peça acaba, a Grazi oculta pelo
           painel e ela sai do catálogo. */}
-      <div className="mt-7">
+      <div className="mt-8">
         {esgotado ? (
-          <div className="border border-carvao/20 px-8 py-5 text-center">
+          <div className="rounded-[var(--r-acao)] border border-carvao/20 px-8 py-5 text-center">
             <p className="t-eyebrow text-carvao-fraco">Peça esgotada</p>
           </div>
         ) : (
@@ -171,7 +171,7 @@ export function PainelProduto({
         )}
       </div>
 
-      <div className="mt-8">
+      <div className="mt-9">
         <Microinformacoes />
       </div>
     </div>

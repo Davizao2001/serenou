@@ -25,7 +25,7 @@ export function SeletorTamanho({ tamanhos, valor, aoEscolher }: Props) {
     <fieldset>
       <legend className="t-eyebrow mb-3 text-carvao-fraco">Tamanho</legend>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2.5">
         {tamanhos.map((t) => {
           const escolhido = t.rotulo === valor;
           return (
@@ -35,15 +35,17 @@ export function SeletorTamanho({ tamanhos, valor, aoEscolher }: Props) {
               disabled={!t.disponivel}
               aria-pressed={escolhido}
               onClick={() => aoEscolher(t.rotulo)}
-              /* Escolhido = borda escura e fundo levemente quente, não bloco
-                 preto. Invertido, o tamanho selecionado ficava mais pesado
-                 que o próprio CTA logo abaixo, e a peça passava a ter dois
-                 retângulos pretos disputando o olho. */
-              className={`t-eyebrow grid h-11 min-w-[3rem] place-items-center px-3 text-[0.6875rem] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva focus-visible:ring-offset-2 focus-visible:ring-offset-linho ${
+              /* Mesma gramática da amostra de cor: fio de 1px em repouso, fio
+                 em carvão quando escolhido, e o foco por fora, em oliva, para
+                 não se confundir com a seleção. Escolhido não vira bloco
+                 preto — invertido, o tamanho pesaria mais que o próprio CTA
+                 logo abaixo, e a peça teria dois retângulos escuros
+                 disputando o olho. */
+              className={`t-eyebrow botao-tamanho grid h-12 min-w-[3.25rem] place-items-center rounded-[var(--r-acao)] px-3.5 text-[0.6875rem] transition-colors duration-200 ${
                 escolhido
-                  ? "bg-areia/60 text-carvao ring-1 ring-carvao"
+                  ? "bg-areia/55 text-carvao ring-1 ring-carvao"
                   : t.disponivel
-                    ? "bg-transparent text-carvao-medio ring-1 ring-carvao/20 hover:text-carvao hover:ring-carvao/50"
+                    ? "bg-transparent text-carvao-medio ring-1 ring-carvao/15 hover:text-carvao hover:ring-carvao/45"
                     : "cursor-not-allowed text-carvao-fraco line-through ring-1 ring-carvao/10"
               }`}
             >

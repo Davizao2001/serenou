@@ -79,13 +79,13 @@ export function Microinformacoes() {
       {ITENS.map((i) => (
         <li
           key={i.rotulo}
-          className="flex items-center justify-between gap-4 border-b border-areia-forte/60 py-2.5 last:border-b-0"
+          className="flex items-center justify-between gap-4 border-b border-areia-forte/60 py-3 last:border-b-0"
         >
           <span className="flex items-center gap-2.5 text-carvao-fraco">
             {i.icone}
-            <span className="text-[0.75rem] leading-tight text-carvao">{i.rotulo}</span>
+            <span className="text-[0.8125rem] leading-tight text-carvao">{i.rotulo}</span>
           </span>
-          <span className="text-[0.75rem] leading-tight text-carvao-fraco">
+          <span className="text-[0.8125rem] leading-tight text-carvao-fraco">
             {i.detalhe}
           </span>
         </li>

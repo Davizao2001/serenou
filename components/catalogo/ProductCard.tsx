@@ -6,6 +6,7 @@ import { ProductImage } from "./ProductImage";
 import { ordenarPorCor, mesmaCor } from "@/lib/media";
 import { formatarPreco, type Produto } from "@/lib/catalogo";
 import { Parcelamento } from "./Parcelamento";
+import { GuiaMedidas } from "@/components/ui/GuiaMedidas";
 
 type Props = {
   produto: Produto;
@@ -78,7 +79,7 @@ export function ProductCard({ produto, priority = false }: Props) {
 
   return (
     <article className="group">
-      <div className="relative overflow-hidden bg-areia">
+      <div className="relative overflow-hidden rounded-[var(--r-card)] bg-areia">
         <ProductImage slot={capa} priority={priority} esmaecida={indisponivel} />
 
         {verso && jaPassou && (
@@ -94,7 +95,7 @@ export function ProductCard({ produto, priority = false }: Props) {
 
         {selo && (
           <span
-            className={`t-eyebrow absolute left-2.5 top-2.5 z-20 px-2 py-1 text-[0.5625rem] tracking-[0.16em] md:left-3 md:top-3 ${
+            className={`t-eyebrow absolute left-2.5 top-2.5 z-20 rounded-[0.375rem] px-2 py-1 text-[0.5625rem] tracking-[0.16em] md:left-3 md:top-3 ${
               indisponivel
                 ? "bg-carvao/85 text-linho-alto"
                 : "bg-linho-alto/95 text-carvao"
@@ -153,7 +154,7 @@ export function ProductCard({ produto, priority = false }: Props) {
         )}
 
         {cores.length > 0 && (
-          <ul className="mt-2 flex flex-wrap items-center gap-1.5" aria-label="Cores">
+          <ul className="mt-2.5 flex flex-wrap items-center gap-1.5" aria-label="Cores">
             {visiveis.map((c) => {
               const ativa = mesmaCor(cor, c.nome);
               const clicavel =
@@ -207,6 +208,21 @@ export function ProductCard({ produto, priority = false }: Props) {
             )}
           </ul>
         )}
+
+        {/* GUIA DE MEDIDAS NO CARTÃO
+            Fica por último, depois das cores, e não logo abaixo do preço: o
+            bloco nome + preço + parcela + cores é a peça, e o guia é uma
+            ferramenta ao lado dela. Enfiado no meio, quebraria a leitura do
+            produto em duas metades.
+
+            SOBRE O CLIQUE: não há link envolvendo o cartão. A área clicável
+            da fotografia é um <Link> em absoluto que cobre só a foto, e o
+            nome é outro link. Este botão está fora dos dois, então não existe
+            propagação para interromper — e é por isso que ele não abre o
+            produto. Conferido no teste, não suposto. */}
+        <div className="mt-2.5">
+          <GuiaMedidas nome={produto.nome} aparencia="cartao" />
+        </div>
       </div>
     </article>
   );

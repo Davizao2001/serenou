@@ -24,14 +24,14 @@ import { MARCA } from "@/lib/loja";
 export function CardEditorial({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`relative flex min-h-[11rem] flex-col overflow-hidden bg-areia px-6 py-7 ${className}`}
+      className={`relative flex min-h-[12rem] flex-col overflow-hidden rounded-[var(--r-painel)] bg-areia px-7 py-8 ${className}`}
     >
       <p className="t-eyebrow text-[0.625rem] leading-[1.6] text-carvao-medio">
         Moda para
         <br />a vida real
       </p>
 
-      <p className="mt-4 max-w-[20ch] text-[1.0625rem] leading-[1.35] text-carvao">
+      <p className="mt-4 max-w-[20ch] text-[1.15rem] leading-[1.32] text-carvao">
         {MARCA.assinatura}
       </p>
 

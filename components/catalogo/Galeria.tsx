@@ -66,9 +66,9 @@ export function Galeria({
     <div className="relative">
       {/* A margem abre a faixa das miniaturas: 3,75rem de miniatura + 0,875rem
           de respiro. Só no desktop — no telefone a foto ocupa a largura toda. */}
-      <div className="lg:ml-[4.625rem]">
+      <div className="lg:ml-[5rem]">
         <div
-          className="group relative overflow-hidden bg-areia"
+          className="group relative overflow-hidden rounded-[var(--r-foto)] bg-areia"
           style={{ aspectRatio: razao }}
         >
           {fotos.map((foto, i) => {
@@ -99,7 +99,7 @@ export function Galeria({
             type="button"
             onClick={() => setAmpliada(true)}
             aria-label={`Ampliar a fotografia de ${nome}`}
-            className="tap absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full bg-linho-alto/90 text-carvao backdrop-blur-[2px] transition-opacity duration-200 hover:bg-linho-alto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva lg:opacity-0 lg:group-hover:opacity-100 lg:focus-visible:opacity-100"
+            className="tap absolute right-3.5 top-3.5 z-10 grid h-10 w-10 place-items-center rounded-full bg-linho-alto/90 text-carvao backdrop-blur-[2px] transition-opacity duration-200 hover:bg-linho-alto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva lg:opacity-0 lg:group-hover:opacity-100 lg:focus-visible:opacity-100"
           >
             <svg
               viewBox="0 0 24 24"
@@ -118,7 +118,7 @@ export function Galeria({
       {fotos.length > 1 && (
         <ul
           aria-label={`Fotos de ${nome}`}
-          className="galeria-trilho mt-2.5 flex gap-2 overflow-x-auto lg:absolute lg:inset-y-0 lg:left-0 lg:mt-0 lg:w-[3.75rem] lg:flex-col lg:gap-2.5 lg:overflow-x-hidden lg:overflow-y-auto"
+          className="galeria-trilho mt-3 flex gap-2.5 overflow-x-auto lg:absolute lg:inset-y-0 lg:left-0 lg:mt-0 lg:w-[4rem] lg:flex-col lg:gap-2.5 lg:overflow-x-hidden lg:overflow-y-auto"
         >
           {fotos.map((foto, i) => {
             const atual = i === ativa;
@@ -135,15 +135,21 @@ export function Galeria({
                      esmaecida some do olhar periférico, o fio em volta marca
                      qual é. Só a opacidade era sutil demais entre duas fotos
                      da mesma peça no mesmo provador. */
-                  className={`tap block w-[4rem] transition-opacity duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva focus-visible:ring-offset-2 focus-visible:ring-offset-linho lg:w-full ${
+                  className={`tap block w-[4.5rem] transition-opacity duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva focus-visible:ring-offset-2 focus-visible:ring-offset-linho lg:w-full ${
                     atual ? "opacity-100" : "opacity-40 hover:opacity-75"
                   }`}
                 >
                   <div
-                    className={`relative overflow-hidden bg-areia transition-[box-shadow] duration-200 ${
-                      atual ? "ring-1 ring-carvao ring-offset-2 ring-offset-linho" : ""
-                    }`}
-                    style={{ aspectRatio: razao }}
+                    /* Mesma correção do seletor de cor: `ring-offset` é um
+                       segundo anel pintado no fundo, não uma folga. Aqui vira
+                       uma sombra só, com a parada do papel e a do carvão. */
+                    className="relative overflow-hidden rounded-[var(--r-mini)] bg-areia transition-[box-shadow] duration-200"
+                    style={{
+                      aspectRatio: razao,
+                      boxShadow: atual
+                        ? "0 0 0 2px var(--color-linho), 0 0 0 3px var(--color-carvao)"
+                        : undefined,
+                    }}
                   >
                     <Frame
                       slot={{ ...foto, sizes: SIZES_MINIATURA }}

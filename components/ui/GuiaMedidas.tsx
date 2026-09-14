@@ -42,8 +42,9 @@ export function GuiaMedidas({
 }: {
   /** Peça de onde o guia foi aberto. Ausente quando vem do menu. */
   nome?: string | null;
-  /** `link` na página de produto, `menu` no cabeçalho e no menu do telefone. */
-  aparencia?: "link" | "menu" | "menu-mobile";
+  /** `link` na página de produto, `menu` no cabeçalho, `menu-mobile` no menu
+   *  do telefone, `cartao` na vitrine — miniatura do gatilho. */
+  aparencia?: "link" | "menu" | "menu-mobile" | "cartao";
   className?: string;
   /** O menu do telefone precisa se fechar quando o guia abre. */
   aoAbrir?: () => void;
@@ -54,6 +55,11 @@ export function GuiaMedidas({
     link: "tap inline-flex items-center gap-2 py-1 text-[0.8125rem] text-carvao-medio underline decoration-carvao/25 underline-offset-4 transition-colors duration-200 hover:text-carvao hover:decoration-carvao/60",
     menu: "t-eyebrow tap block py-2 tracking-[0.12em] opacity-80 transition-opacity duration-200 hover:opacity-100",
     "menu-mobile": "t-eyebrow tap block py-3 text-left tracking-[0.14em] text-carvao-medio transition-colors duration-200 hover:text-carvao",
+    /* No cartão o gatilho é quase invisível até se procurar por ele: sem
+       sublinhado em repouso, na cor dos metadados. É utilidade ao lado da
+       peça, não um segundo caminho competindo com o nome. */
+    cartao:
+      "tap inline-flex items-center gap-1.5 text-[0.6875rem] text-carvao-fraco underline decoration-transparent underline-offset-[0.3em] transition-colors duration-200 hover:text-carvao-medio hover:decoration-carvao/40",
   } as const;
 
   function abrir() {
@@ -66,13 +72,15 @@ export function GuiaMedidas({
       <button
         type="button"
         onClick={abrir}
-        className={`${estilos[aparencia]} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva focus-visible:ring-offset-2 focus-visible:ring-offset-linho ${className}`}
+        className={`${estilos[aparencia]} ${className}`}
       >
-        {aparencia === "link" && (
+        {(aparencia === "link" || aparencia === "cartao") && (
           <svg
             viewBox="0 0 24 24"
             aria-hidden="true"
-            className="h-[0.9375rem] w-[0.9375rem] shrink-0 fill-none stroke-current"
+            className={`shrink-0 fill-none stroke-current ${
+              aparencia === "cartao" ? "h-3.5 w-3.5" : "h-[0.9375rem] w-[0.9375rem]"
+            }`}
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -81,7 +89,17 @@ export function GuiaMedidas({
             <path d="M7 8.5v3M11 8.5v4M15 8.5v3M19 8.5v4" />
           </svg>
         )}
-        {GUIA_MEDIDAS.titulo}
+        {/* No cartão de 2 colunas do telefone "Guia de medidas" empurra a
+            linha para duas; "Medidas" diz a mesma coisa ao lado da peça, onde
+            o contexto já é a roupa. No desktop cabe inteiro. */}
+        {aparencia === "cartao" ? (
+          <>
+            <span className="sm:hidden">Medidas</span>
+            <span className="hidden sm:inline">{GUIA_MEDIDAS.titulo}</span>
+          </>
+        ) : (
+          GUIA_MEDIDAS.titulo
+        )}
       </button>
 
       <Modal
@@ -136,7 +154,7 @@ export function GuiaMedidas({
                 href={linkWhatsApp(mensagemTamanho(nome))}
                 target="_blank"
                 rel="noreferrer"
-                className="t-eyebrow inline-block bg-carvao px-7 py-4 text-[0.6875rem] text-linho-alto transition-colors duration-200 hover:bg-[#241f19] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva focus-visible:ring-offset-2"
+                className="t-eyebrow inline-block rounded-[var(--r-acao)] bg-carvao px-7 py-4 text-[0.6875rem] text-linho-alto transition-colors duration-200 hover:bg-[#241f19]"
               >
                 {GUIA_MEDIDAS.cta}
               </a>

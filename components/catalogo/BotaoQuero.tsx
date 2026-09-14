@@ -71,7 +71,7 @@ export function BotaoQuero({ nome, slug, preco, cor, tamanho, bloqueado }: Props
     return (
       <span
         aria-disabled="true"
-        className="t-eyebrow flex h-[3.25rem] w-full cursor-not-allowed items-center justify-center gap-3 bg-carvao/25 px-6 text-[0.6875rem] text-linho-alto"
+        className="t-eyebrow flex h-[3.5rem] w-full cursor-not-allowed items-center justify-center gap-3 rounded-[var(--r-acao)] bg-carvao/25 px-6 text-[0.71875rem] text-linho-alto"
       >
         {CTA_PRODUTO}
         {seta}
@@ -84,7 +84,7 @@ export function BotaoQuero({ nome, slug, preco, cor, tamanho, bloqueado }: Props
       href={linkWhatsApp(mensagem)}
       target="_blank"
       rel="noreferrer"
-      className="t-eyebrow group/cta flex h-[3.25rem] w-full items-center justify-center gap-3 bg-carvao px-6 text-[0.6875rem] text-linho-alto transition-colors duration-200 hover:bg-[#241f19] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva focus-visible:ring-offset-2 focus-visible:ring-offset-linho"
+      className="t-eyebrow group/cta flex h-[3.5rem] w-full items-center justify-center gap-3 rounded-[var(--r-acao)] bg-carvao px-6 text-[0.71875rem] text-linho-alto transition-colors duration-200 hover:bg-[#241f19]"
     >
       {CTA_PRODUTO}
       {seta}

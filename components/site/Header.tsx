@@ -28,22 +28,55 @@ import { CATEGORIAS, COLECOES, linkWhatsApp } from "@/lib/loja";
  * vestido em promoção continua em Vestidos e aparece também em Promoções,
  * sem cadastro duplicado.
  */
-/* "Catálogo" saiu da lista e virou entrada própria.
+/* O MENU ENCOLHEU PORQUE A LISTA ERA A ERRADA, NÃO A TIPOGRAFIA
  *
- * Ele nunca foi uma categoria: é o acesso à vitrine inteira, a única entrada
- * que não filtra nada. Enquanto estava no mesmo `<ul>` com o mesmo peso, lia
- * como mais um recorte ao lado de Vestidos e Blusas. Agora tem peso um pouco
- * maior e um fio de divisão depois — o suficiente para dizer "este é o
- * caminho geral, estes são os recortes" sem virar botão. */
+ * Havia doze entradas numa linha: Catálogo, Novidades, seis categorias,
+ * Promoções, Guia de medidas e WhatsApp. Isso não é menu de loja de autor, é
+ * barra de marketplace — e o peso vinha da quantidade, não do tamanho da
+ * letra. Encolher a fonte teria escondido o sintoma.
+ *
+ * As seis CATEGORIAS entraram numa gaveta sob Catálogo, que é onde elas já
+ * pertenciam: "que tipo de peça" é uma pergunta só, com seis respostas.
+ *
+ * Novidades e Promoções ficaram fora da gaveta de propósito. Elas não são
+ * categorias — são coleções transversais, e respondem a outra pergunta:
+ * "o que chegou" e "o que está mais barato". Um vestido em promoção está nas
+ * duas. Enfiá-las junto das categorias misturaria os dois eixos e obrigaria
+ * quem procura promoção a abrir uma gaveta de tipos de roupa.
+ *
+ * Sobraram cinco entradas. E aí veio o ganho que eu não esperava: com cinco,
+ * a linha inteira volta a caber em 1024px. O botão Menu no notebook, que eu
+ * tinha aceitado como o preço de manter a tipografia legível, deixou de ser
+ * necessário — a mesma decisão que custava uma concessão agora devolve ela.
+ */
 const CATALOGO = { label: "Catálogo", href: "/catalogo" };
 
-const CATEGORIAS_NAV = [
-  ...COLECOES.filter((c) => c.slug === "novidades"),
-  ...CATEGORIAS,
-  ...COLECOES.filter((c) => c.slug === "promocoes"),
-].map((c) => ({ label: c.nome, href: `/catalogo?c=${c.slug}` }));
+/** As seis que vivem dentro da gaveta. */
+const CATEGORIAS_GAVETA = CATEGORIAS.map((c) => ({
+  label: c.nome,
+  href: `/catalogo?c=${c.slug}`,
+}));
 
-const NAV = [CATALOGO, ...CATEGORIAS_NAV];
+/** As duas coleções, soltas na barra. */
+const COLECOES_NAV = COLECOES.map((c) => ({
+  label: c.nome,
+  href: `/catalogo?c=${c.slug}`,
+}));
+
+/** O menu do telefone continua mostrando tudo em lista — lá não há gaveta,
+ *  e esconder categorias atrás de um toque a mais seria piorar. */
+const NAV_MOBILE = [
+  CATALOGO,
+  ...COLECOES.filter((c) => c.slug === "novidades").map((c) => ({
+    label: c.nome,
+    href: `/catalogo?c=${c.slug}`,
+  })),
+  ...CATEGORIAS_GAVETA,
+  ...COLECOES.filter((c) => c.slug === "promocoes").map((c) => ({
+    label: c.nome,
+    href: `/catalogo?c=${c.slug}`,
+  })),
+];
 
 export function Header() {
   const header = useRef<HTMLElement>(null);
@@ -79,7 +112,7 @@ export function Header() {
           className="absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-areia-forte"
         />
 
-        <div className="relative mx-auto grid h-full max-w-[112rem] grid-cols-[auto_1fr_auto] items-center gap-6 px-5 md:px-8 lg:px-12 xl:grid-cols-[1fr_auto_1fr]">
+        <div className="relative mx-auto grid h-full max-w-[112rem] grid-cols-[auto_1fr_auto] items-center gap-6 px-5 md:px-8 lg:grid-cols-[1fr_auto_1fr] lg:px-12">
           <Link href="/" className="tap block" aria-label="Serenou, início">
             <span className="marca-serenou" aria-hidden="true" />
             <span
@@ -90,48 +123,77 @@ export function Header() {
             </span>
           </Link>
 
-          {/* A LINHA CHEIA COMEÇA EM 1280, NÃO EM 1024
-              A tipografia desce de 0,75rem para 0,6875rem e o tracking de
-              0,14em para 0,1em — com doze rótulos, o espaço entre letras custa
-              mais largura que as próprias letras.
-
-              Ainda assim doze não cabem em 1024: medido, a lista pedia 838px e
-              empurrava a pílula do WhatsApp para fora da tela. Havia como
-              forçar, caindo para 10px — e 10px em caixa alta com tracking
-              largo fica abaixo do piso de legibilidade que o próprio projeto
-              escreveu em `.t-eyebrow`. Entre espremer a tipografia e adiar a
-              linha cheia, adia-se a linha: de 1024 a 1279 vale o botão Menu,
-              que abre a mesma lista com Guia de medidas e WhatsApp dentro. */}
-          <nav aria-label="Principal" className="hidden xl:block">
-            <ul className="flex items-center gap-4 2xl:gap-5">
-              <li>
+          {/* Cinco entradas. A tipografia desce de 0,6875rem para 0,625rem e o
+              tracking de 0,1em para 0,075em — com cinco rótulos isso já não é
+              o que faz caber, é o que faz respirar. O respiro entre elas
+              aumenta (16px → 26px): com poucos itens, ar é sofisticação;
+              apertar cinco coisas no meio da barra seria desperdiçar o
+              espaço que acabou de sobrar. */}
+          <nav aria-label="Principal" className="hidden lg:block">
+            <ul className="flex items-center gap-[1.625rem]">
+              <li className="gaveta relative">
                 <Link
                   href={CATALOGO.href}
-                  className="t-eyebrow tap block py-2 text-[0.6875rem] tracking-[0.1em] transition-opacity duration-200 hover:opacity-100"
+                  className="menu-item tap flex items-center gap-1.5 py-2"
                   style={{ fontWeight: 600 }}
                 >
                   {CATALOGO.label}
-                </Link>
-              </li>
-              {/* Fio de divisão, não separador de menu: 1px de altura de
-                  letra, na cor do texto a 25%. Marca a fronteira sem virar
-                  desenho. */}
-              <li aria-hidden="true" className="h-3 w-px shrink-0 bg-current opacity-25" />
-
-              {CATEGORIAS_NAV.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="t-eyebrow tap block py-2 text-[0.6875rem] tracking-[0.1em] opacity-75 transition-opacity duration-200 hover:opacity-100"
+                  <svg
+                    viewBox="0 0 16 16"
+                    aria-hidden="true"
+                    className="h-2.5 w-2.5 shrink-0 fill-none stroke-current opacity-60"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   >
+                    <path d="m4 6.5 4 4 4-4" />
+                  </svg>
+                </Link>
+
+                {/* A gaveta. Encosta no item, sem seta e sem sombra pesada:
+                    é uma folha de papel sobre a página, não um painel de
+                    aplicativo. O `pt-3` fora do quadro mantém o caminho do
+                    mouse contínuo entre o rótulo e a lista — sem ele a gaveta
+                    fecha no meio do trajeto. */}
+                <div className="gaveta-painel absolute left-1/2 top-full z-50 w-[13.5rem] -translate-x-1/2 pt-3">
+                  <div className="rounded-[var(--r-painel)] border border-areia-forte/70 bg-linho-alto p-2 shadow-[0_16px_40px_-24px_rgba(22,19,15,0.45)]">
+                    <Link
+                      href={CATALOGO.href}
+                      className="menu-gaveta-item block rounded-[0.5rem] px-3 py-2.5"
+                    >
+                      Ver todas
+                    </Link>
+                    <span
+                      aria-hidden="true"
+                      className="mx-3 my-1 block h-px bg-areia-forte/60"
+                    />
+                    <ul>
+                      {CATEGORIAS_GAVETA.map((c) => (
+                        <li key={c.href}>
+                          <Link
+                            href={c.href}
+                            className="menu-gaveta-item block rounded-[0.5rem] px-3 py-2.5"
+                          >
+                            {c.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </li>
+
+              {COLECOES_NAV.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="menu-item tap block py-2">
                     {item.label}
                   </Link>
                 </li>
               ))}
 
-              <li aria-hidden="true" className="h-3 w-px shrink-0 bg-current opacity-25" />
+              <li aria-hidden="true" className="h-2.5 w-px shrink-0 bg-current opacity-20" />
               <li>
-                <GuiaMedidas aparencia="menu" className="text-[0.6875rem] tracking-[0.1em]" />
+                <GuiaMedidas aparencia="menu" className="menu-item" />
               </li>
             </ul>
           </nav>
@@ -145,19 +207,17 @@ export function Header() {
                 entrar, entra com tela e resultado; até lá, não fica de
                 enfeite. O menu já dá conta: Catálogo mostra tudo e as
                 categorias recortam. */}
-            {/* O WhatsApp é o único caminho de venda do site, e estava com o
-                mesmo peso de "Calças". Ganhou fundo carvão e texto claro —
-                dentro da paleta, sem cor nova e sem virar botão de banner.
-
-                `header-acao` é a exceção necessária: o header troca de tinta
-                por cima da hero (`header-tinta`), e uma pílula sólida que
-                herda essa tinta some na fotografia escura. A regra está em
-                globals.css e fixa o contraste nos dois estados. */}
+            {/* RESTAURADO AO ESTADO ANTERIOR À REFORMULAÇÃO DO MENU
+                Tirado de `f4e387c:components/site/Header.tsx`, o commit
+                imediatamente anterior ao que transformou isto numa pílula
+                sólida. Texto, classes, padding, opacidade e o ponto de corte
+                em `sm` são os mesmos byte a byte — não é aproximação visual.
+                O número e o link continuam os de hoje. */}
             <a
               href={linkWhatsApp()}
-              className="header-acao t-eyebrow tap hidden px-5 py-3 text-[0.6875rem] tracking-[0.1em] transition-opacity duration-200 hover:opacity-90 sm:inline-block"
+              className="t-eyebrow tap hidden py-3 tracking-[0.14em] opacity-80 transition-opacity duration-200 hover:opacity-100 sm:inline-block"
             >
-              Falar no WhatsApp
+              WhatsApp
             </a>
             <button
               type="button"
@@ -165,7 +225,7 @@ export function Header() {
               aria-expanded={menuOpen}
               aria-controls="menu-mobile"
               onClick={() => setMenuOpen((v) => !v)}
-              className="t-eyebrow tap -mr-2 px-2 py-3 text-[0.6875rem] tracking-[0.1em] xl:hidden"
+              className="t-eyebrow tap -mr-2 px-2 py-3 text-[0.6875rem] tracking-[0.1em] lg:hidden"
             >
               {menuOpen ? "Fechar" : "Menu"}
             </button>
@@ -181,11 +241,11 @@ export function Header() {
             Safari no iPhone come mais que isso quando reaparece. `overflow-y`
             e o respiro embaixo garantem que a última entrada continue
             alcançável em qualquer altura de tela. */
-        className="fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-linho px-5 pb-16 pt-[calc(var(--header-h)+2rem)] md:px-8 lg:px-12 xl:hidden"
+        className="fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-linho px-5 pb-16 pt-[calc(var(--header-h)+2rem)] md:px-8 lg:hidden"
       >
         <nav aria-label="Menu principal">
           <ul className="flex flex-col gap-1">
-            {NAV.map((item) => (
+            {NAV_MOBILE.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
@@ -195,7 +255,7 @@ export function Header() {
                      cabe a lista inteira se a tipografia ceder um pouco. O
                      teto preserva a escala nos telefones altos. */
                   className={`t-display block py-2.5 text-[clamp(1.5rem,4.4svh,2.1rem)] ${
-                    item.href === CATALOGO.href ? "text-carvao" : "text-carvao"
+                    "text-carvao"
                   }`}
                 >
                   {item.label}

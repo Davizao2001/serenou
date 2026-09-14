@@ -90,8 +90,17 @@ export function PecaEmFoco({ produto }: { produto: Produto }) {
 
        Abaixo de `xl` a ficha desce para o fim do bloco e a página volta a
        duas colunas: 280px de acordeão espremido ao lado de uma foto de 340
-       não é densidade, é aperto. */
-    <div className="grid gap-8 md:gap-10 lg:grid-cols-[1fr_21.25rem] lg:gap-12 xl:grid-cols-[1fr_21.25rem_17.5rem] xl:gap-11">
+       não é densidade, é aperto.
+
+       QUEM CRESCE, CRESCE À CUSTA DE QUEM
+       Num container fixo as três colunas dividem a mesma linha: subir a
+       decisão e a ficha em 10% encolhe a fotografia na mesma conta. No
+       primeiro teste foi exatamente o que aconteceu — a foto caiu 2,5%
+       enquanto tudo em volta engordava, e a página ficou MENOS presente, não
+       mais. Aqui a prioridade é a fotografia, que é a peça: ela leva o
+       aumento, decisão e ficha crescem o suficiente para acompanhar a
+       tipografia maior, e o resto da presença vem do tipo e do respiro. */
+    <div className="grid gap-9 md:gap-11 lg:grid-cols-[1fr_22rem] lg:gap-12 xl:grid-cols-[1fr_21.5rem_17.625rem] xl:gap-9">
       <Galeria
         fotos={fotos}
         ativa={ativa}
@@ -114,7 +123,7 @@ export function PecaEmFoco({ produto }: { produto: Produto }) {
           inferior direito da primeira dobra ficava vazio. Não é preenchimento
           com texto: é o mesmo card esticado, com a frase no alto e o
           grafismo embaixo. */}
-      <div className="flex flex-col gap-5 lg:col-span-2 xl:col-span-1">
+      <div className="flex flex-col gap-6 lg:col-span-2 xl:col-span-1">
         <FichaLateral produto={produto} />
         <CardEditorial className="xl:flex-1" />
       </div>

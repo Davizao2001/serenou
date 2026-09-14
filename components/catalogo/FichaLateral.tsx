@@ -39,7 +39,7 @@ export function FichaLateral({
   const temTamanhos = produto.tamanhos.length > 0;
 
   return (
-    <aside className="border border-areia-forte px-5">
+    <aside className="rounded-[var(--r-painel)] border border-areia-forte/80 px-5">
       {temDetalhes && (
         <Acordeao titulo="Detalhes da peça" aberto>
           <ul className="space-y-2.5">
@@ -54,7 +54,7 @@ export function FichaLateral({
                   aria-hidden="true"
                   className="mt-[0.5625rem] block h-px w-2.5 shrink-0 bg-carvao/30"
                 />
-                <span className="t-body text-[0.8125rem] leading-relaxed">{d}</span>
+                <span className="t-body text-[0.84375rem] leading-relaxed">{d}</span>
               </li>
             ))}
           </ul>
@@ -64,7 +64,7 @@ export function FichaLateral({
       <Acordeao titulo="Tamanhos e medidas" aberto={!temDetalhes}>
         {temTamanhos ? (
           <>
-            <p className="t-body text-[0.8125rem] leading-relaxed">
+            <p className="t-body text-[0.84375rem] leading-relaxed">
               Esta peça está cadastrada em{" "}
               {produto.tamanhos.map((t) => t.rotulo).join(", ")}.
             </p>
@@ -74,7 +74,7 @@ export function FichaLateral({
           </>
         ) : (
           <>
-            <p className="t-body text-[0.8125rem] leading-relaxed">
+            <p className="t-body text-[0.84375rem] leading-relaxed">
               Esta peça ainda não tem grade cadastrada. Veja a referência de
               tamanhos da Serenou ou fale com a gente.
             </p>
@@ -90,7 +90,7 @@ export function FichaLateral({
         <Acordeao titulo="Cuidados com a peça">
           <ul className="space-y-2.5">
             {cuidados.map((c) => (
-              <li key={c} className="t-body text-[0.8125rem] leading-relaxed">
+              <li key={c} className="t-body text-[0.84375rem] leading-relaxed">
                 {c}
               </li>
             ))}
@@ -109,7 +109,7 @@ export function FichaLateral({
                 aria-hidden="true"
                 className="mt-[0.5625rem] block h-px w-2.5 shrink-0 bg-carvao/30"
               />
-              <span className="t-body text-[0.8125rem] leading-relaxed">{e}</span>
+              <span className="t-body text-[0.84375rem] leading-relaxed">{e}</span>
             </li>
           ))}
         </ul>
