@@ -1,0 +1,670 @@
+[
+ {
+  "slug": "frente-unica",
+  "nome": "Frente Única",
+  "cat": "blusas",
+  "preco": 89,
+  "status": "oculto",
+  "tam": [],
+  "resumo": "Frente única com fecho de botões, para dar melhor estrutura, e tecido com aparência semelhante ao cetim.",
+  "detalhes": [
+   "Fecho de botões",
+   "Tecido com aparência de cetim",
+   "Disponível em quatro cores"
+  ],
+  "cores": [],
+  "fotos": [
+   [
+    "01",
+    null,
+    "Quatro frentes únicas lado a lado na arara, em preto, off-white, azul-marinho e vermelho escuro."
+   ],
+   [
+    "02",
+    null,
+    "Frente única preta vestida, com a gola drapeada e o caimento acetinado."
+   ],
+   [
+    "03",
+    null,
+    "Frente única off-white vestida, com a gola drapeada."
+   ],
+   [
+    "05",
+    null,
+    "Frente única azul-marinho vestida, vista de frente."
+   ],
+   [
+    "04",
+    null,
+    "Frente única em vermelho escuro vestida, com o tecido acetinado à luz."
+   ]
+  ],
+  "amostras": {},
+  "arquivos": {
+   "01": "d5c6b42c-93ab-4045-9e7e-5eb46fb6de33.jpg",
+   "02": "cf3c16e9-42f2-4411-8c14-f6f3407811ce.jpg",
+   "03": "0d4f37eb-97f3-4b4f-afd0-0c69831aa499.jpg",
+   "05": "7d8812c8-79c0-443b-87be-45f94401bca6.jpg",
+   "04": "9c8c5aae-1cdf-46d3-bf5d-6c3fa000a14f.jpg"
+  }
+ },
+ {
+  "slug": "vestido-longo-com-fivela",
+  "nome": "Vestido Longo com Fivela",
+  "cat": "vestidos",
+  "preco": 129,
+  "status": "disponivel",
+  "tam": [
+   "M",
+   "G",
+   "GG"
+  ],
+  "resumo": "Vestido longo em tecido leve, com detalhe de fivela. Bojo removível e forrado.",
+  "detalhes": [
+   "Tecido leve",
+   "Detalhe de fivela",
+   "Bojo removível",
+   "Forrado"
+  ],
+  "cores": [
+   "Azul",
+   "Off-white"
+  ],
+  "fotos": [
+   [
+    "06",
+    "Off-white",
+    "Vestido longo off-white com fivela dourada no decote, visto de frente."
+   ],
+   [
+    "07",
+    "Azul",
+    "Vestido longo azul com fivela dourada no decote, visto de frente."
+   ]
+  ],
+  "amostras": {
+   "Azul": "#9fb7da",
+   "Off-white": "#e9e6de"
+  },
+  "arquivos": {
+   "06": "e5a982f8-3661-4d26-a1e7-711bde7e8e00.jpg",
+   "07": "43ce1a5b-ac24-4988-8a26-1b1b03e4dd50.jpg"
+  }
+ },
+ {
+  "slug": "conjunto-de-moletinho",
+  "nome": "Conjunto de Moletinho",
+  "cat": "conjuntos",
+  "preco": 139.99,
+  "status": "disponivel",
+  "tam": [
+   "P",
+   "M",
+   "G"
+  ],
+  "resumo": "Conjunto em tecido de moletinho, pensado para look com tênis: calça de corte reto e polo básica.",
+  "detalhes": [
+   "Calça de corte reto",
+   "Polo básica",
+   "Tecido de moletinho"
+  ],
+  "cores": [
+   "Rosa",
+   "Preto",
+   "Azul"
+  ],
+  "fotos": [
+   [
+    "10",
+    "Rosa",
+    "Conjunto de moletinho rosa: polo de manga curta e calça de corte reto."
+   ],
+   [
+    "11",
+    "Rosa",
+    "Conjunto de moletinho rosa visto de lado, com a mão no bolso da calça."
+   ],
+   [
+    "09",
+    "Preto",
+    "Conjunto de moletinho preto: polo de manga curta e calça de corte reto."
+   ],
+   [
+    "08",
+    "Azul",
+    "Conjunto de moletinho azul: polo de manga curta e calça de corte reto."
+   ]
+  ],
+  "amostras": {
+   "Rosa": "#e8c4d6",
+   "Preto": "#1a1a1a",
+   "Azul": "#6f97d1"
+  },
+  "arquivos": {
+   "10": "c1c5e946-12a2-4d1a-9e81-c2d9aebd96b5.jpg",
+   "11": "80d4767d-2449-430b-85fe-d398f118946a.jpg",
+   "09": "d3ae029a-359c-4d0d-8ea6-569086c8d3bb.jpg",
+   "08": "f3ea477d-e8f4-4996-89ad-5d72be320cbb.jpg"
+  }
+ },
+ {
+  "slug": "conjunto-de-camisa-alongada-e-shorts",
+  "nome": "Conjunto de Camisa Alongada e Shorts",
+  "cat": "conjuntos",
+  "preco": 139,
+  "status": "disponivel",
+  "tam": [
+   "P",
+   "M",
+   "G"
+  ],
+  "resumo": "Camisa alongada, que também pode ser usada como terceira peça, e shorts. Proposta casual chic.",
+  "detalhes": [
+   "Camisa alongada",
+   "Pode ser usada como terceira peça",
+   "Shorts"
+  ],
+  "cores": [
+   "Azul-marinho",
+   "Off-white",
+   "Marrom"
+  ],
+  "fotos": [
+   [
+    "12",
+    "Azul-marinho",
+    "Conjunto azul-marinho de camisa alongada e shorts, com pesponto claro."
+   ],
+   [
+    "13",
+    "Azul-marinho",
+    "Camisa alongada azul-marinho vista de perto, com bolso e pesponto contrastante."
+   ],
+   [
+    "14",
+    "Azul-marinho",
+    "Conjunto azul-marinho visto de frente, com a camisa aberta sobre o shorts."
+   ],
+   [
+    "15",
+    "Off-white",
+    "Conjunto off-white de camisa alongada e shorts."
+   ],
+   [
+    "16",
+    "Off-white",
+    "Camisa alongada off-white vista de perto, com bolso e pesponto contrastante."
+   ],
+   [
+    "17",
+    "Marrom",
+    "Conjunto marrom de camisa alongada e shorts."
+   ]
+  ],
+  "amostras": {
+   "Azul-marinho": "#1f2a4a",
+   "Off-white": "#eee8dc",
+   "Marrom": "#6b4a3a"
+  },
+  "arquivos": {
+   "12": "ef6827da-650d-477f-86b7-edf7240633e0.jpg",
+   "13": "71d99de2-d648-4ef9-b38e-8693ab4246f9.jpg",
+   "14": "4bb8648d-b7af-465e-8e8c-37d4cc97e70b.jpg",
+   "15": "de53ba77-0427-4a70-b702-597ae9033126.jpg",
+   "16": "100eb4f7-36ae-405e-8993-e02c3ef4b93d.jpg",
+   "17": "ad99a685-3063-4346-925e-207b7e891e13.jpg"
+  }
+ },
+ {
+  "slug": "conjunto-em-viscose-com-elastano",
+  "nome": "Conjunto em Viscose com Elastano",
+  "cat": "conjuntos",
+  "preco": 149,
+  "status": "disponivel",
+  "tam": [
+   "M",
+   "G",
+   "GG"
+  ],
+  "resumo": "Conjunto em viscose com elastano, com detalhe diferenciado na manga e no comprimento da blusa.",
+  "detalhes": [
+   "Viscose com elastano",
+   "Detalhe diferenciado na manga",
+   "Blusa mais longa"
+  ],
+  "cores": [
+   "Preto",
+   "Nude"
+  ],
+  "fotos": [
+   [
+    "18",
+    "Preto",
+    "Conjunto preto em viscose com elastano: blusa de ombro caído e calça pantalona."
+   ],
+   [
+    "19",
+    "Preto",
+    "Blusa preta do conjunto vista de perto, com o franzido no ombro."
+   ],
+   [
+    "20",
+    "Nude",
+    "Conjunto nude em viscose com elastano: blusa de ombro caído e calça pantalona."
+   ]
+  ],
+  "amostras": {
+   "Preto": "#1a1a1a",
+   "Nude": "#d8ccb4"
+  },
+  "arquivos": {
+   "18": "a5c939df-fb7a-4dcd-a643-a84898ec19e7.jpg",
+   "19": "83803dd0-d5e9-42db-a884-1981afa22145.jpg",
+   "20": "bf866200-4680-48b3-96a5-04d1175ac707.jpg"
+  }
+ },
+ {
+  "slug": "conjunto-com-pantalona-e-cropped-cruzado",
+  "nome": "Conjunto com Pantalona e Cropped Cruzado",
+  "cat": "conjuntos",
+  "preco": 129,
+  "status": "disponivel",
+  "tam": [
+   "M",
+   "G",
+   "GG"
+  ],
+  "resumo": "Pantalona de cós alto com bolsos e cropped de fechamento cruzado.",
+  "detalhes": [
+   "Pantalona de cós alto",
+   "Bolsos",
+   "Cropped com fechamento cruzado"
+  ],
+  "cores": [
+   "Amarelo"
+  ],
+  "fotos": [
+   [
+    "21",
+    "Amarelo",
+    "Conjunto amarelo de pantalona e cropped cruzado, visto de frente."
+   ]
+  ],
+  "amostras": {
+   "Amarelo": "#efe08f"
+  },
+  "arquivos": {
+   "21": "22955a51-c559-4bb7-8906-af461787a9d3.jpg"
+  }
+ },
+ {
+  "slug": "conjunto-bless",
+  "nome": "Conjunto Bless",
+  "cat": "conjuntos",
+  "preco": 159,
+  "status": "disponivel",
+  "tam": [
+   "P",
+   "M",
+   "G"
+  ],
+  "resumo": "Alfaiataria com uma proposta mais descolada.",
+  "detalhes": [
+   "Alfaiataria"
+  ],
+  "cores": [
+   "Preto",
+   "Marrom",
+   "Bordô"
+  ],
+  "fotos": [
+   [
+    "22",
+    "Preto",
+    "Conjunto Bless preto: colete com zíper e bolso de aba, com calça cargo."
+   ],
+   [
+    "23",
+    "Marrom",
+    "Conjunto Bless marrom, visto de frente."
+   ],
+   [
+    "24",
+    "Marrom",
+    "Colete marrom do Conjunto Bless visto de perto, com o zíper e o bolso de aba."
+   ],
+   [
+    "25",
+    "Bordô",
+    "Conjunto Bless bordô, visto de frente."
+   ]
+  ],
+  "amostras": {
+   "Preto": "#1a1a1a",
+   "Marrom": "#5d4038",
+   "Bordô": "#6e1f35"
+  },
+  "arquivos": {
+   "22": "50d4db70-5b9c-4ac9-82ce-ce3de2ae2e48.jpg",
+   "23": "af449f78-5370-40c0-a370-5f4ab360aead.jpg",
+   "24": "2cc8e829-3065-4904-b233-c849937cabdf.jpg",
+   "25": "a2fce50e-79ee-4dc2-afbc-4bb992eb775a.jpg"
+  }
+ },
+ {
+  "slug": "vestido-longo-de-uma-alca",
+  "nome": "Vestido Longo de Uma Alça",
+  "cat": "vestidos",
+  "preco": 149,
+  "status": "disponivel",
+  "tam": [
+   "M",
+   "G",
+   "GG"
+  ],
+  "resumo": "Vestido longo em viscose, de uma alça, com recortes laterais e fivela central. Caimento leve.",
+  "detalhes": [
+   "Viscose",
+   "Uma alça",
+   "Recortes laterais",
+   "Fivela central"
+  ],
+  "cores": [
+   "Preto",
+   "Marrom"
+  ],
+  "fotos": [
+   [
+    "26",
+    "Preto",
+    "Vestido longo preto de uma alça, com recorte lateral e flor dourada na cintura."
+   ],
+   [
+    "27",
+    null,
+    "O vestido longo de uma alça nas duas cores: a peça marrom no cabide, ao lado da preta vestida."
+   ]
+  ],
+  "amostras": {
+   "Preto": "#1a1a1a",
+   "Marrom": "#6b4a3a"
+  },
+  "arquivos": {
+   "26": "967403ab-dbc1-4518-b827-991ebe230f77.jpg",
+   "27": "94208c6e-35e3-432b-af66-03b3d6e00b0b.jpg"
+  }
+ },
+ {
+  "slug": "pantalona-de-cos-alto",
+  "nome": "Pantalona de Cós Alto",
+  "cat": "calcas",
+  "preco": 89.99,
+  "status": "disponivel",
+  "tam": [
+   "P",
+   "M",
+   "G",
+   "GG",
+   "G1"
+  ],
+  "resumo": "Pantalona de cós alto que valoriza a silhueta, com bolsos laterais, tecido que não amassa e caimento fluido.",
+  "detalhes": [
+   "Cós alto",
+   "Bolsos laterais",
+   "Tecido que não amassa",
+   "Caimento fluido"
+  ],
+  "cores": [
+   "Nude",
+   "Azul-marinho",
+   "Preto"
+  ],
+  "fotos": [
+   [
+    "31",
+    "Nude",
+    "Pantalona de cós alto nude, com o cordão no cós."
+   ],
+   [
+    "30",
+    "Azul-marinho",
+    "Pantalona de cós alto azul-marinho, com bolso lateral à vista."
+   ],
+   [
+    "28",
+    "Preto",
+    "Pantalona de cós alto preta, vista de frente."
+   ],
+   [
+    "29",
+    "Preto",
+    "Cós da pantalona preta visto de perto, com o franzido e o cordão."
+   ]
+  ],
+  "amostras": {
+   "Nude": "#d8ccb4",
+   "Azul-marinho": "#1f2a4a",
+   "Preto": "#1a1a1a"
+  },
+  "arquivos": {
+   "31": "2f9595db-e32a-4fbf-8515-be3c8e7ff3f7.jpg",
+   "30": "169fc100-a942-448a-94f4-0a5d83293a99.jpg",
+   "28": "31b9af24-48fd-4c92-bff3-3cd47a4f8584.jpg",
+   "29": "b8ef84b6-0c50-48d6-83a9-43bddffbb9ee.jpg"
+  }
+ },
+ {
+  "slug": "conjunto-de-lanzinha",
+  "nome": "Conjunto de Lanzinha",
+  "cat": "conjuntos",
+  "preco": 129,
+  "status": "disponivel",
+  "tam": [
+   "M",
+   "G",
+   "GG",
+   "G1"
+  ],
+  "resumo": "Duas peças: pantalona com bolsos laterais e blusa de manga longa com punhos estruturados.",
+  "detalhes": [
+   "Pantalona com bolsos laterais",
+   "Blusa de manga longa",
+   "Punhos estruturados"
+  ],
+  "cores": [
+   "Champanhe",
+   "Marrom"
+  ],
+  "fotos": [
+   [
+    "32",
+    "Champanhe",
+    "Conjunto de lanzinha champanhe: blusa de manga longa e pantalona."
+   ],
+   [
+    "33",
+    "Champanhe",
+    "Conjunto champanhe visto de lado, com o caimento da blusa."
+   ],
+   [
+    "34",
+    "Marrom",
+    "Conjunto de lanzinha marrom: blusa de manga longa e pantalona."
+   ]
+  ],
+  "amostras": {
+   "Champanhe": "#cdc6b6",
+   "Marrom": "#6b4a3a"
+  },
+  "arquivos": {
+   "32": "d3873f52-b029-47da-bc42-c4e949708fbf.jpg",
+   "33": "2aa76886-0a0d-4127-aeff-de453d712a08.jpg",
+   "34": "f79cd6f4-d2cd-4050-9ce3-7c1d9fce24e1.jpg"
+  }
+ },
+ {
+  "slug": "biquini-cintura-alta",
+  "nome": "Biquíni Cintura Alta",
+  "cat": "moda-praia",
+  "preco": 99,
+  "status": "disponivel",
+  "tam": [
+   "M",
+   "G",
+   "GG"
+  ],
+  "resumo": "Cintura alta, tecido texturizado, sustentação em aro e alça com regulagem.",
+  "detalhes": [
+   "Cintura alta",
+   "Tecido texturizado",
+   "Sustentação em aro",
+   "Alça com regulagem"
+  ],
+  "cores": [
+   "Azul",
+   "Rosa",
+   "Verde"
+  ],
+  "fotos": [
+   [
+    "35",
+    "Azul",
+    "Biquíni cintura alta azul, com top de aro e argola dourada na calcinha."
+   ],
+   [
+    "36",
+    "Azul",
+    "Top de aro do biquíni azul visto de perto."
+   ],
+   [
+    "37",
+    "Rosa",
+    "Biquíni cintura alta rosa, com top de aro e argola dourada na calcinha."
+   ],
+   [
+    "38",
+    "Verde",
+    "Biquíni cintura alta verde, com top de aro e argola dourada na calcinha."
+   ]
+  ],
+  "amostras": {
+   "Azul": "#12a9b6",
+   "Rosa": "#d4157a",
+   "Verde": "#0f9463"
+  },
+  "arquivos": {
+   "35": "4b79d6b5-d780-4f40-8e01-5a41fead9f9a.jpg",
+   "36": "6151c7b1-a676-4a48-9d95-3fa61a759bbf.jpg",
+   "37": "226be8b2-746c-4f78-ab8d-cef9bbf885bb.jpg",
+   "38": "cb9efa59-b5ea-4d4c-bf40-1aaa7eb0862d.jpg"
+  }
+ },
+ {
+  "slug": "biquini-gabi",
+  "nome": "Biquíni Gabi",
+  "cat": "moda-praia",
+  "preco": 99,
+  "status": "disponivel",
+  "tam": [
+   "P",
+   "M",
+   "G",
+   "GG"
+  ],
+  "resumo": "Modelo cortininha, linha premium, modelagem semifio.",
+  "detalhes": [
+   "Modelo cortininha",
+   "Modelagem semifio",
+   "Linha premium"
+  ],
+  "cores": [
+   "Preto",
+   "Verde",
+   "Rosa"
+  ],
+  "fotos": [
+   [
+    "39",
+    "Preto",
+    "Biquíni Gabi preto: top cortininha com amarração e calcinha semifio."
+   ],
+   [
+    "42",
+    "Preto",
+    "Calcinha semifio do Biquíni Gabi preto vista de perto, com a etiqueta Serenou Beach."
+   ],
+   [
+    "40",
+    "Verde",
+    "Biquíni Gabi verde: top cortininha com amarração e calcinha semifio."
+   ],
+   [
+    "41",
+    "Rosa",
+    "Biquíni Gabi rosa: top cortininha com amarração e calcinha semifio."
+   ]
+  ],
+  "amostras": {
+   "Preto": "#1a1a1a",
+   "Verde": "#4a5340",
+   "Rosa": "#a3216b"
+  },
+  "arquivos": {
+   "39": "eb92a0ce-20f2-46f9-a5a5-1e11040a04c1.jpg",
+   "42": "a5349751-3598-4461-95e5-b9e726686d83.jpg",
+   "40": "771ae119-fd11-47f2-b161-125d9dbe1bc2.jpg",
+   "41": "11080afe-1808-4425-8ed3-eb5100452784.jpg"
+  }
+ },
+ {
+  "slug": "biquini-sol",
+  "nome": "Biquíni Sol",
+  "cat": "moda-praia",
+  "preco": 119,
+  "status": "disponivel",
+  "tam": [
+   "G",
+   "GG",
+   "G1"
+  ],
+  "resumo": "Cintura alta, tecido de poliamida, bojo removível.",
+  "detalhes": [
+   "Cintura alta",
+   "Tecido de poliamida",
+   "Bojo removível"
+  ],
+  "cores": [
+   "Marrom",
+   "Preto",
+   "Vinho"
+  ],
+  "fotos": [
+   [
+    "43",
+    "Marrom",
+    "Biquíni Sol marrom: top cortininha e calcinha de cintura alta."
+   ],
+   [
+    "44",
+    "Preto",
+    "Biquíni Sol preto: top cortininha e calcinha de cintura alta."
+   ],
+   [
+    "45",
+    "Vinho",
+    "Biquíni Sol vinho: top cortininha e calcinha de cintura alta."
+   ]
+  ],
+  "amostras": {
+   "Marrom": "#4a342c",
+   "Preto": "#141414",
+   "Vinho": "#4a1b24"
+  },
+  "arquivos": {
+   "43": "ab4ab0c1-33ac-4254-859f-218a89ada99f.jpg",
+   "44": "a1e1d2e0-647e-4408-b64d-4909f73ef8f1.jpg",
+   "45": "772ce0c6-e7ab-4b2e-9dc4-de6fe3a16860.jpg"
+  }
+ }
+]
