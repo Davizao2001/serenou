@@ -84,7 +84,10 @@ export function BotaoQuero({ nome, slug, preco, cor, tamanho, bloqueado }: Props
       href={linkWhatsApp(mensagem)}
       target="_blank"
       rel="noreferrer"
-      className="t-eyebrow group/cta flex h-[3.5rem] w-full items-center justify-center gap-3 rounded-[var(--r-acao)] bg-carvao px-6 text-[0.71875rem] text-linho-alto transition-colors duration-200 hover:bg-[#241f19]"
+      /* O foco em oliva, por fora, com o mesmo afastamento de 3px do botão de
+         tamanho. Sem isso o anel saía em `currentColor` — linho-alto sobre um
+         botão carvão, invisível no papel em volta. */
+      className="t-eyebrow group/cta flex h-[3.5rem] w-full items-center justify-center gap-3 rounded-[var(--r-acao)] bg-carvao px-6 text-[0.71875rem] text-linho-alto transition-colors duration-200 hover:bg-[#241f19] focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-oliva"
     >
       {CTA_PRODUTO}
       {seta}

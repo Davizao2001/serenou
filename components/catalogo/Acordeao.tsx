@@ -26,7 +26,11 @@ export function Acordeao({
 }) {
   return (
     <details className="detalhe group border-b border-areia-forte/70 last:border-b-0" open={aberto}>
-      <summary className="t-eyebrow flex cursor-pointer items-center justify-between gap-3 py-[1.125rem] text-[0.71875rem] text-carvao transition-colors duration-200 hover:text-carvao-medio focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva focus-visible:ring-offset-2 focus-visible:ring-offset-linho">
+      {/* O foco sai de `.detalhe > summary:focus-visible`, em app/globals.css:
+          um `outline` em oliva com o raio da miniatura, igual ao da amostra de
+          cor e ao do botão de tamanho. Era um `ring` com `ring-offset`, que
+          desenhava um segundo anel na cor do fundo em volta do título. */}
+      <summary className="t-eyebrow flex cursor-pointer items-center justify-between gap-3 py-[1.125rem] text-[0.71875rem] text-carvao transition-colors duration-200 hover:text-carvao-medio">
         {titulo}
         <svg
           viewBox="0 0 16 16"

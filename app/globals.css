@@ -719,7 +719,15 @@ picture {
    O `<details>` faz o trabalho todo sozinho: abre sem JavaScript, é focável
    pelo teclado e anuncia o estado para o leitor de tela. O que não serve é o
    triângulo padrão do navegador, que é de sistema operacional, não da marca.
-   Some, e o + que vira × ocupa o lugar dele.
+   Some, e o chevron da marca ocupa o lugar dele — o mesmo gesto do menu.
+
+   O FOCO É O MESMO DO RESTO DA PÁGINA
+   Antes o título usava `ring` com `ring-offset`, que pinta DOIS anéis: o da
+   folga, na cor do fundo, e o de oliva. Sobre a ficha isso desenhava um
+   retângulo claro em volta do título toda vez que alguém chegava nele com
+   Tab — e ali o "fundo" não é linho puro, então a folga aparecia como uma
+   terceira cor. O resto da página (amostra de cor, botão de tamanho) marca
+   foco com `outline`, que é uma linha só e não pinta nada. Aqui também.
 --------------------------------------------------------------------------- */
 .detalhe > summary {
   list-style: none;
@@ -727,6 +735,12 @@ picture {
 
 .detalhe > summary::-webkit-details-marker {
   display: none;
+}
+
+.detalhe > summary:focus-visible {
+  outline: 2px solid var(--color-oliva);
+  outline-offset: 2px;
+  border-radius: var(--r-mini);
 }
 
 
@@ -864,16 +878,20 @@ picture {
    ITENS DO MENU
 
    Escala própria, menor que `.t-eyebrow`: o menu não é um rótulo de seção, é
-   navegação secundária que acompanha o logotipo sem competir com ele. 10px
-   seria ilegível em caixa alta com tracking largo; 10,5px com tracking mais
-   curto que o do eyebrow mantém a leitura e tira o peso.
+   navegação secundária que acompanha o logotipo sem competir com ele.
+
+   11px, e não os 10,5px do primeiro teste: com cinco entradas não é mais o
+   tamanho que faz caber, e meio pixel a menos só aproximava o menu do limite
+   de leitura num notebook sem devolver nada em composição. O peso agora vem
+   do tracking curto (0,07em contra os 0,22em do eyebrow) e da opacidade, não
+   do corpo da letra.
 --------------------------------------------------------------------------- */
 .menu-item {
   font-family: var(--font-sans);
-  font-size: 0.65625rem; /* 10,5px */
+  font-size: 0.6875rem; /* 11px */
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.075em;
+  letter-spacing: 0.07em;
   line-height: 1;
   opacity: 0.72;
   transition: opacity 0.2s var(--ease-out);
@@ -944,7 +962,53 @@ picture {
   border-radius: 9999px;
 }
 
+/* ---------------------------------------------------------------------------
+   BOTÃO DE TAMANHO — A MESMA GRAMÁTICA, NÃO UMA PARECIDA
+
+   Cor e tamanho são duas escolhas na mesma coluna, a 30px uma da outra. Se
+   uma marca o escolhido com anel externo e a outra com um `ring` do Tailwind
+   de parada única, a pessoa lê dois sistemas de marcação na mesma decisão.
+   Aqui as paradas são as mesmas do disco de cor, na mesma ordem:
+
+     repouso    fio interno de 1px a 14%
+     hover      o mesmo fio a 30% — e só em quem NÃO está escolhido
+     escolhido  fio interno + folga na cor do papel + fio em carvão
+     esgotado   fio a 10%, sem hover: o botão existe, mas não responde
+     foco       `outline` em oliva por fora, outra propriedade e outra cor
+
+   O `:not([data-escolhido])` no hover repete a correção da amostra de cor, e
+   pelo mesmo motivo de especificidade: sem ele, passar o mouse sobre o
+   tamanho JÁ escolhido apagaria a marcação dele — justo quando a pessoa está
+   com o cursor em cima para confirmar.
+
+   A ordem das regras importa: o escolhido vem depois do esgotado para que um
+   nunca comece a pintar por cima do outro por acidente de cascata.
+--------------------------------------------------------------------------- */
+.botao-tamanho {
+  box-shadow: inset 0 0 0 1px rgb(22 19 15 / 0.14);
+  transition:
+    box-shadow 0.2s var(--ease-out),
+    background-color 0.2s var(--ease-out),
+    color 0.2s var(--ease-out);
+}
+
+.botao-tamanho:hover:not(:disabled):not([data-escolhido]) {
+  box-shadow: inset 0 0 0 1px rgb(22 19 15 / 0.3);
+}
+
+.botao-tamanho:disabled {
+  box-shadow: inset 0 0 0 1px rgb(22 19 15 / 0.1);
+}
+
+.botao-tamanho[data-escolhido] {
+  box-shadow:
+    inset 0 0 0 1px rgb(22 19 15 / 0.14),
+    0 0 0 2px var(--color-linho),
+    0 0 0 3px var(--color-carvao);
+}
+
 .botao-tamanho:focus-visible {
   outline: 2px solid var(--color-oliva);
   outline-offset: 3px;
+  border-radius: var(--r-acao);
 }

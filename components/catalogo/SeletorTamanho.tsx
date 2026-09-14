@@ -25,7 +25,10 @@ export function SeletorTamanho({ tamanhos, valor, aoEscolher }: Props) {
     <fieldset>
       <legend className="t-eyebrow mb-3 text-carvao-fraco">Tamanho</legend>
 
-      <div className="flex flex-wrap gap-2.5">
+      {/* `gap-3` e não `gap-2.5`: o botão escolhido ganhou anel externo de 3px,
+          e com 10px de respiro sobrariam 4px entre o anel de um e a borda do
+          vizinho. Doze pixels devolvem a folga sem afrouxar a fileira. */}
+      <div className="flex flex-wrap gap-3">
         {tamanhos.map((t) => {
           const escolhido = t.rotulo === valor;
           return (
@@ -34,19 +37,32 @@ export function SeletorTamanho({ tamanhos, valor, aoEscolher }: Props) {
               type="button"
               disabled={!t.disponivel}
               aria-pressed={escolhido}
+              data-escolhido={escolhido ? "sim" : undefined}
               onClick={() => aoEscolher(t.rotulo)}
-              /* Mesma gramática da amostra de cor: fio de 1px em repouso, fio
-                 em carvão quando escolhido, e o foco por fora, em oliva, para
-                 não se confundir com a seleção. Escolhido não vira bloco
-                 preto — invertido, o tamanho pesaria mais que o próprio CTA
-                 logo abaixo, e a peça teria dois retângulos escuros
-                 disputando o olho. */
-              className={`t-eyebrow botao-tamanho grid h-12 min-w-[3.25rem] place-items-center rounded-[var(--r-acao)] px-3.5 text-[0.6875rem] transition-colors duration-200 ${
+              /* A MESMA GRAMÁTICA DA AMOSTRA DE COR, AGORA LITERALMENTE
+                 Antes isto era parecido com o seletor de cor; agora é igual,
+                 e por construção: os três estados saem de `.botao-tamanho`
+                 em app/globals.css, com as mesmas paradas de sombra que o
+                 disco usa — fio interno em repouso, fio mais forte no hover,
+                 e no escolhido uma folga na cor do papel seguida do fio em
+                 carvão. Duas escolhas lado a lado na mesma coluna precisam
+                 falar a mesma língua; se o tamanho marca com um anel de um
+                 jeito e a cor de outro, a pessoa lê dois sistemas.
+
+                 O estado vai em `data-escolhido`, e não numa classe do
+                 Tailwind, pelo mesmo motivo de lá: o hover precisa de
+                 `:not([data-escolhido])` para não apagar a marcação do botão
+                 já escolhido — e isso é seletor, não classe utilitária.
+
+                 Escolhido não vira bloco preto: invertido, o tamanho pesaria
+                 mais que o próprio CTA logo abaixo, e a peça teria dois
+                 retângulos escuros disputando o olho. */
+              className={`t-eyebrow botao-tamanho grid h-12 min-w-[3.25rem] place-items-center rounded-[var(--r-acao)] px-3.5 text-[0.6875rem] ${
                 escolhido
-                  ? "bg-areia/55 text-carvao ring-1 ring-carvao"
+                  ? "bg-areia/55 text-carvao"
                   : t.disponivel
-                    ? "bg-transparent text-carvao-medio ring-1 ring-carvao/15 hover:text-carvao hover:ring-carvao/45"
-                    : "cursor-not-allowed text-carvao-fraco line-through ring-1 ring-carvao/10"
+                    ? "bg-transparent text-carvao-medio hover:text-carvao"
+                    : "cursor-not-allowed text-carvao-fraco line-through"
               }`}
             >
               {t.rotulo}

@@ -123,12 +123,12 @@ export function Header() {
             </span>
           </Link>
 
-          {/* Cinco entradas. A tipografia desce de 0,6875rem para 0,625rem e o
-              tracking de 0,1em para 0,075em — com cinco rótulos isso já não é
-              o que faz caber, é o que faz respirar. O respiro entre elas
-              aumenta (16px → 26px): com poucos itens, ar é sofisticação;
-              apertar cinco coisas no meio da barra seria desperdiçar o
-              espaço que acabou de sobrar. */}
+          {/* Cinco entradas. A tipografia fica em 11px — o tracking cai de
+              0,1em para 0,07em, e é dali que vem o aperto visual do rótulo,
+              não do corpo da letra. O respiro entre as entradas aumenta
+              (16px → 26px): com poucos itens, ar é sofisticação; apertar
+              cinco coisas no meio da barra seria desperdiçar o espaço que
+              acabou de sobrar. */}
           <nav aria-label="Principal" className="hidden lg:block">
             <ul className="flex items-center gap-[1.625rem]">
               <li className="gaveta relative">
@@ -154,12 +154,24 @@ export function Header() {
                     é uma folha de papel sobre a página, não um painel de
                     aplicativo. O `pt-3` fora do quadro mantém o caminho do
                     mouse contínuo entre o rótulo e a lista — sem ele a gaveta
-                    fecha no meio do trajeto. */}
-                <div className="gaveta-painel absolute left-1/2 top-full z-50 w-[13.5rem] -translate-x-1/2 pt-3">
-                  <div className="rounded-[var(--r-painel)] border border-areia-forte/70 bg-linho-alto p-2 shadow-[0_16px_40px_-24px_rgba(22,19,15,0.45)]">
+                    fecha no meio do trajeto.
+
+                    O RAIO DE DENTRO É O DE FORA MENOS O RESPIRO
+                    13px de quadro com 6px de respiro pede 7px nos itens. Com
+                    8px por dentro — o valor do primeiro teste — o canto do
+                    item corria por fora da curva do quadro nos 45°, que é
+                    justamente onde o olho percebe que duas curvas não são
+                    concêntricas. Não é sutileza gratuita: é a mesma conta que
+                    a fotografia e o cartão já seguem no resto do site.
+
+                    12,5rem e não 13,5: "Macaquinhos", o rótulo mais longo,
+                    ocupa 88px. A gaveta não precisa ser larga, precisa ser
+                    calma. */}
+                <div className="gaveta-painel absolute left-1/2 top-full z-50 w-[12.5rem] -translate-x-1/2 pt-3">
+                  <div className="rounded-[var(--r-painel)] border border-areia-forte/60 bg-linho-alto p-1.5 shadow-[0_10px_28px_-20px_rgba(22,19,15,0.32)]">
                     <Link
                       href={CATALOGO.href}
-                      className="menu-gaveta-item block rounded-[0.5rem] px-3 py-2.5"
+                      className="menu-gaveta-item block rounded-[0.4375rem] px-3 py-2"
                     >
                       Ver todas
                     </Link>
@@ -172,7 +184,7 @@ export function Header() {
                         <li key={c.href}>
                           <Link
                             href={c.href}
-                            className="menu-gaveta-item block rounded-[0.5rem] px-3 py-2.5"
+                            className="menu-gaveta-item block rounded-[0.4375rem] px-3 py-2"
                           >
                             {c.label}
                           </Link>

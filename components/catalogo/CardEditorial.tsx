@@ -41,13 +41,30 @@ export function CardEditorial({ className = "" }: { className?: string }) {
 
           Mora numa faixa própria no pé do card, e não solto em absoluto: na
           primeira versão os círculos ficavam por trás do texto e a palavra
-          "momentos." passava por cima de uma linha curva. Aqui o `mt-auto`
-          empurra a faixa para baixo quando o card estica, e o `overflow`
-          corta o que passar da borda. */}
-      <div aria-hidden="true" className="pointer-events-none relative mt-auto h-16">
+          "momentos." passava por cima de uma linha curva. O `mt-auto` empurra
+          a faixa para baixo quando o card estica, e o `overflow` corta o que
+          passar da borda.
+
+          A FAIXA ENCOLHEU PORQUE A ALTURA DO CARD NÃO É DELE
+          Este card estica para acompanhar a fotografia, e o que sobra para
+          ele depende do tamanho da ficha logo acima — que muda de peça para
+          peça. Medido nas cinco: a folga entre a frase e o grafismo ia de
+          173px na Trijunto a 15px no Vestido de Tule, que tem a ficha mais
+          longa. Quinze pixels não é respiro, é encosto.
+
+          Tentei antes garantir um piso com `padding` acima da faixa. Não
+          funciona, e vale registrar por quê: `overflow: hidden` zera o
+          tamanho mínimo automático do item flex, então o card simplesmente
+          encolhe por baixo do próprio conteúdo e corta o que passar — o piso
+          existia no CSS e não existia na tela. Medido, não suposto.
+
+          O que funciona é pedir menos altura: faixa de 3rem em vez de 4rem e
+          um traço de 6rem em vez de 7. Dezesseis pixels de volta para o caso
+          apertado, e no card estreito a marca ainda fica melhor pequena. */}
+      <div aria-hidden="true" className="pointer-events-none relative mt-auto h-12">
         <svg
           viewBox="0 0 120 120"
-          className="absolute -bottom-8 -right-9 h-28 w-28 fill-none stroke-carvao/15"
+          className="absolute -bottom-7 -right-8 h-24 w-24 fill-none stroke-carvao/15"
           strokeWidth="1"
         >
           <circle cx="60" cy="60" r="46" />
