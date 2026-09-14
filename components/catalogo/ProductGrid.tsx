@@ -44,7 +44,7 @@ export function ProductGrid({ produtos, prioritarias = 2, denso = false }: Props
     >
       {produtos.map((p, i) => (
         <li key={p.slug}>
-          <ProductCard produto={p} priority={i < prioritarias} />
+          <ProductCard produto={p} priority={i < prioritarias} nivel={2} />
         </li>
       ))}
     </ul>

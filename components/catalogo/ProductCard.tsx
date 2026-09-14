@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ProductImage } from "./ProductImage";
 import { ordenarPorCor, mesmaCor } from "@/lib/media";
-import { formatarPreco, type Produto } from "@/lib/catalogo";
+import { fioAmostra, formatarPreco, type Produto } from "@/lib/catalogo";
 import { Parcelamento } from "./Parcelamento";
 import { GuiaMedidas } from "@/components/ui/GuiaMedidas";
 
@@ -12,6 +12,12 @@ type Props = {
   produto: Produto;
   /** Primeiras peças da vitrine — carregam sem esperar o scroll. */
   priority?: boolean;
+  /** Nível do título do cartão. No catálogo o `h1` é "Catálogo" e o nome da
+   *  peça vem logo abaixo, então ali é `h2`. Na fileira de relacionados da
+   *  página de produto o `h1` é a peça e "Você também pode gostar" já é o
+   *  `h2` — ali o nome é `h3`. É o mesmo cartão; o que muda é a profundidade
+   *  do documento em que ele foi colocado, e isso quem sabe é quem coloca. */
+  nivel?: 2 | 3;
 };
 
 /** Quantas bolinhas de cor cabem antes de virar poluição. O resto vira "+2". */
@@ -45,7 +51,8 @@ const CORES_VISIVEIS = 4;
  * as bolinhas podem ser botões sem ficarem presas dentro de um link — botão
  * dentro de link é HTML inválido e, na prática, intratável no teclado.
  */
-export function ProductCard({ produto, priority = false }: Props) {
+export function ProductCard({ produto, priority = false, nivel = 3 }: Props) {
+  const Titulo = `h${nivel}` as "h2" | "h3";
   const indisponivel = produto.status === "indisponivel";
 
   const [cor, setCor] = useState<string | null>(null);
@@ -125,7 +132,10 @@ export function ProductCard({ produto, priority = false }: Props) {
           do cartão. Agora o respiro depois da foto é maior que o respiro
           interno: a informação gruda na peça a que pertence. */}
       <div className="mt-3.5 md:mt-4">
-        <h3 className="text-[0.9375rem] leading-snug md:text-[1rem]">
+        {/* A tag muda com o nível; classe, tamanho, peso, entrelinha e margem
+            são as mesmas nos dois casos — a troca é semântica e não pode ter
+            efeito visual. */}
+        <Titulo className="text-[0.9375rem] leading-snug md:text-[1rem]">
           <Link
             href={`/produto/${produto.slug}`}
             onMouseEnter={entrar}
@@ -134,7 +144,7 @@ export function ProductCard({ produto, priority = false }: Props) {
           >
             {produto.nome}
           </Link>
-        </h3>
+        </Titulo>
 
         <p className="mt-[0.1875rem] flex flex-wrap items-baseline gap-x-2 text-[0.875rem] md:text-[0.9375rem]">
           {produto.precoAnterior && (
@@ -159,14 +169,17 @@ export function ProductCard({ produto, priority = false }: Props) {
               const ativa = mesmaCor(cor, c.nome);
               const clicavel =
                 trocaPorCor && produto.imagens.some((i) => mesmaCor(i.cor, c.nome));
+              /* O fio é calculado por tom, não fixado: ver `fioAmostra`. */
+              const fio = fioAmostra(c.amostra);
               const bolinha = (
                 <span
                   aria-hidden="true"
-                  className="block h-[0.9375rem] w-[0.9375rem] rounded-full ring-1 ring-carvao/15"
+                  className="block h-[0.9375rem] w-[0.9375rem] rounded-full"
                   style={{
                     background: Array.isArray(c.amostra)
                       ? `linear-gradient(135deg, ${c.amostra[0]} 50%, ${c.amostra[1]} 50%)`
                       : c.amostra,
+                    boxShadow: `inset 0 0 0 1px ${fio.repouso}`,
                   }}
                 />
               );
@@ -178,7 +191,12 @@ export function ProductCard({ produto, priority = false }: Props) {
                       onClick={() => setCor(ativa ? null : c.nome)}
                       aria-pressed={ativa}
                       aria-label={c.nome}
-                      className={`tap flex items-center justify-center rounded-full p-[3px] transition-shadow duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva ${
+                      /* `p-[5px]` e não `p-[3px]`: o disco continua com 15px,
+                         que é o tamanho certo para a bolinha ao lado do preço,
+                         mas o botão passa de 21×21 para 25×25 e cruza o mínimo
+                         de 24×24 da WCAG 2.2. Alvo e desenho são coisas
+                         diferentes; só o alvo cresceu. */
+                      className={`tap flex items-center justify-center rounded-full p-[5px] transition-shadow duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-oliva ${
                         ativa ? "ring-1 ring-carvao" : "hover:ring-1 hover:ring-carvao/30"
                       }`}
                     >
@@ -189,7 +207,7 @@ export function ProductCard({ produto, priority = false }: Props) {
                        continua sendo informação e não finge uma interação
                        que não existe. O nome vai junto para quem não
                        distingue a cor pela bolinha. */
-                    <span className="flex items-center justify-center p-[3px]">
+                    <span className="flex items-center justify-center p-[5px]">
                       {bolinha}
                       <span className="sr-only">{c.nome}</span>
                     </span>

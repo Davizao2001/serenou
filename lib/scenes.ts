@@ -716,11 +716,23 @@ export function fechoScene(root: HTMLElement): Cleanup {
   return () => mm.revert();
 }
 
+/* Um marcador por seção, e nenhum repetido.
+ *
+ * `ASerenou`, `LojaFisica` e `Fecho` usavam os três `data-scene="fecho"`.
+ * Nada quebrava, porque cada componente passa o próprio nó para a cena — mas
+ * qualquer consulta global pegava o primeiro do DOM em vez do que se queria.
+ * Aconteceu duas vezes durante a auditoria, comigo: medi "o rodapé" e estava
+ * medindo A Serenou. Armadilha que só cobra depois.
+ *
+ * As três continuam usando `fechoScene`: a cena é a mesma (máscara de linha,
+ * reveal e parallax), o que muda é onde ela é montada. */
 export const SCENES = {
   "[data-scene='header']": headerScene,
   "[data-scene='teaser']": teaserScene,
-  "[data-scene='fecho']": fechoScene,
   "[data-scene='opening']": openingScene,
   "[data-scene='leve']": leveScene,
   "[data-scene='versatil']": versatilScene,
+  "[data-scene='serenou']": fechoScene,
+  "[data-scene='loja']": fechoScene,
+  "[data-scene='fecho']": fechoScene,
 } as const;

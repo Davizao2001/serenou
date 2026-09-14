@@ -459,3 +459,72 @@ export function escolherRelacionadas(
   const doResto = candidatas.filter((p) => p.categoria !== atual.categoria);
   return [...daCategoria, ...doResto].slice(0, quantas);
 }
+
+/* ---------------------------------------------------------------------------
+   O CONTORNO DA AMOSTRA DE COR — MEDIDO, NÃO ESTIMADO
+
+   A bolinha de cor é gráfico que carrega informação: é ela, sozinha, que diz
+   que a peça existe naquele tom. A WCAG pede 3:1 para esse tipo de elemento, e
+   o contorno de 14% que existia não chegava perto — medido sobre o linho
+   (#f2ece2) ele dá 1,33:1, e um disco off-white dá 1,04:1. Na prática a cor
+   sumia: no cartão do Conjunto de Camisa Alongada, uma das três parecia não
+   existir.
+
+   A regra tem duas metades, e a primeira é o que evita deixar todas as
+   bolinhas pesadas:
+
+     o disco se delimita sozinho?   contraste do PRÓPRIO tom contra o papel.
+                                    Preto dá 14,8:1, marinho 12,0:1, bordô
+                                    9,4:1 — esses não precisam de ajuda e
+                                    ficam com o fio sutil de antes.
+     não se delimita?               fio reforçado, ainda de 1px.
+
+   POR QUE 50% E NÃO 30%
+
+   O fio é carvão composto sobre o papel, então a opacidade decide a cor final.
+   Medido: 30% dá 1,94:1, 40% dá 2,53:1, 45% dá 2,91:1 — ainda reprova — e 50%
+   dá 3,35:1. Cinquenta é o menor passo redondo que cruza a linha, e é por isso
+   que é ele. O hover sobe na mesma proporção do que já existia (+0,14).
+--------------------------------------------------------------------------- */
+
+const PAPEL = { r: 242, g: 236, b: 226 } as const;
+
+function canal(v: number): number {
+  const c = v / 255;
+  return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+}
+
+function luminancia(hex: string): number {
+  const h = hex.replace("#", "");
+  const n =
+    h.length === 3
+      ? [h[0] + h[0], h[1] + h[1], h[2] + h[2]]
+      : [h.slice(0, 2), h.slice(2, 4), h.slice(4, 6)];
+  const [r, g, b] = n.map((x) => parseInt(x, 16));
+  if ([r, g, b].some(Number.isNaN)) return 1;
+  return 0.2126 * canal(r) + 0.7152 * canal(g) + 0.0722 * canal(b);
+}
+
+const L_PAPEL =
+  0.2126 * canal(PAPEL.r) + 0.7152 * canal(PAPEL.g) + 0.0722 * canal(PAPEL.b);
+
+/** Contraste WCAG entre um tom e o papel do site. */
+export function contrasteComPapel(hex: string): number {
+  const l = luminancia(hex);
+  const [hi, lo] = l > L_PAPEL ? [l, L_PAPEL] : [L_PAPEL, l];
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+/** O fio de 1px da amostra: sutil quando o próprio disco já se delimita,
+ *  reforçado quando não. `amostra` aceita o tom único ou o par do degradê —
+ *  no par decide o mais claro, que é o pior caso. */
+export function fioAmostra(amostra: string | string[]): {
+  repouso: string;
+  hover: string;
+} {
+  const tons = Array.isArray(amostra) ? amostra : [amostra];
+  const pior = Math.min(...tons.map((t) => contrasteComPapel(t)));
+  return pior >= 3
+    ? { repouso: "rgb(22 19 15 / 0.14)", hover: "rgb(22 19 15 / 0.3)" }
+    : { repouso: "rgb(22 19 15 / 0.5)", hover: "rgb(22 19 15 / 0.64)" };
+}

@@ -31,7 +31,7 @@ export function LojaFisica() {
     <section
       ref={root}
       id="loja"
-      data-scene="fecho"
+      data-scene="loja"
       data-escurece-fundo
       aria-labelledby="loja-titulo"
       className="relative overflow-hidden bg-carvao pt-[16svh] text-linho-alto lg:pt-[22svh]"

@@ -46,8 +46,11 @@ export function Vitrine({
         )}
       </header>
 
+      {/* O trilho é só do telefone, e o respiro em volta dele era o que fazia
+          o cabeçalho do catálogo ocupar 96px contra os 56 do desktop — quase o
+          dobro, justamente na tela que tem menos altura para gastar. */}
       {temCatalogo && (
-        <div className="mt-6">
+        <div className="mt-3.5">
           <FiltroCategorias ativo={filtro} />
         </div>
       )}
@@ -55,7 +58,7 @@ export function Vitrine({
       {/* No desktop o respiro entre o título e a grade é maior, porque ali
           não há trilho de categorias no meio — e sem esse espaço o título
           ficaria colado na primeira fileira de fotos. */}
-      <div className="mt-7 lg:mt-14">
+      <div className="mt-3.5 lg:mt-14">
         {lista.length > 0 ? (
           <ProductGrid produtos={lista} denso={denso} />
         ) : (

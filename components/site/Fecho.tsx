@@ -6,9 +6,7 @@ import { fechoScene } from "@/lib/scenes";
 import { AssinaturaSettei } from "./AssinaturaSettei";
 import {
   ENTREGAS,
-  HORARIO,
   INSTAGRAM,
-  LOJA,
   MARCA,
   WHATSAPP_EXIBICAO,
   linkWhatsApp,
@@ -53,12 +51,15 @@ export function Fecho() {
     <footer
       ref={root}
       data-scene="fecho"
-      className="relative overflow-hidden bg-carvao pt-[14svh] text-linho-alto lg:pt-[18svh]"
+      /* 8svh/10svh, e não 14/18. Somado ao vazio no pé da seção da loja,
+         o rodapé começava 430px depois do último botão — botões, vazio,
+         vazio, rodapé. Ver o comentário em LojaFisica. */
+      className="relative overflow-hidden bg-carvao pt-[8svh] text-linho-alto lg:pt-[10svh]"
     >
       <div className="mx-auto max-w-[112rem] px-5 md:px-8 lg:px-12">
         <div
           data-fecho-chamada
-          className="border-t border-linho-alto/15 pt-12"
+          className="border-t border-linho-alto/15 pt-9"
         >
           <div data-reveal>
             <p className="t-display text-[1.25rem] tracking-[0.02em] md:text-[1.5rem]">
@@ -71,31 +72,21 @@ export function Fecho() {
 
           <div
             data-reveal
-            className="mt-12 grid gap-9 sm:grid-cols-2 lg:mt-14 lg:grid-cols-4 lg:gap-10"
+            className="mt-12 grid gap-9 sm:grid-cols-2 lg:mt-14 lg:gap-10"
           >
-            <section>
-              <h2 className="t-eyebrow text-[0.625rem] text-linho-alto/45">Loja física</h2>
-              <address className="t-body mt-4 text-sm not-italic leading-relaxed text-linho-alto/80">
-                {LOJA.linhas.map((linha) => (
-                  <span key={linha} className="block">
-                    {linha}
-                  </span>
-                ))}
-              </address>
-            </section>
+            {/* ENDEREÇO E HORÁRIO NÃO MORAM AQUI — MORAM NA SEÇÃO DE CIMA
 
-            <section>
-              <h2 className="t-eyebrow text-[0.625rem] text-linho-alto/45">Horário</h2>
-              <dl className="mt-4 space-y-2.5 text-sm leading-relaxed">
-                {HORARIO.map((h) => (
-                  <div key={h.dias}>
-                    <dt className="text-linho-alto/55">{h.dias}</dt>
-                    <dd className="text-linho-alto/85">{h.horas}</dd>
-                  </div>
-                ))}
-              </dl>
-            </section>
+                Eles estavam nas duas: "A Serenou também te espera por aqui"
+                traz rua, bairro, os dois horários e o Como chegar, e o rodapé
+                repetia rua, bairro e os mesmos dois horários 600px depois. Ler
+                o mesmo dado duas vezes em menos de uma tela não é reforço, é a
+                sensação de segundo rodapé — e ainda deixa a dúvida de qual dos
+                dois é a fonte.
 
+                A decisão de ir até a loja acontece lá em cima, com o mapa ao
+                lado. O rodapé fica com o que é dele: a marca, como falar com
+                ela e como a peça chega. Nenhum dado foi removido do site —
+                só deixou de aparecer duas vezes. */}
             <section>
               <h2 className="t-eyebrow text-[0.625rem] text-linho-alto/45">Entregas</h2>
               <ul className="mt-4 space-y-2 text-sm leading-relaxed text-linho-alto/80">

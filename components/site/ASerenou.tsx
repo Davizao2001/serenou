@@ -31,7 +31,7 @@ export function ASerenou() {
     <section
       ref={root}
       id="sobre"
-      data-scene="fecho"
+      data-scene="serenou"
       aria-labelledby="serenou-titulo"
       className="relative overflow-hidden bg-carvao text-linho-alto"
     >

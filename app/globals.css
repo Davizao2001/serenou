@@ -936,7 +936,9 @@ picture {
    O disco tem 28px; o botão em volta, 44px. O alvo de toque não encolheu.
 --------------------------------------------------------------------------- */
 .amostra-cor-disco {
-  box-shadow: inset 0 0 0 1px rgb(22 19 15 / 0.14);
+  /* `--fio` vem do componente, calculado por tom em `fioAmostra`. O valor
+     padrão é o antigo: quem não passar a variável não muda de aparência. */
+  box-shadow: inset 0 0 0 1px var(--fio, rgb(22 19 15 / 0.14));
   transition: box-shadow 0.2s var(--ease-out);
 }
 
@@ -946,12 +948,12 @@ picture {
    anel dela. Pego no teste — a cor selecionada perdia a marcação justamente
    quando a pessoa ia clicar de novo. */
 .amostra-cor:hover .amostra-cor-disco:not([data-escolhida]) {
-  box-shadow: inset 0 0 0 1px rgb(22 19 15 / 0.3);
+  box-shadow: inset 0 0 0 1px var(--fio-hover, rgb(22 19 15 / 0.3));
 }
 
 .amostra-cor-disco[data-escolhida] {
   box-shadow:
-    inset 0 0 0 1px rgb(22 19 15 / 0.14),
+    inset 0 0 0 1px var(--fio, rgb(22 19 15 / 0.14)),
     0 0 0 3px var(--color-linho),
     0 0 0 4px var(--color-carvao);
 }

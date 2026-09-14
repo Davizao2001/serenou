@@ -1,5 +1,7 @@
 "use client";
 
+import { fioAmostra } from "@/lib/catalogo";
+
 import type { Cor } from "@/lib/catalogo";
 
 type Props = {
@@ -68,15 +70,23 @@ export function SeletorCor({ cores, valor, aoEscolher }: Props) {
               title={c.nome}
               className="amostra-cor grid h-11 w-11 place-items-center rounded-full"
             >
+              {/* O fio de 1px vem de `fioAmostra`, medido por tom: sutil onde
+                  o disco já se delimita sozinho contra o papel, reforçado onde
+                  não. As três paradas do estado escolhido continuam iguais —
+                  só a primeira, a interna, muda de opacidade. */}
               <span
                 aria-hidden="true"
                 data-escolhida={escolhida ? "sim" : undefined}
                 className="amostra-cor-disco block h-7 w-7 rounded-full"
-                style={{
-                  background: Array.isArray(c.amostra)
-                    ? `linear-gradient(135deg, ${c.amostra[0]} 50%, ${c.amostra[1]} 50%)`
-                    : c.amostra,
-                }}
+                style={
+                  {
+                    background: Array.isArray(c.amostra)
+                      ? `linear-gradient(135deg, ${c.amostra[0]} 50%, ${c.amostra[1]} 50%)`
+                      : c.amostra,
+                    "--fio": fioAmostra(c.amostra).repouso,
+                    "--fio-hover": fioAmostra(c.amostra).hover,
+                  } as React.CSSProperties
+                }
               />
               <span className="sr-only">{c.nome}</span>
             </button>

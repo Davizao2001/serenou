@@ -32,7 +32,12 @@ export function ChapterLeve() {
       id="vestidos"
       data-scene="leve"
       aria-labelledby="leve-titulo"
-      className="relative px-5 py-[14svh] md:px-8 lg:px-12 lg:py-[18svh]"
+      /* O respiro de baixo é menor que o de cima, e de propósito: é ele que
+         separa o Leve da entrada do Versátil, e medindo a faixa entre os dois
+         dava 33% da viewport vazia por ~400px. Cortar 5svh no pé antecipa a
+         chegada da próxima composição sem tocar em nada da animação. O de
+         cima continua 14/18svh, porque ali a separação é do manifesto. */
+      className="relative px-5 pb-[11svh] pt-[14svh] md:px-8 lg:px-12 lg:pb-[13svh] lg:pt-[18svh]"
     >
       <div className="mx-auto grid max-w-[112rem] gap-10 lg:grid-cols-[60fr_40fr] lg:items-center lg:gap-16">
         {/* Conteúdo — 40% */}
