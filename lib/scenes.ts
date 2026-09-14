@@ -487,8 +487,12 @@ export function versatilScene(root: HTMLElement): Cleanup {
       },
     });
 
+    /* O primeiro passo começava em 1 de uma timeline de 3,95 — um quarto do
+       percurso preso rolando com a composição 01 parada. Começa em 0,5 e o
+       intervalo cai de 1,7 para 1,45: as três composições passam a ocupar o
+       trecho inteiro em vez de se amontoarem no fim. */
     [1, 2].forEach((i) => {
-      const at = 1 + (i - 1) * 1.7;
+      const at = 0.5 + (i - 1) * 1.45;
       tl.to(quadros[i], { clipPath: "inset(0% 0% 0% 0%)", duration: 1 }, at)
         .to(legendas[i - 1], { autoAlpha: 0, duration: 0.4 }, at)
         /* a placa anterior só sai depois que a nova cobriu — é a sobreposição
@@ -525,11 +529,12 @@ export function teaserScene(root: HTMLElement): Cleanup {
         backgroundColor: "#16130f",
         ease: EASE.linear,
         immediateRender: false,
-        scrollTrigger: { trigger: root, start: "top 92%", end: "top 42%", scrub: true },
+        scrollTrigger: { trigger: root, start: "top 92%", end: "top 30%", scrub: true },
       }
     );
 
     const quadro = one("[data-teaser-frame]");
+    const chamada = one("[data-fecho-chamada]") ?? root;
 
     gsap.fromTo(
       quadro,
@@ -563,7 +568,13 @@ export function teaserScene(root: HTMLElement): Cleanup {
         duration: 0.9,
         stagger: 0.1,
         ease: EASE.out,
-        scrollTrigger: { trigger: root, start: "top 40%", once: true },
+        /* O gatilho era `root`, cujo topo é o da faixa de degradê — 300px
+           acima do texto. Com "top 40%" a máscara rodava com o título ainda
+           fora da tela: quando a pessoa chegava nele, já estava parado, e a
+           seção não tinha nenhum sinal de chegada. Ancorado na chamada e a
+           88%, o título começa a subir enquanto a composição anterior ainda
+           está saindo — que é a sobreposição que faltava. */
+        scrollTrigger: { trigger: chamada, start: "top 88%", once: true },
       }
     );
 
@@ -576,7 +587,7 @@ export function teaserScene(root: HTMLElement): Cleanup {
         duration: DUR.slow,
         stagger: 0.12,
         ease: EASE.out,
-        scrollTrigger: { trigger: root, start: "top 36%", once: true },
+        scrollTrigger: { trigger: chamada, start: "top 82%", once: true },
       }
     );
   });

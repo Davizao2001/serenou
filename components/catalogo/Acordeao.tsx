@@ -30,7 +30,7 @@ export function Acordeao({
           um `outline` em oliva com o raio da miniatura, igual ao da amostra de
           cor e ao do botão de tamanho. Era um `ring` com `ring-offset`, que
           desenhava um segundo anel na cor do fundo em volta do título. */}
-      <summary className="t-eyebrow flex cursor-pointer items-center justify-between gap-3 py-[1.125rem] text-[0.71875rem] text-carvao transition-colors duration-200 hover:text-carvao-medio">
+      <summary className="t-eyebrow flex cursor-pointer items-center justify-between gap-3 py-[1.3125rem] text-[0.71875rem] text-carvao transition-colors duration-200 hover:text-carvao-medio">
         {titulo}
         <svg
           viewBox="0 0 16 16"
@@ -43,7 +43,7 @@ export function Acordeao({
           <path d="m3.5 6 4.5 4.5L12.5 6" />
         </svg>
       </summary>
-      <div className="pb-6">{children}</div>
+      <div className="pb-7">{children}</div>
     </details>
   );
 }

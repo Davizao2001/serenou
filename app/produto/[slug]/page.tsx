@@ -101,7 +101,7 @@ export default async function Produto({ params }: Props) {
               "mais blusas", não "o catálogo inteiro". No telefone só o degrau
               da categoria fica, porque três degraus e um nome longo quebram
               em duas linhas numa tela de 360. */}
-          <nav aria-label="Trilha" className="mb-6 md:mb-8">
+          <nav aria-label="Trilha" className="mb-7 md:mb-10">
             <ol className="t-eyebrow flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[0.625rem] text-carvao-fraco">
               <li className="hidden sm:block">
                 <Link

@@ -123,9 +123,16 @@ export function PecaEmFoco({ produto }: { produto: Produto }) {
           inferior direito da primeira dobra ficava vazio. Não é preenchimento
           com texto: é o mesmo card esticado, com a frase no alto e o
           grafismo embaixo. */}
-      <div className="flex flex-col gap-6 lg:col-span-2 xl:col-span-1">
+      <div className="flex flex-col gap-7 lg:col-span-2 xl:col-span-1">
         <FichaLateral produto={produto} />
-        <CardEditorial className="xl:flex-1" />
+        {/* `max-h` junto do `flex-1`: o card estica para acompanhar a coluna,
+            mas para antes de virar buraco. Sem o teto, com a coluna de decisão
+            mais alta que a fotografia ele chegava a 491px no Conjunto Bless —
+            a frase no alto, o grafismo no pé e 300px de nada no meio. Com 22rem
+            a coluna da ficha termina perto do pé da foto, que é o alinhamento
+            óptico que interessa: as três colunas não precisam terminar na mesma
+            linha, precisam parecer a mesma composição. */}
+        <CardEditorial className="xl:flex-1 xl:max-h-[22rem]" />
       </div>
     </div>
   );

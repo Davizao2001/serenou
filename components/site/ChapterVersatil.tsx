@@ -72,7 +72,11 @@ export function ChapterVersatil() {
       aria-labelledby="versatil-titulo"
       className="relative"
     >
-      <div data-versatil-stage className="relative pt-[10svh] lg:h-[340svh] lg:pt-0">
+      {/* 250svh, e não 340. A distância presa era 240svh para duas trocas de
+          composição — 120svh cada, o dobro do que o gesto precisa. Medido: a
+          terceira fotografia terminava de entrar com 94% do percurso gasto e
+          o restante era rolagem sem acontecimento. Agora são 150svh presos. */}
+      <div data-versatil-stage className="relative pt-[10svh] lg:h-[250svh] lg:pt-0">
         <div className="lg:sticky lg:top-0 lg:flex lg:h-[100svh] lg:items-center lg:pt-[var(--header-h)]">
           <div className="mx-auto grid w-full max-w-[112rem] gap-12 px-5 md:px-8 lg:grid-cols-[38fr_62fr] lg:items-center lg:gap-16 lg:px-12">
             {/* Coluna tipográfica */}

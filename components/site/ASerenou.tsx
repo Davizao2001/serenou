@@ -41,10 +41,16 @@ export function ASerenou() {
           aqui e não tinge o capítulo anterior, que continua claro. */}
       <div
         aria-hidden="true"
-        className="h-[34svh] bg-gradient-to-b from-areia to-carvao lg:h-[44svh]"
+        className="h-[20svh] bg-gradient-to-b from-areia to-carvao lg:h-[24svh]"
       />
 
-      <div className="mx-auto max-w-[112rem] px-5 pt-[8svh] md:px-8 lg:px-12 lg:pt-[10svh]">
+      {/* A faixa era 44svh e o conteúdo começava 10svh depois dela: quase
+          meia tela e meia de degradê antes da primeira palavra. Medido a
+          1440×900, a maior faixa contínua sem conteúdo chegava a 68% da
+          viewport por 700px de rolagem. A faixa cai para 24svh e o respiro
+          para 5svh — o degradê continua fazendo a passagem de cor, só deixa
+          de ser uma fila de espera. */}
+      <div className="mx-auto max-w-[112rem] px-5 pt-[5svh] md:px-8 lg:px-12 lg:pt-[6svh]">
         <div data-fecho-chamada className="lg:grid lg:grid-cols-[52fr_48fr] lg:gap-16">
           <div>
             <p data-reveal className="t-eyebrow mb-8 text-linho-alto/55 md:mb-12">

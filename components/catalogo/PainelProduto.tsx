@@ -28,6 +28,15 @@ import { EXIGIR_ESCOLHA } from "@/lib/loja";
  * "Novidade", aparece "Novo". Hardcodar "Mais Vendido" seria escrever um
  * número de vendas que ninguém mediu.
  *
+ * O RITMO VERTICAL, DEPOIS DA MEDIÇÃO
+ *
+ * A escala estava boa e a coluna, curta demais para a fotografia ao lado. O
+ * ajuste é de respiro entre GRUPOS, não de tamanho: descrição +4px, bloco de
+ * escolha +8px e 4px entre cor e tamanho, guia +4px, CTA +8px, ficha rápida
+ * +8px. Somam ~32px distribuídos em seis junções — nenhum buraco novo, e a
+ * leitura continua contínua. Nada de `space-between`: o que sobra fica no fim
+ * da coluna, não repartido entre os grupos.
+ *
  * A cor NÃO mora aqui: mora em `PecaEmFoco`, um nível acima, porque a galeria
  * também responde a ela. Escolher "Rosa" tem que trocar a fotografia, e a
  * fotografia é irmã desta coluna, não filha.
@@ -62,7 +71,7 @@ export function PainelProduto({
 
   return (
     <div>
-      {selo && <p className="t-eyebrow mb-3.5 text-carvao-fraco">{selo}</p>}
+      {selo && <p className="t-eyebrow mb-4 text-carvao-fraco">{selo}</p>}
 
       {/* Escala de peça, não de manchete. O display da home existe para ser
           lido do outro lado da sala; aqui o nome está a 40cm dos olhos, ao
@@ -85,10 +94,10 @@ export function PainelProduto({
           preço, a cliente guarda o número errado. */}
       <Parcelamento preco={produto.preco} variante="produto" className="mt-1" />
 
-      <p className="t-body mt-[1.125rem] max-w-[38ch] text-[1rem] leading-[1.55]">{produto.resumo}</p>
+      <p className="t-body mt-[1.375rem] max-w-[38ch] text-[1rem] leading-[1.55]">{produto.resumo}</p>
 
       {(temCores || temTamanhos) && (
-        <div className="mt-8 space-y-7">
+        <div className="mt-10 space-y-8">
           {temCores && (
             <div>
               <SeletorCor cores={produto.cores} valor={cor} aoEscolher={aoEscolherCor} />
@@ -114,7 +123,7 @@ export function PainelProduto({
       {/* O guia acompanha a decisão de tamanho, então mora logo abaixo dela —
           e existe mesmo quando a peça não tem tamanho cadastrado, porque a
           dúvida "será que serve em mim?" não depende de haver grade. */}
-      <div className="mt-5">
+      <div className="mt-6">
         <GuiaMedidas nome={produto.nome} />
       </div>
 
@@ -122,7 +131,7 @@ export function PainelProduto({
           um CTA de aviso de reposição prometeria uma função que não existe.
           A regra confirmada é outra: quando a peça acaba, a Grazi oculta pelo
           painel e ela sai do catálogo. */}
-      <div className="mt-8">
+      <div className="mt-10">
         {esgotado ? (
           <div className="rounded-[var(--r-acao)] border border-carvao/20 px-8 py-5 text-center">
             <p className="t-eyebrow text-carvao-fraco">Peça esgotada</p>
@@ -149,11 +158,11 @@ export function PainelProduto({
                 que ela escolhe. "A conversa segue no WhatsApp" é só o aviso
                 de para onde o botão leva — fica em nota de rodapé. */}
             {faltando.length > 0 ? (
-              <p className="t-body mt-3 text-center text-sm text-carvao">
+              <p className="t-body mt-3.5 text-center text-sm text-carvao">
                 Escolha {faltando.join(" e ")} para continuar.
               </p>
             ) : (
-              <p className="mt-3 flex items-center justify-center gap-2 text-[0.75rem] text-carvao-fraco">
+              <p className="mt-3.5 flex items-center justify-center gap-2 text-[0.75rem] text-carvao-fraco">
                 <svg
                   viewBox="0 0 24 24"
                   aria-hidden="true"
@@ -171,7 +180,7 @@ export function PainelProduto({
         )}
       </div>
 
-      <div className="mt-9">
+      <div className="mt-11">
         <Microinformacoes />
       </div>
     </div>
