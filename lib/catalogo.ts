@@ -412,3 +412,50 @@ export const PRODUTOS_DESENVOLVIMENTO: Produto[] = [
 export function produtosVisiveis(produtos: Produto[]): Produto[] {
   return produtos.filter((p) => p.status !== "oculto");
 }
+
+/**
+ * "VOCÊ TAMBÉM PODE GOSTAR" — QUEM ENTRA NA FILEIRA, E EM QUE ORDEM
+ *
+ * A fileira tem quatro vagas no desktop. Antes ela só aceitava peças da mesma
+ * categoria, e como o acervo é pequeno o resultado era literal demais: a Bata
+ * de Poá tem uma única irmã em Blusas, então a fileira mostrava um cartão
+ * sozinho à esquerda e três vãos vazios. Isso não lê como "só existe esta"; lê
+ * como fileira quebrada.
+ *
+ * Agora a mesma categoria continua vindo primeiro — ela é a resposta mais
+ * próxima do que a pessoa está olhando — e as vagas que sobrarem são
+ * preenchidas com o resto do catálogo.
+ *
+ * ISTO NÃO É RECOMENDAÇÃO
+ *
+ * Não há pontuação, não há histórico, não há sorteio e não há nada aprendido
+ * sobre quem está lendo. São duas listas concatenadas na ordem em que a loja
+ * cadastrou, cortadas no tamanho da fileira. A mesma peça, aberta duas vezes,
+ * mostra exatamente os mesmos vizinhos na mesma ordem — sem isso o cache de
+ * página do Next serviria uma fileira e a navegação do cliente mostraria
+ * outra.
+ *
+ * A ORDEM VEM DE FORA, DE PROPÓSITO
+ *
+ * `todas` já chega ordenada por data de cadastro, mais recente primeiro, que é
+ * a ordem da vitrine. Reordenar aqui faria a fileira discordar do catálogo, e
+ * seria um segundo critério para a mesma loja.
+ *
+ * Peça oculta é filtrada aqui também, e não só na consulta. A consulta é a
+ * barreira principal; esta é a de quem monta a fileira, para o caso de a lista
+ * um dia vir de outro lugar. Peça indisponível continua entrando, como já
+ * entrava: o cartão tem selo próprio para isso, e esconder a peça esgotada
+ * faria a cliente achar que a loja não faz aquele modelo.
+ */
+export function escolherRelacionadas(
+  todas: Produto[],
+  atual: Produto,
+  quantas = 4
+): Produto[] {
+  const candidatas = todas.filter(
+    (p) => p.slug !== atual.slug && p.status !== "oculto"
+  );
+  const daCategoria = candidatas.filter((p) => p.categoria === atual.categoria);
+  const doResto = candidatas.filter((p) => p.categoria !== atual.categoria);
+  return [...daCategoria, ...doResto].slice(0, quantas);
+}

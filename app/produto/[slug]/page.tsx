@@ -83,7 +83,7 @@ export default async function Produto({ params }: Props) {
   const produto = await buscarProduto(slug);
   if (!produto) notFound();
 
-  const daMesmaCategoria = await relacionadas(produto, 4);
+  const tambemPodeGostar = await relacionadas(produto, 4);
 
   return (
     <>
@@ -133,19 +133,24 @@ export default async function Produto({ params }: Props) {
 
           <PecaEmFoco produto={produto} />
 
-          {/* RELACIONADOS — MESMA CATEGORIA, SEM ALGORITMO
-              A lista é literal: as outras peças da mesma categoria, na ordem
-              em que estão no catálogo, sem a peça atual. Com o acervo de hoje
-              isso dá de uma a três peças; a fileira enche sozinha conforme a
-              Grazi cadastra. Cartões menores que os da vitrine — aqui eles
-              são convite, não a grade principal. */}
-          {daMesmaCategoria.length > 0 && (
+          {/* RELACIONADOS — MESMA CATEGORIA PRIMEIRO, SEM ALGORITMO
+              Quatro vagas. A mesma categoria entra na frente, e o que sobrar
+              é completado com o resto do catálogo, na ordem em que a loja
+              cadastrou. Sem pontuação, sem histórico e sem sorteio: a mesma
+              peça mostra sempre os mesmos vizinhos. A regra está em
+              `escolherRelacionadas`, em lib/catalogo.ts.
+
+              Antes a fileira só aceitava a mesma categoria, e com o acervo de
+              hoje isso deixava a Bata de Poá com um cartão sozinho e três
+              vãos. Cartões menores que os da vitrine — aqui eles são convite,
+              não a grade principal. */}
+          {tambemPodeGostar.length > 0 && (
             <section className="mt-16 border-t border-areia-forte pt-10 md:mt-20 md:pt-12">
               <h2 className="t-eyebrow mb-9 text-[0.75rem] text-carvao-fraco">
                 Você também pode gostar
               </h2>
               <ul className="grid grid-cols-2 gap-x-4 gap-y-9 sm:gap-x-5 lg:grid-cols-4 lg:gap-x-6">
-                {daMesmaCategoria.map((p) => (
+                {tambemPodeGostar.map((p) => (
                   <li key={p.slug}>
                     <ProductCard produto={p} />
                   </li>

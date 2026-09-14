@@ -2,7 +2,7 @@ import { clienteSanity } from "./client";
 import { PROJECAO_IMAGEM, slotDeImagem, type ImagemSanity } from "./imagem";
 import { CONFIGURADO, REVALIDAR } from "../env";
 import type { Produto } from "@/lib/catalogo";
-import { PRODUTOS_DESENVOLVIMENTO } from "@/lib/catalogo";
+import { PRODUTOS_DESENVOLVIMENTO, escolherRelacionadas } from "@/lib/catalogo";
 import type { Categoria, StatusProduto } from "@/lib/loja";
 
 /* ---------------------------------------------------------------------------
@@ -157,10 +157,10 @@ export async function listarSlugs(): Promise<string[]> {
   return slugs ?? [];
 }
 
-/** As peças da mesma categoria, para o rodapé da página de produto. */
-export async function relacionadas(produto: Produto, quantas = 3): Promise<Produto[]> {
-  const todas = await listarProdutos();
-  return todas
-    .filter((p) => p.slug !== produto.slug && p.categoria === produto.categoria)
-    .slice(0, quantas);
+/** A fileira do rodapé da página de produto: mesma categoria primeiro, e o
+ *  resto do catálogo completando as vagas. A regra inteira — e o porquê de
+ *  cada exclusão — mora em `escolherRelacionadas`, em lib/catalogo.ts, que é
+ *  função pura e pode ser testada sem o Sanity. Aqui só se busca a lista. */
+export async function relacionadas(produto: Produto, quantas = 4): Promise<Produto[]> {
+  return escolherRelacionadas(await listarProdutos(), produto, quantas);
 }
