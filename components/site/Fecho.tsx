@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { useGSAP } from "@/lib/gsap";
 import { fechoScene } from "@/lib/scenes";
+import { AssinaturaSettei } from "./AssinaturaSettei";
 import {
   ENTREGAS,
   HORARIO,
@@ -137,12 +138,27 @@ export function Fecho() {
           </div>
         </div>
 
-        <div className="mt-[7svh] flex flex-wrap items-end justify-between gap-8 border-t border-linho-alto/15 py-10">
-          <span className="marca-serenou text-linho-alto" aria-hidden="true" />
-          <span className="marca-texto t-display text-[1.4rem]">Serenou</span>
-          <p className="t-eyebrow text-linho-alto/55">
-            Serenou {new Date().getFullYear()}
-          </p>
+        {/* ÚLTIMA LINHA — SERENOU À ESQUERDA, SETTEI À DIREITA
+
+            Os três elementos da Serenou continuam os mesmos; o que mudou é
+            que agora andam juntos num grupo, para abrir o lado direito à
+            assinatura do estúdio. Numa linha com `justify-between` não existe
+            acrescentar sem mover: com a assinatura solta como quarto item, o
+            copyright sairia da beirada e o conjunto viraria quatro coisas
+            espalhadas em vez de duas assinaturas se encarando.
+
+            No telefone o `flex-wrap` empilha e o alinhamento continua à
+            esquerda, como o resto do rodapé. Sem caixa, sem centralizar. */}
+        <div className="mt-[7svh] flex flex-wrap items-center justify-between gap-x-10 gap-y-6 border-t border-linho-alto/15 py-10">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+            <span className="marca-serenou text-linho-alto" aria-hidden="true" />
+            <span className="marca-texto t-display text-[1.4rem]">Serenou</span>
+            <p className="t-eyebrow text-linho-alto/55">
+              Serenou {new Date().getFullYear()}
+            </p>
+          </div>
+
+          <AssinaturaSettei />
         </div>
       </div>
     </footer>

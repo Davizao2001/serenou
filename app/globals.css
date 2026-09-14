@@ -26,6 +26,13 @@
   --font-display: "Archivo Variable", "Archivo", "Helvetica Neue", Arial, sans-serif;
   --font-sans: "Instrument Sans Variable", "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
 
+  /* Assinatura da Settei — PROVISÓRIA.
+     A tipografia da identidade da Settei não está neste projeto. Até o
+     arquivo da fonte chegar, o nome sai na sans que o site já carrega, para
+     não puxar uma requisição nova por uma palavra. Quando a fonte real
+     chegar, é esta linha que muda — o componente não. */
+  --font-settei: var(--font-sans);
+
   /* Ritmo vertical */
   --spacing-gutter: 1.5rem;
 }
