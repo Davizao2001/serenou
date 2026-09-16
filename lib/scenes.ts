@@ -107,7 +107,6 @@ export function openingScene(root: HTMLElement): Cleanup {
   const { q, one } = scoped(root);
   const mm = gsap.matchMedia();
   const splits: SplitText[] = [];
-  const limpezas: Array<() => void> = [];
 
   mm.add({ desktop: MQ.desktop, mobile: MQ.mobile, reduce: MQ.reduce }, (ctx) => {
     const { desktop, reduce } = ctx.conditions as Record<string, boolean>;
@@ -117,15 +116,46 @@ export function openingScene(root: HTMLElement): Cleanup {
        exatamente o tipo de movimento que a preferência pede para não ter. */
     if (reduce) return;
 
-    limpezas.push(rotacaoHero(q, root));
+    /* Limpezas DESTA execução da condição. Antes elas iam para um array de
+       fora, que só era percorrido no desmonte: na troca de breakpoint a
+       callback rodava de novo, o array crescia, e a limpeza da rotação da
+       hero — que é quem devolve `data-hero-tom` ao tom da primeira
+       fotografia — nunca chegava a rodar. Devolvendo a função aqui, o próprio
+       GSAP a executa antes de reexecutar a condição. */
+    const daCondicao: Array<() => void> = [];
+    daCondicao.push(rotacaoHero(q, root));
 
     /* ---- Entrada da hero ----
        Duas versões. Quem chega direto vê a sequência completa de cinco tempos.
        Quem vem da intro vê uma entrada curta: a fotografia já está montada por
        baixo da cortina, e reabri-la com máscara e zoom seria uma segunda
        abertura — o usuário esperaria duas vezes pela mesma coisa. */
-    if (introAtiva()) {
-      limpezas.push(aoTerminarIntro(() => entradaHero(q, one, true)));
+    /* A ABERTURA TOCA UMA VEZ POR VISITA, NÃO UMA POR BREAKPOINT
+
+       Na troca de condição — arrastar a janela cruzando 1024px, sair do
+       fullscreen, acoplar um monitor — o GSAP reverte o contexto e REEXECUTA
+       esta callback. Sem a marca abaixo, a segunda execução caía em
+       `entradaHero(..., false)` e tocava os cinco tempos de novo: a
+       fotografia era mascarada até sumir e reaberta, e as três linhas do
+       título caíam e subiam outra vez. Confirmado em teste, e é a abertura do
+       site acontecendo pela segunda vez no meio do uso.
+
+       Simplesmente pular não serve: o revert devolveu a placa ao
+       `clipPath: inset(0% 0% 100% 0%)` e as linhas ao `yPercent: 108` do
+       estado de pré-pintura, então sem ninguém para desfazer isso a hero
+       ficaria invisível. Por isso a segunda vez é INSTANTÂNEA — mesmo estado
+       final, sem percurso.
+
+       A marca vive no dataset do elemento, e não numa variável do módulo,
+       porque precisa sobreviver ao revert (que só mexe em estilo) e morrer
+       junto com a página. */
+    const jaAbriu = root.dataset.heroAberta === "sim";
+    root.dataset.heroAberta = "sim";
+
+    if (jaAbriu) {
+      entradaHero(q, one, false, true);
+    } else if (introAtiva()) {
+      daCondicao.push(aoTerminarIntro(() => entradaHero(q, one, true)));
     } else {
       entradaHero(q, one, false);
     }
@@ -209,10 +239,14 @@ export function openingScene(root: HTMLElement): Cleanup {
         scrollTrigger: { trigger: corpo, start: "top 84%", once: true },
       }
     );
+
+    /* O GSAP executa isto ao reverter a condição — na troca de breakpoint e
+       no desmonte. É o que garante que a assinatura do fim da intro não se
+       empilhe e que o tom da hero volte ao lugar. */
+    return () => daCondicao.forEach((f) => f());
   });
 
   return () => {
-    limpezas.forEach((f) => f());
     splits.forEach((s) => s.revert());
     mm.revert();
   };
@@ -224,7 +258,21 @@ export function openingScene(root: HTMLElement): Cleanup {
 type Busca = (sel: string) => HTMLElement[];
 type Um = (sel: string) => HTMLElement;
 
-function entradaHero(q: Busca, one: Um, curta: boolean) {
+function entradaHero(q: Busca, one: Um, curta: boolean, instantanea = false) {
+  /* Mesmo destino da sequência longa, sem os 1,6 s de percurso. Usado quando
+     a condição do matchMedia troca e o revert já desfez os estados finais:
+     a hero precisa voltar a ser visível, mas a pessoa não pode assistir à
+     abertura do site outra vez no meio do uso. */
+  if (instantanea) {
+    gsap.set(one("[data-plate-reveal]"), { clipPath: "inset(0% 0% 0% 0%)" });
+    gsap.set(one("[data-plate-zoom]"), { scale: 1 });
+    gsap.set(one("[data-hero-eyebrow]"), { autoAlpha: 1, y: 0 });
+    gsap.set(q("[data-hero-line]"), { yPercent: 0, y: 0, autoAlpha: 1 });
+    gsap.set(one("[data-hero-desc]"), { autoAlpha: 1, y: 0 });
+    gsap.set(q("[data-hero-cta]"), { autoAlpha: 1, y: 0 });
+    return;
+  }
+
   if (!curta) {
     /* Cinco tempos, ~1,6 s no total. */
     gsap

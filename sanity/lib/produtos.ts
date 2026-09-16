@@ -3,6 +3,7 @@ import { PROJECAO_IMAGEM, slotDeImagem, type ImagemSanity } from "./imagem";
 import { CONFIGURADO, REVALIDAR } from "../env";
 import type { Produto } from "@/lib/catalogo";
 import { PRODUTOS_DESENVOLVIMENTO, escolherRelacionadas } from "@/lib/catalogo";
+import { CATEGORIAS } from "@/lib/loja";
 import type { Categoria, StatusProduto } from "@/lib/loja";
 
 /* ---------------------------------------------------------------------------
@@ -58,24 +59,59 @@ const CAMPOS = `
   imagens[]${PROJECAO_IMAGEM}
 `;
 
-/* `status != "oculto"` mora aqui, em um lugar só. */
-const VISIVEIS = `_type == "produto" && status != "oculto" && defined(slug.current)`;
+/* `status != "oculto"` mora aqui, em um lugar só.
+ *
+ * `teste != true` entrou junto, e era uma incoerência de verdade: o painel
+ * esconde a peça de teste da lista "Catálogo" (ver sanity.config.ts), mas o
+ * site a publicava — vitrine, página própria, indexável. A Grazi não a via no
+ * lugar onde trabalha, então não tinha como perceber. O painel dizia uma
+ * coisa e o site fazia outra.
+ *
+ * `!= true` e não `== false`: no GROQ, campo ausente não é `false`, é
+ * indefinido, e `teste == false` deixaria de fora toda peça cadastrada antes
+ * do campo existir. */
+const VISIVEIS = `_type == "produto" && status != "oculto" && teste != true && defined(slug.current)`;
 
 const CONSULTA_LISTA = `*[${VISIVEIS}] | order(_createdAt desc) { ${CAMPOS} }`;
 const CONSULTA_UMA = `*[${VISIVEIS} && slug.current == $slug][0] { ${CAMPOS} }`;
 const CONSULTA_SLUGS = `*[${VISIVEIS}].slug.current`;
 
+/** Categorias que o site sabe filtrar, para reconhecer uma que não conhece. */
+const CATEGORIAS_CONHECIDAS = new Set<string>(CATEGORIAS.map((c) => c.slug));
+
 /** Converte o documento do Sanity no tipo que os componentes já usam. */
 function adaptar(d: ProdutoSanity): Produto {
+  /* Uma categoria que o site não conhece vinha virando "vestidos" em
+     silêncio. Continua virando — a peça precisa aparecer em algum lugar, e
+     sumir do catálogo seria pior — mas agora deixa rastro nos Runtime Logs.
+     O caminho real para isto é alguém renomear um slug em lib/loja.ts: todas
+     as peças da categoria antiga viram vestido de uma vez, e sem este aviso
+     a descoberta seria pela vitrine. */
+  const categoria = d.categoria ?? "";
+  if (categoria && !CATEGORIAS_CONHECIDAS.has(categoria)) {
+    console.warn(
+      `[catálogo] a peça "${d.nome ?? d._id}" está na categoria "${categoria}", que não existe em lib/loja.ts. Mostrando como vestido.`
+    );
+  }
+
   return {
     slug: d.slug?.current ?? d._id,
     nome: d.nome ?? "Peça sem nome",
     /* A Grazi digita reais no painel; o site trabalha em centavos para não
        arrastar ponto flutuante até a vitrine. A conversão mora só aqui. */
     preco: Math.round((d.preco ?? 0) * 100),
+    /* O preço riscado exige a promoção MARCADA, não só o valor preenchido.
+       `hidden` no painel esconde o campo sem apagar o dado, então uma peça
+       que saiu da promoção guardava o valor antigo e continuava riscando o
+       preço fora de Promoções. O schema agora impede o estado incoerente; esta
+       linha é o cinto para os documentos que já existirem assim. */
     precoAnterior:
-      typeof d.precoAnterior === "number" ? Math.round(d.precoAnterior * 100) : undefined,
-    categoria: (d.categoria ?? "vestidos") as Categoria,
+      d.promocao && typeof d.precoAnterior === "number"
+        ? Math.round(d.precoAnterior * 100)
+        : undefined,
+    categoria: (CATEGORIAS_CONHECIDAS.has(categoria)
+      ? categoria
+      : "vestidos") as Categoria,
     novidade: d.novidade ?? false,
     promocao: d.promocao ?? false,
     status: (d.status ?? "disponivel") as StatusProduto,
@@ -108,53 +144,104 @@ const cache = { next: { revalidate: REVALIDAR } };
  *
  * O erro não some: vai para o log do servidor inteiro, para aparecer nos
  * Runtime Logs da Vercel em vez de virar silêncio.
+ *
+ * O RESULTADO DIZ SE DEU CERTO, E ISSO IMPORTA
+ *
+ * Antes a falha era indistinguível de "não achei nada": as duas devolviam
+ * vazio. Quem chamava não tinha como saber a diferença, e as duas
+ * consequências eram ruins — o catálogo vazio dizia "as peças estão sendo
+ * fotografadas", que é mentira durante uma queda; e a página de uma peça que
+ * EXISTE virava `notFound()`, com o Next guardando esse 404.
  */
+type Resultado<T> = { ok: true; valor: T } | { ok: false };
+
 async function consultar<T>(
   descricao: string,
-  executar: () => Promise<T>,
-  seFalhar: T
-): Promise<T> {
+  executar: () => Promise<T>
+): Promise<Resultado<T>> {
   try {
-    return await executar();
+    return { ok: true, valor: await executar() };
   } catch (erro) {
     console.error(`[catálogo] falha ao ${descricao} no Sanity:`, erro);
-    return seFalhar;
+    return { ok: false };
   }
 }
 
-/** Todas as peças visíveis, mais recentes primeiro. */
-export async function listarProdutos(): Promise<Produto[]> {
-  if (!CONFIGURADO) return PRODUTOS_DESENVOLVIMENTO.filter((p) => p.status !== "oculto");
-  const docs = await consultar(
-    "listar as peças",
-    () => clienteSanity().fetch<ProdutoSanity[]>(CONSULTA_LISTA, {}, cache),
-    [] as ProdutoSanity[]
-  );
-  return (docs ?? []).map(adaptar);
+/**
+ * O catálogo não pôde ser lido.
+ *
+ * Diferente de "está vazio". Quem captura isto mostra "não conseguimos
+ * carregar agora", nunca "não existe" — e a página de produto não vira 404
+ * por causa de um minuto de instabilidade.
+ */
+export class CatalogoIndisponivel extends Error {
+  constructor(detalhe: string) {
+    super(`Não foi possível ler o catálogo (${detalhe}).`);
+    this.name = "CatalogoIndisponivel";
+  }
 }
 
-/** Uma peça pelo endereço. `undefined` quando não existe ou está oculta. */
+/** Todas as peças visíveis, mais recentes primeiro. Vazio se a leitura falhar. */
+export async function listarProdutos(): Promise<Produto[]> {
+  return (await listarProdutosComEstado()).produtos;
+}
+
+/**
+ * A mesma lista, dizendo se deu para ler.
+ *
+ * Só o catálogo usa: é a única tela que precisa escolher entre dois textos de
+ * estado vazio — "ainda estamos fotografando" e "não conseguimos carregar".
+ */
+export async function listarProdutosComEstado(): Promise<{
+  produtos: Produto[];
+  falhou: boolean;
+}> {
+  if (!CONFIGURADO)
+    return {
+      produtos: PRODUTOS_DESENVOLVIMENTO.filter((p) => p.status !== "oculto"),
+      falhou: false,
+    };
+
+  const r = await consultar("listar as peças", () =>
+    clienteSanity().fetch<ProdutoSanity[]>(CONSULTA_LISTA, {}, cache)
+  );
+
+  if (!r.ok) return { produtos: [], falhou: true };
+  return { produtos: (r.valor ?? []).map(adaptar), falhou: false };
+}
+
+/**
+ * Uma peça pelo endereço. `undefined` quando não existe ou está oculta.
+ *
+ * Quando a CONSULTA falha, lança `CatalogoIndisponivel` em vez de devolver
+ * nada — porque devolver nada viraria `notFound()` na página, e um 404
+ * guardado para uma peça que existe é o pior desfecho possível para um link
+ * que circulou no WhatsApp.
+ */
 export async function buscarProduto(slug: string): Promise<Produto | undefined> {
   if (!CONFIGURADO)
     return PRODUTOS_DESENVOLVIMENTO.find((p) => p.slug === slug && p.status !== "oculto");
-  const doc = await consultar(
-    `buscar a peça "${slug}"`,
-    () => clienteSanity().fetch<ProdutoSanity | null>(CONSULTA_UMA, { slug }, cache),
-    null as ProdutoSanity | null
+
+  const r = await consultar(`buscar a peça "${slug}"`, () =>
+    clienteSanity().fetch<ProdutoSanity | null>(CONSULTA_UMA, { slug }, cache)
   );
-  return doc ? adaptar(doc) : undefined;
+
+  if (!r.ok) throw new CatalogoIndisponivel(`peça "${slug}"`);
+  return r.valor ? adaptar(r.valor) : undefined;
 }
 
 /** Endereços que ganham página estática. Peça oculta nunca entra. */
 export async function listarSlugs(): Promise<string[]> {
   if (!CONFIGURADO)
     return PRODUTOS_DESENVOLVIMENTO.filter((p) => p.status !== "oculto").map((p) => p.slug);
-  const slugs = await consultar(
-    "listar os endereços das peças",
-    () => clienteSanity().fetch<string[]>(CONSULTA_SLUGS, {}, cache),
-    [] as string[]
+  /* Aqui a falha continua devolvendo lista vazia, e é de propósito: esta
+     função roda na compilação. Lançar faria o build inteiro parar por causa
+     de um minuto de instabilidade. Sem rota pré-gerada o site continua de pé
+     — `dynamicParams` deixa cada peça ser montada na primeira visita. */
+  const r = await consultar("listar os endereços das peças", () =>
+    clienteSanity().fetch<string[]>(CONSULTA_SLUGS, {}, cache)
   );
-  return slugs ?? [];
+  return r.ok ? (r.valor ?? []) : [];
 }
 
 /** A fileira do rodapé da página de produto: mesma categoria primeiro, e o

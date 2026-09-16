@@ -63,8 +63,24 @@ export const produto = defineType({
       type: "number",
       group: "principal",
       description: "Só o número. Exemplo: 189,90",
-      validation: (r) =>
-        r.required().min(0).error("Informe o valor da peça."),
+      /* Cada regra com a sua mensagem, e não uma só no fim da corrente.
+         `.error("Informe o valor")` aplicado à cadeia inteira respondia isso
+         também para um preço negativo, que não explica nada.
+
+         O teto e as duas casas decimais existem por um erro de digitação
+         concreto: sem eles, `18990` no lugar de `189,90` publica um vestido
+         de R$ 18.990,00 em silêncio — e esse número segue direto para a
+         mensagem do WhatsApp. 9.999,99 está muito acima da peça mais cara da
+         loja e muito abaixo de um dedo escorregando no teclado.
+
+         `min(0.01)` e não `min(0)`: peça de graça não existe no catálogo, e
+         um zero esquecido aparecia como "R$ 0,00" na vitrine. */
+      validation: (r) => [
+        r.required().error("Informe o valor da peça."),
+        r.min(0.01).error("O valor precisa ser maior que zero."),
+        r.max(9999.99).error("Valor acima de R$ 9.999,99 — confira se não faltou a vírgula."),
+        r.precision(2).error("No máximo duas casas decimais. Exemplo: 189,90"),
+      ],
     }),
 
     defineField({
@@ -75,12 +91,39 @@ export const produto = defineType({
       description:
         "Preencha só quando a peça estiver em promoção. Aparece riscado ao lado do valor.",
       hidden: ({ parent }) => !parent?.promocao,
+      /* OS DOIS CAMPOS DA PROMOÇÃO PRECISAM CONCORDAR — NOS DOIS SENTIDOS
+
+         `promocao` é uma caixa na aba "Onde aparece"; `precoAnterior` é um
+         número na aba "A peça". Eram independentes, e `hidden` esconde do
+         olho sem apagar o dado. Daí as duas incoerências que ninguém via:
+
+           promoção marcada, valor vazio  → selo "Promoção" sem desconto
+                                            nenhum na tela;
+           promoção desmarcada depois     → o campo some, o valor continua
+                                            gravado, e a peça saía de
+                                            Promoções CONTINUANDO com o preço
+                                            riscado.
+
+         Agora cada estado cobra o outro. Nenhuma peça estava em promoção
+         quando isto foi escrito, então nada no ar precisou ser corrigido — e
+         é por isso que era o momento de fechar. */
       validation: (r) =>
         r.custom((valor, contexto) => {
-          const pai = contexto.parent as { preco?: number } | undefined;
+          const pai = contexto.parent as
+            | { preco?: number; promocao?: boolean }
+            | undefined;
+
+          if (pai?.promocao && valor == null)
+            return "Peça em promoção precisa do valor de antes — é ele que aparece riscado.";
+
+          if (!pai?.promocao && valor != null)
+            return 'Só vale com "Está em promoção" marcado. Apague o valor ou marque a caixa em "Onde aparece".';
+
           if (valor == null) return true;
+
           if (pai?.preco != null && valor <= pai.preco)
             return "O valor de antes precisa ser maior que o valor atual.";
+
           return true;
         }),
     }),
@@ -139,6 +182,14 @@ export const produto = defineType({
               type: "string",
               description:
                 "Para quem usa leitor de tela e para o Google. Exemplo: Vestido longo verde oliva, com caimento fluido.",
+              /* Aviso, nunca erro: uma foto sem descrição não pode impedir a
+                 peça de ir ao ar. Mas o campo era opcional e silencioso, e
+                 campo opcional e silencioso ninguém preenche 45 vezes — o
+                 site cai num genérico ("Nome da peça, fotografia 3") e quem
+                 usa leitor de tela ouve isso em vez da peça. Um aviso visível
+                 no formulário custa nada e muda o hábito. */
+              validation: (r) =>
+                r.warning("Sem descrição, quem usa leitor de tela não sabe o que a foto mostra."),
             }),
             /* De que cor é esta foto.
                Quando preenchido, clicar na bolinha da cor no site troca a
@@ -186,6 +237,21 @@ export const produto = defineType({
       group: "opcoes",
       description:
         "Deixe vazio se a peça não tem opção de cor — o site simplesmente não mostra o seletor.",
+      /* Duas cores com o mesmo nome desenham duas bolinhas iguais no site, e
+         deixam a troca de fotografia ambígua: a validação de `imagens[].cor`
+         compara por nome, e com o nome repetido ela não sabe qual das duas a
+         foto representa. O erro é do cadastro, mas quem descobre é a cliente
+         clicando numa bolinha que não faz nada. */
+      validation: (r) =>
+        r.custom((cores) => {
+          const nomes = ((cores ?? []) as { nome?: string }[])
+            .map((c) => c?.nome?.trim().toLowerCase())
+            .filter(Boolean) as string[];
+          const repetido = nomes.find((n, i) => nomes.indexOf(n) !== i);
+          return repetido
+            ? `A cor "${repetido}" está cadastrada duas vezes. Cada cor entra uma vez só.`
+            : true;
+        }),
       of: [
         {
           type: "object",
@@ -204,6 +270,11 @@ export const produto = defineType({
               type: "color",
               options: { disableAlpha: true },
               description: "A bolinha que a cliente clica.",
+              /* Sem amostra o site cai num bege padrão. Uma peça com duas
+                 cores sem amostra vira duas bolinhas idênticas, e no cartão
+                 da vitrine a bolinha é a única coisa que distingue "Oliva" de
+                 "Preto". */
+              validation: (r) => r.required().error("Escolha a cor da bolinha."),
             }),
           ],
           preview: {
@@ -221,6 +292,19 @@ export const produto = defineType({
       group: "opcoes",
       description:
         "Escreva os tamanhos como você usa: P, M, G, 38, Único. Deixe vazio se a peça não tem tamanho.",
+      /* "M" duas vezes vira dois botões "M" na página da peça — e, se só um
+         dos dois estiver marcado como esgotado, um riscado e o outro não,
+         lado a lado. */
+      validation: (r) =>
+        r.custom((tamanhos) => {
+          const rotulos = ((tamanhos ?? []) as { rotulo?: string }[])
+            .map((t) => t?.rotulo?.trim().toLowerCase())
+            .filter(Boolean) as string[];
+          const repetido = rotulos.find((t, i) => rotulos.indexOf(t) !== i);
+          return repetido
+            ? `O tamanho "${repetido}" está cadastrado duas vezes.`
+            : true;
+        }),
       of: [
         {
           type: "object",

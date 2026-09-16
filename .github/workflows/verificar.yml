@@ -1,0 +1,42 @@
+# -----------------------------------------------------------------------------
+# VERIFICAÇÃO
+#
+# `lint` e `typecheck` existiam no package.json e nada os disparava: o Next 16
+# não roda ESLint durante o build, então um erro de tipo só era descoberto por
+# quem lembrasse de rodar o comando na mão. Este arquivo é o gatilho que
+# faltava — e é toda a esteira que o projeto precisa hoje.
+#
+# Não há suíte de teste, e não é esquecimento: o que este site faz de mais
+# arriscado é ler um catálogo e montar um link de WhatsApp, e as duas coisas
+# são verificadas por tipo. Teste entra no dia em que houver lógica que o tipo
+# não cubra.
+#
+# `--frozen-lockfile` de propósito: a verificação roda contra as versões que o
+# deploy vai usar, não contra o que o npm resolveria hoje.
+# -----------------------------------------------------------------------------
+
+name: Verificar
+
+on:
+  push:
+    branches: [main, preview-sanity]
+  pull_request:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Tipos
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint

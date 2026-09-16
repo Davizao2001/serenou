@@ -11,6 +11,8 @@ import { buscarProduto, listarSlugs, relacionadas } from "@/sanity/lib/produtos"
 import { largest } from "@/lib/media";
 import { formatarPreco } from "@/lib/catalogo";
 import { MARCA, CATEGORIAS } from "@/lib/loja";
+import { DadosEstruturados } from "@/components/site/DadosEstruturados";
+import { produtoJsonLd, trilhaJsonLd } from "@/lib/dados-estruturados";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -87,6 +89,12 @@ export default async function Produto({ params }: Props) {
 
   return (
     <>
+      {/* A peça e a trilha, para a busca. Preço e disponibilidade saem de
+          campos reais do painel; nada de SKU, avaliação ou prazo de frete —
+          o porquê de cada ausência está em lib/dados-estruturados.ts. */}
+      <DadosEstruturados dados={produtoJsonLd(produto)} />
+      <DadosEstruturados dados={trilhaJsonLd(produto)} />
+
       <Header />
       <main id="conteudo" className="bg-linho pb-[12svh] pt-[calc(var(--header-h)+5svh)]">
         {/* 1280px. Com três colunas a caixa precisa ser mais larga do que era

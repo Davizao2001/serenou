@@ -188,8 +188,64 @@ body {
   display: none;
 }
 
+/* A CORTINA PRECISA SABER SAIR SOZINHA
+
+   `data-intro` é aceso por um script inline no `<head>`, que sempre roda —
+   é inline, não depende de bundle nenhum. Quem apagava era só o JavaScript
+   de módulo do `SerenouIntro`. Quando esse bundle não executa — chunk 404
+   depois de um deploy com aba antiga aberta, CSP, extensão, erro em qualquer
+   módulo importado antes — a página ficava com a cortina cobrindo tudo, o
+   botão Pular inerte e a rolagem travada, sem saída a não ser recarregar.
+   Medido: 15 s com os chunks bloqueados e nada acontecia, porque a rede de
+   12 segundos da cena só é registrada depois que o efeito roda.
+
+   A rede agora é de CSS, que chega junto com o HTML. Aos 13 s a cortina some
+   e a rolagem volta, sem depender de JavaScript. O caminho normal continua
+   mais rápido e vence este: `liberarPagina()` remove o atributo, o seletor
+   deixa de casar, a animação simplesmente para de existir.
+
+   Os passos ficam em 99%/100% porque `overflow` e `visibility` são
+   propriedades discretas: entre dois quadros-chave elas viram no meio do
+   intervalo, e é esse meio — 12,94 s — que precisa cair depois do limite
+   absoluto da cena. Nada aqui anima opacidade: é o GSAP que faz o fade da
+   saída normal, com estilo inline, e uma animação de CSS venceria o inline
+   na cascata. */
+@keyframes serenou-liberar-rolagem {
+  0%,
+  99% {
+    overflow: hidden;
+  }
+  100% {
+    overflow: visible;
+  }
+}
+
+@keyframes serenou-liberar-cortina {
+  0%,
+  99% {
+    visibility: visible;
+    pointer-events: auto;
+  }
+  100% {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
 html[data-intro="ativa"] {
   overflow: hidden;
+  animation: serenou-liberar-rolagem 13s step-end forwards;
+}
+
+/* O corte geral de movimento reduzido zera a duração de toda animação com
+   `!important`. Aqui duração não é enfeite, é o prazo da rede de segurança:
+   zerada, a cortina sumiria no primeiro quadro e quem pediu menos movimento
+   perderia o selo de abertura. Os 13 s valem para todo mundo. */
+@media (prefers-reduced-motion: reduce) {
+  html[data-intro="ativa"],
+  html[data-intro="ativa"] [data-intro-camada] {
+    animation-duration: 13s !important;
+  }
 }
 
 html[data-intro="ativa"] [data-intro-camada] {
@@ -197,6 +253,7 @@ html[data-intro="ativa"] [data-intro-camada] {
   position: fixed;
   inset: 0;
   z-index: 200;
+  animation: serenou-liberar-cortina 13s step-end forwards;
   background: linear-gradient(
     to right,
     #c9c3bb 0%,

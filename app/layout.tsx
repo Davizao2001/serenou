@@ -4,6 +4,12 @@ import "@fontsource-variable/instrument-sans/index.css";
 import "./globals.css";
 import { HERO_SLIDES } from "@/lib/media";
 import { MARCA } from "@/lib/loja";
+/* De onde o site está sendo servido. A cadeia de variáveis mora em
+   lib/site.ts porque o sitemap, o robots e os dados estruturados precisam da
+   mesma resposta. */
+import { ORIGEM } from "@/lib/site";
+import { DadosEstruturados } from "@/components/site/DadosEstruturados";
+import { lojaJsonLd } from "@/lib/dados-estruturados";
 
 /* Título e descrição saem da identidade que já existe em `lib/loja.ts` —
    nada foi inventado aqui. `metadataBase` fica de fora de propósito: sem
@@ -14,19 +20,6 @@ import { MARCA } from "@/lib/loja";
 const TITULO = `${MARCA.nome} | ${MARCA.assinatura.replace(/\.$/, "")}`;
 const DESCRICAO =
   "Hoje, a Serenou veste diferentes momentos da mulher: vestidos, conjuntos, peças casuais e moda praia pensados para uma rotina real.";
-
-/* O domínio definitivo ainda não foi decidido, então nada é chutado aqui.
-   Quando existir, basta cadastrar NEXT_PUBLIC_SITE_URL. Fora isso, em deploy
-   a Vercel informa a própria URL, que é a correta para aquele ambiente. Sem
-   nenhuma das duas — rodando na máquina — fica indefinido e o Next resolve
-   relativo, que é o comportamento certo para desenvolvimento. */
-const ORIGEM =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : undefined);
 
 export const metadata: Metadata = {
   metadataBase: ORIGEM ? new URL(ORIGEM) : undefined,
@@ -57,13 +50,32 @@ export const viewport: Viewport = {
 
    `data-intro`: a decisão de tocar a intro precisa estar tomada antes do
    primeiro quadro, senão a hero aparece por um instante e só depois a cortina
-   cai. `?intro=1` força a intro para teste, ignorando a sessão. */
+   cai. `?intro=1` força a intro para teste, ignorando a sessão.
+
+   SÓ NA HOME, E ESSA CONDIÇÃO É A CORREÇÃO DE UM DEFEITO REAL
+
+   Este script roda em toda rota, mas quem apaga `data-intro` é o
+   `SerenouIntro`, que só existe em app/page.tsx. Sem a checagem de caminho, a
+   pessoa cujo PRIMEIRO endereço da sessão fosse uma peça — o caso de quem
+   clica num link compartilhado no WhatsApp, que é a principal porta de
+   entrada da loja — recebia `html[data-intro="ativa"]` sem ninguém para
+   removê-lo, e com ele o `overflow: hidden` da folha de estilo. A página não
+   rolava: medido em 16/09, roda do mouse e tecla End devolviam scrollY 0 numa
+   página de 4980px, com o botão do WhatsApp parado em 1221px, fora de
+   alcance. Quem passava pela home antes não via nada disso, e foi o que
+   escondeu o defeito por semanas.
+
+   A cortina também tem uma saída em CSS puro (ver app/globals.css): a
+   decisão de acendê-la é tomada aqui, por script inline que sempre roda, e
+   apagá-la não pode depender do bundle, que pode não chegar. */
 const ANTES_DA_PINTURA = `
 document.documentElement.classList.add("js-motion");
 try {
+  var naHome = location.pathname === "/" || location.pathname === "";
   var forcar = /[?&]intro=1(&|$)/.test(location.search);
   var visto = sessionStorage.getItem("serenou_intro_seen") === "true";
-  if (forcar || !visto) document.documentElement.setAttribute("data-intro", "ativa");
+  if (naHome && (forcar || !visto))
+    document.documentElement.setAttribute("data-intro", "ativa");
 } catch (e) {}
 `;
 
@@ -79,6 +91,13 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: ANTES_DA_PINTURA }} />
       </head>
       <body>
+        {/* A loja física, para a busca local. Fica no layout e não numa
+            página porque o `@id` dela é o vendedor referenciado pela oferta
+            de cada peça — a referência só resolve se os dois estiverem no
+            mesmo documento. Só sai daqui o que a Grazi confirmou; ver o
+            comentário em lib/dados-estruturados.ts. */}
+        <DadosEstruturados dados={lojaJsonLd()} />
+
         {/* Fundo da página. A transição cromática entre capítulos acontece
             aqui, não em um gradiente visível. */}
         <div

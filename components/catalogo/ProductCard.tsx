@@ -224,6 +224,21 @@ export function ProductCard({ produto, priority = false, nivel = 3 }: Props) {
                 </span>
               </li>
             )}
+
+            {/* O NOME DA COR ESCOLHIDA, EM TEXTO
+
+                A bolinha era a única pista visível de qual cor é qual. Quem
+                enxerga mas não distingue os tons — e está no telefone, onde
+                não existe `title` porque não existe hover — clicava numa
+                bolinha, a fotografia trocava, e nada dizia para QUAL cor. O
+                nome estava só em `aria-label`, que é para leitor de tela.
+
+                Aparece só depois da escolha, exatamente como na página de
+                produto: antes disso não há cor escolhida, e escrever uma
+                seria inventar uma seleção que ninguém fez. */}
+            {cor && (
+              <li className="ml-1 text-[0.6875rem] text-carvao-medio">{cor}</li>
+            )}
           </ul>
         )}
 

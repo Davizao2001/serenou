@@ -10,20 +10,30 @@ import { linkWhatsApp } from "@/lib/loja";
  * por fora; agora a seleção é a URL, o servidor filtra, e aqui só se desenha
  * o que chegou. Sem `use client`, sem JavaScript de filtro no navegador.
  *
- * Catálogo vazio é diferente de filtro sem resultado. Sem essa distinção,
+ * TRÊS ESTADOS VAZIOS, NÃO DOIS
+ *
+ * Catálogo vazio é diferente de filtro sem resultado: sem essa distinção,
  * uma loja que ainda não cadastrou nada mandaria a pessoa "escolher outra
  * categoria" — e todas estão vazias.
+ *
+ * E falha de leitura é diferente das duas. O texto "as peças estão sendo
+ * fotografadas" é verdade numa loja nova e MENTIRA durante uma queda do
+ * Sanity — afirma um motivo que ninguém verificou, e manda embora quem
+ * voltaria em cinco minutos. Por isso `falhou` chega até aqui.
  */
 export function Vitrine({
   lista,
   totalCatalogo,
   filtro,
+  falhou = false,
 }: {
   /** Já filtrada pelo servidor. */
   lista: Produto[];
   /** Tamanho do catálogo inteiro — decide a densidade e o estado vazio. */
   totalCatalogo: number;
   filtro: string;
+  /** A leitura do catálogo falhou — vazio aqui não significa "não existe". */
+  falhou?: boolean;
 }) {
   const temCatalogo = totalCatalogo > 0;
   /* Densidade pelo tamanho do catálogo, não pelo do filtro: a largura da
@@ -63,7 +73,16 @@ export function Vitrine({
           <ProductGrid produtos={lista} denso={denso} />
         ) : (
           <p className="t-body max-w-[46ch] py-[8svh] text-carvao-medio">
-            {temCatalogo ? (
+            {falhou ? (
+              <>
+                Não conseguimos carregar as peças agora. Atualize a página em
+                alguns segundos — ou{" "}
+                <a href={linkWhatsApp()} className="underline underline-offset-4">
+                  chame a gente no WhatsApp
+                </a>
+                , que mostramos tudo por lá.
+              </>
+            ) : temCatalogo ? (
               <>
                 Nenhuma peça nesta seleção por enquanto. Escolha outra categoria
                 ou{" "}

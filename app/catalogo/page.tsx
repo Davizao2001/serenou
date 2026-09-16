@@ -4,7 +4,7 @@ import { ASerenou } from "@/components/site/ASerenou";
 import { LojaFisica } from "@/components/site/LojaFisica";
 import { Fecho } from "@/components/site/Fecho";
 import { Vitrine } from "@/components/catalogo/Vitrine";
-import { listarProdutos } from "@/sanity/lib/produtos";
+import { listarProdutosComEstado } from "@/sanity/lib/produtos";
 import { produtosVisiveis, filtrarPorSelecao, GRADE_DENSA } from "@/lib/catalogo";
 import { CATEGORIAS, COLECOES } from "@/lib/loja";
 
@@ -55,7 +55,9 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 export default async function Catalogo({ searchParams }: Props) {
   const { c } = await searchParams;
   const filtro = c && FILTROS.has(c) ? c : "tudo";
-  const produtos = await listarProdutos();
+  /* `falhou` separa "a loja ainda não cadastrou" de "não deu para ler agora".
+     Os dois deixam a tela vazia e pedem textos diferentes — ver Vitrine. */
+  const { produtos, falhou } = await listarProdutosComEstado();
 
   /* A seleção é filtrada AQUI, no servidor. É o que faz desktop e telefone
      mostrarem o mesmo conjunto: os dois leem `?c=`, e quem abre
@@ -88,7 +90,12 @@ export default async function Catalogo({ searchParams }: Props) {
               precisa seguir o filtro, e o filtro é estado do cliente. Deixar
               o número no servidor faria a página dizer "5 peças" com uma
               peça na tela depois de filtrar por Vestidos. */}
-          <Vitrine lista={lista} totalCatalogo={totalCatalogo} filtro={filtro} />
+          <Vitrine
+            lista={lista}
+            totalCatalogo={totalCatalogo}
+            filtro={filtro}
+            falhou={falhou}
+          />
         </div>
       </main>
       <ASerenou />
