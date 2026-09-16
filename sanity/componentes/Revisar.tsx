@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import imageUrlBuilder from "@sanity/image-url";
 import { Badge, Card, Flex, Text } from "@sanity/ui";
+import { ALTURA, COR, GRUPO, RAIO, ROTULO_GRUPO, botao, bolinha } from "./estilo";
 import type { SanityDocument } from "sanity";
 import { dataset, projectId } from "../env";
 import { CATEGORIAS, formatarPrecoCentavos, mensagemProduto } from "./ponte";
@@ -29,6 +30,12 @@ import { CATEGORIAS, formatarPrecoCentavos, mensagemProduto } from "./ponte";
    A cor e o tamanho da prévia são EXEMPLO, escolhidos aqui e nunca gravados
    na peça. A legenda diz isso, porque uma prévia que parece configuração é
    uma armadilha.
+
+   UM CARTÃO SÓ
+
+   Eram três cartões com borda, empilhados. O primeiro tem razão de ser — é a
+   peça, um objeto — mas conferência e mensagem são seções de uma mesma
+   leitura, e ganharam fio e rótulo no lugar da moldura.
 --------------------------------------------------------------------------- */
 
 type Cor = { _key?: string; nome?: string; amostra?: { hex?: string } };
@@ -174,7 +181,7 @@ export function Revisar(props: { document: { displayed: Partial<SanityDocument> 
                     width: "100%",
                     aspectRatio: "3 / 4",
                     objectFit: "cover",
-                    borderRadius: 10,
+                    borderRadius: RAIO.acao,
                   }}
                 />
               ) : (
@@ -246,16 +253,7 @@ export function Revisar(props: { document: { displayed: Partial<SanityDocument> 
                 <Flex as="div" gap={3} align="center" wrap="wrap">
                   {cores.map((c) => (
                     <Flex as="div" key={c._key ?? c.nome} gap={2} align="center">
-                      <span
-                        aria-hidden="true"
-                        style={{
-                          width: 16,
-                          height: 16,
-                          borderRadius: 999,
-                          background: c.amostra?.hex ?? "#cbbda6",
-                          boxShadow: "inset 0 0 0 1px rgb(22 19 15 / 0.3)",
-                        }}
-                      />
+                      <span aria-hidden="true" style={bolinha(16, c.amostra?.hex ?? "#cbbda6")} />
                       <Text as="div" size={1}>{c.nome}</Text>
                     </Flex>
                   ))}
@@ -276,9 +274,9 @@ export function Revisar(props: { document: { displayed: Partial<SanityDocument> 
         </Card>
 
         {/* ---- Conferência ---- */}
-        <Card as="div" padding={4} radius={3} border>
+        <div style={GRUPO}>
           <Flex as="div" direction="column" gap={4}>
-            <Text as="div" size={1} weight="medium">
+            <Text as="div" size={1} style={ROTULO_GRUPO}>
               Conferência
             </Text>
 
@@ -311,12 +309,12 @@ export function Revisar(props: { document: { displayed: Partial<SanityDocument> 
               </Flex>
             )}
           </Flex>
-        </Card>
+        </div>
 
         {/* ---- WhatsApp ---- */}
-        <Card as="div" padding={4} radius={3} border>
+        <div style={GRUPO}>
           <Flex as="div" direction="column" gap={4}>
-            <Text as="div" size={1} weight="medium">
+            <Text as="div" size={1} style={ROTULO_GRUPO}>
               Assim a mensagem chega no seu WhatsApp
             </Text>
 
@@ -341,11 +339,20 @@ export function Revisar(props: { document: { displayed: Partial<SanityDocument> 
               </Flex>
             )}
 
-            <Card as="div" padding={3} radius={2} tone="transparent" border>
+            {/* O quadro da mensagem é o único lugar do painel que imita
+                outra interface de propósito: a Grazi precisa reconhecer que
+                aquilo é o WhatsApp dela, não um campo do formulário. */}
+            <div
+              style={{
+                padding: "12px 14px",
+                borderRadius: RAIO.cartao,
+                background: COR.areia,
+              }}
+            >
               <Text as="div" size={1} style={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
                 {mensagem}
               </Text>
-            </Card>
+            </div>
 
             <Text as="div" size={1} muted>
               A cliente escolhe a cor e o tamanho na página. O que ela não
@@ -355,7 +362,7 @@ export function Revisar(props: { document: { displayed: Partial<SanityDocument> 
                 " O link só entra depois que a peça tiver endereço — publique e ele aparece aqui."}
             </Text>
           </Flex>
-        </Card>
+        </div>
       </Flex>
     </div>
   );
@@ -382,17 +389,7 @@ function Escolha({
           key={o}
           type="button"
           onClick={() => aoEscolher(o)}
-          style={{
-            minHeight: 32,
-            padding: "0 10px",
-            borderRadius: 8,
-            border: "1px solid rgb(22 19 15 / 0.16)",
-            background: o === valor ? "#16130f" : "transparent",
-            color: o === valor ? "#f8f4ed" : "inherit",
-            cursor: "pointer",
-            font: "inherit",
-            fontSize: 12,
-          }}
+          style={{ ...botao(o === valor, ALTURA.miudo), padding: "0 10px", fontSize: 12 }}
         >
           {o}
         </button>

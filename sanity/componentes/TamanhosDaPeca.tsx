@@ -1,10 +1,15 @@
 import { useCallback, useMemo } from "react";
-import { Card, Flex, Text } from "@sanity/ui";
+import { Flex, Text } from "@sanity/ui";
 import { insert, unset, type ArrayOfObjectsInputProps } from "sanity";
 import { TAMANHOS_COMUNS, chave } from "./paleta";
+import { ALTURA, COR, GRUPO, RAIO, ROTULO_GRUPO } from "./estilo";
 
 /* ---------------------------------------------------------------------------
    TAMANHOS — OS CINCO DE SEMPRE, EM UM CLIQUE
+
+   O atalho fica separado da lista por um fio e um rótulo, não por mais um
+   cartão: o campo já mora dentro do cartão do formulário, e uma terceira
+   moldura só empilha borda.
 
    P, M, G, GG e G1 é a grade da maioria das peças, e cadastrá-la eram cinco
    "Adicionar item" e cinco digitações. Aqui são cinco botões que alternam.
@@ -62,9 +67,11 @@ export function TamanhosDaPeca(props: ArrayOfObjectsInputProps) {
 
   return (
     <Flex as="div" direction="column" gap={4}>
-      <Card as="div" padding={3} radius={2} tone="transparent" border>
+      {renderDefault(props)}
+
+      <div style={GRUPO}>
         <Flex as="div" direction="column" gap={3}>
-          <Text as="div" size={1} weight="medium">
+          <Text as="div" size={1} style={ROTULO_GRUPO}>
             Tamanhos mais usados
           </Text>
 
@@ -92,13 +99,11 @@ export function TamanhosDaPeca(props: ArrayOfObjectsInputProps) {
 
           <Text as="div" size={1} muted>
             Clique para incluir ou tirar. Para 38, Único ou qualquer outro, use{" "}
-            <strong>Adicionar item</strong> abaixo. Peça sem tamanho é só deixar
+            <strong>Adicionar item</strong> acima. Peça sem tamanho é só deixar
             a lista vazia.
           </Text>
         </Flex>
-      </Card>
-
-      {renderDefault(props)}
+      </div>
     </Flex>
   );
 }
@@ -129,12 +134,12 @@ function BotaoTamanho({
       }
       style={{
         minWidth: 52,
-        minHeight: 44,
+        minHeight: ALTURA.controle,
         padding: "0 14px",
-        borderRadius: 10,
-        border: "1px solid rgb(22 19 15 / 0.16)",
-        background: dentro && !esgotado ? "#16130f" : "transparent",
-        color: dentro && !esgotado ? "#f8f4ed" : "inherit",
+        borderRadius: RAIO.acao,
+        border: `1px solid ${COR.fio}`,
+        background: dentro && !esgotado ? COR.carvao : "transparent",
+        color: dentro && !esgotado ? COR.linhoAlto : "inherit",
         opacity: esgotado ? 0.55 : 1,
         textDecoration: esgotado ? "line-through" : "none",
         cursor: esgotado ? "default" : "pointer",

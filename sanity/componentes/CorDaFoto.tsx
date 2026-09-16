@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
-import { Card, Flex, Select, Text } from "@sanity/ui";
+import { Flex, Select, Text } from "@sanity/ui";
 import { set, unset, useFormValue, type StringInputProps } from "sanity";
+import { COR, RAIO, bolinha } from "./estilo";
 
 /* ---------------------------------------------------------------------------
    "ESTA FOTO É DE" — A LISTA, NO LUGAR DA DIGITAÇÃO
@@ -69,13 +70,19 @@ export function CorDaFoto(props: StringInputProps) {
      vazio com uma opção só é ruído. A frase diz onde resolver. */
   if (nomes.length === 0) {
     return (
-      <Card as="div" padding={3} radius={2} tone="transparent" border>
+      <div
+        style={{
+          padding: "10px 12px",
+          borderRadius: RAIO.acao,
+          border: `1px solid ${COR.fio}`,
+        }}
+      >
         <Text as="div" size={1} muted>
           Esta peça ainda não tem cores. Cadastre as cores em{" "}
           <strong>Cores e tamanhos</strong> para poder vincular uma foto a uma
           delas.
         </Text>
-      </Card>
+      </div>
     );
   }
 
@@ -115,7 +122,7 @@ export function CorDaFoto(props: StringInputProps) {
       ) : (
         <Text as="div" size={1} muted>
           {value
-            ? "Esta foto aparece quando a cliente escolhe essa cor."
+            ? "Essa foto aparece quando a cliente seleciona essa cor."
             : "Foto geral: fica na galeria e não responde a nenhuma bolinha."}
         </Text>
       )}
@@ -125,20 +132,5 @@ export function CorDaFoto(props: StringInputProps) {
 
 /** A amostra, do mesmo tamanho e com o mesmo fio que a cliente vê no site. */
 function Bolinha({ hex, vazia }: { hex?: string; vazia?: boolean }) {
-  return (
-    <span
-      aria-hidden="true"
-      style={{
-        flex: "none",
-        display: "block",
-        width: 22,
-        height: 22,
-        borderRadius: 999,
-        background: vazia || !hex ? "transparent" : hex,
-        boxShadow: vazia
-          ? "inset 0 0 0 1px rgb(22 19 15 / 0.24)"
-          : "inset 0 0 0 1px rgb(22 19 15 / 0.32)",
-      }}
-    />
-  );
+  return <span aria-hidden="true" style={bolinha(22, vazia ? undefined : hex)} />;
 }

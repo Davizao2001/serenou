@@ -36,12 +36,27 @@
   --serenou-areia-forte: #d3c3ac;
   --serenou-carvao: #16130f;
   --serenou-oliva: #565e38;
+
+  /* O fio de contorno, nos dois pesos do site. Os componentes próprios
+     (sanity/componentes/estilo.ts) leem daqui em vez de repetir o rgba. */
+  --serenou-fio: rgb(22 19 15 / 0.16);
+  --serenou-fio-forte: rgb(22 19 15 / 0.3);
 }
 
 /* ---- Plano 1: a barra do topo -------------------------------------------
    Carvão, com um fio de areia embaixo em vez da sombra padrão. Tudo que
    está dentro dela herda a tinta clara — menos o avatar, que tem cor
-   própria e é como a pessoa se reconhece na tela. */
+   própria e é como a pessoa se reconhece na tela.
+
+   MAIS DISCRETA DO QUE ERA
+
+   A hierarquia da tela é peça > navegação > auxiliares, e a barra estava
+   competindo: tinta cheia, mesmo peso do conteúdo. Agora os itens da barra
+   ficam a 76% de opacidade e sobem para 100% no hover e no foco — some do
+   caminho quando não é a vez dela, e continua legível (76% de linho sobre
+   carvão dá 8,6:1, bem acima do mínimo).
+
+   A marca fica em 100%: é âncora, não navegação. */
 .painel-serenou [data-ui="Navbar"][data-scheme="light"] {
   background-color: var(--serenou-carvao) !important;
   color: var(--serenou-linho) !important;
@@ -51,6 +66,17 @@
 
 .painel-serenou [data-ui="Navbar"][data-scheme="light"] *:not([data-ui="Avatar"]):not([data-ui="Avatar"] *) {
   color: inherit !important;
+}
+
+.painel-serenou [data-ui="Navbar"][data-scheme="light"] :is([data-ui="Button"], [data-ui="MenuButton"], a) {
+  opacity: 0.76;
+  transition: opacity 0.15s ease-out;
+}
+
+.painel-serenou
+  [data-ui="Navbar"][data-scheme="light"]
+  :is([data-ui="Button"], [data-ui="MenuButton"], a):is(:hover, :focus-visible, [data-selected]) {
+  opacity: 1;
 }
 
 .painel-serenou [data-ui="Navbar"][data-scheme="light"] :is([data-ui="Card"], [data-ui="Button"], [data-ui="Box"], [data-ui="MenuButton"]) {
@@ -93,14 +119,20 @@
   background-color: rgba(22, 19, 15, 0.06) !important;
 }
 
-/* Onde a Grazi está agora: carvão sólido, o mesmo gesto do "QUERO ESSA
-   PEÇA". Sem isto o item selecionado sai quase branco sobre areia. */
+/* Onde a Grazi está agora.
+
+   Era carvão sólido — e um retângulo preto na coluna puxava o olho para a
+   navegação, justamente o contrário da hierarquia que a peça precisa. Agora é
+   o papel claro da área de trabalho com um prumo de carvão à esquerda: diz
+   "é este" sem gritar, e ainda amarra visualmente a coluna ao painel do
+   documento, que tem esse mesmo fundo. */
 .painel-serenou [data-testid="structure-tool-list-pane"] [data-ui="PreviewCard"][data-scheme="light"][data-selected] {
-  background-color: var(--serenou-carvao) !important;
+  background-color: var(--serenou-linho-alto) !important;
+  box-shadow: inset 3px 0 0 0 var(--serenou-carvao);
 }
 
-.painel-serenou [data-testid="structure-tool-list-pane"] [data-ui="PreviewCard"][data-scheme="light"][data-selected] :is([data-ui="Text"], svg) {
-  color: var(--serenou-linho) !important;
+.painel-serenou [data-testid="structure-tool-list-pane"] [data-ui="PreviewCard"][data-scheme="light"][data-selected] [data-ui="Text"] {
+  font-weight: 600;
 }
 
 /* ---- Fios --------------------------------------------------------------- */
@@ -177,4 +209,124 @@
 .painel-serenou [data-ui="Preview"] [data-ui="Media"] img {
   border-radius: 0;
   object-fit: cover;
+}
+
+/* ---------------------------------------------------------------------------
+   A ETAPA ATIVA
+
+   As cinco etapas — A peça, Fotos, Cores e tamanhos, Onde aparece, Revisar —
+   são a espinha do cadastro, e a aba selecionada vinha quase igual às outras:
+   mesma tinta, mesmo peso, só um fundo levíssimo.
+
+   Três sinais somados, nenhum grande: peso 600, um fundo de areia discreto e
+   um fio de carvão embaixo. Três porque um só falha para alguém — quem não
+   distingue o bege percebe o peso, quem lê rápido percebe o fio.
+
+   Não vira pastilha: o raio continua o mesmo dos outros controles e o fundo
+   é o bege da casa, não uma cor de destaque.
+
+   A regra cobre `aria-selected` e `data-selected` porque o Sanity usa os dois
+   conforme o componente, e testar visualmente cada um custaria mais do que
+   escrever os dois seletores.
+--------------------------------------------------------------------------- */
+.painel-serenou [data-ui="Tab"] {
+  font-weight: 400;
+  opacity: 0.72;
+  transition:
+    opacity 0.15s ease-out,
+    background-color 0.15s ease-out;
+}
+
+.painel-serenou [data-ui="Tab"]:hover {
+  opacity: 1;
+}
+
+.painel-serenou
+  [data-ui="Tab"]:is([aria-selected="true"], [data-selected], [data-state="active"]) {
+  opacity: 1;
+  font-weight: 600;
+  background-color: rgba(230, 219, 203, 0.55);
+  box-shadow: inset 0 -2px 0 0 var(--serenou-carvao);
+}
+
+/* ---------------------------------------------------------------------------
+   UMA LINGUAGEM SÓ
+
+   Campo, seletor e botão tinham alturas de fábrica diferentes, o que fazia
+   uma linha com input + botão sair desalinhada. 44px em todos — o mesmo alvo
+   de toque que o site usa, e o que faz o painel funcionar no telefone sem
+   régua diferente.
+
+   O rótulo de campo ganha o mesmo tratamento dos rótulos do site: menor, com
+   entreletra, em carvão médio. É o que separa "o que é este campo" de "o que
+   eu escrevi nele".
+--------------------------------------------------------------------------- */
+.painel-serenou :is([data-ui="TextInput"], [data-ui="Select"]) input,
+.painel-serenou :is([data-ui="TextInput"], [data-ui="Select"]) select {
+  min-height: 44px;
+}
+
+.painel-serenou [data-ui="Button"]:not([data-ui="Navbar"] [data-ui="Button"]) {
+  min-height: 40px;
+}
+
+/* ---------------------------------------------------------------------------
+   AGRUPAR POR ESPAÇO, NÃO POR MOLDURA
+
+   O formulário do Sanity já desenha um cartão por campo de objeto. Somado ao
+   cartão do formulário e ao do painel, um array de cores dentro de uma peça
+   chegava a três bordas concêntricas.
+
+   Aqui as bordas internas dos fieldsets viram fio de cima — a separação
+   continua, a caixa some. Os componentes próprios seguem a mesma regra em
+   sanity/componentes/estilo.ts.
+--------------------------------------------------------------------------- */
+.painel-serenou [data-ui="Fieldset"] {
+  border: 0;
+  border-top: 1px solid var(--serenou-fio);
+  border-radius: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   TELEFONE
+
+   Desktop primeiro, telefone capaz. O Studio já colapsa os painéis sozinho; o
+   que ele não faz é impedir que as cinco abas virem uma fileira espremida com
+   rótulo cortado. Abaixo de 480px elas rolam na horizontal, inteiras, com o
+   gesto que a Grazi já usa no trilho de categorias do site.
+
+   As ações do documento empilham em vez de disputar a mesma linha, e o alvo
+   de toque não encolhe: 44px continua 44px no telefone, que é onde ele mais
+   importa.
+--------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+  .painel-serenou [role="tablist"] {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .painel-serenou [role="tablist"]::-webkit-scrollbar {
+    display: none;
+  }
+
+  .painel-serenou [data-ui="Tab"] {
+    flex: none;
+    white-space: nowrap;
+  }
+
+  /* O rodapé de ações do documento: empilhado, cada botão com a largura
+     inteira. Espremidos lado a lado, "Publicar" e o menu de ações ficavam
+     com alvo menor que o mínimo. */
+  .painel-serenou [data-testid="document-panel-actions"] {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .painel-serenou [data-testid="document-panel-actions"] > * {
+    flex: 1 1 auto;
+  }
 }

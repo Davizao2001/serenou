@@ -168,7 +168,14 @@ export function acoesDaPeca(
     const renomeada: DocumentActionComponent = (props) => {
       const descricao = acao(props);
       if (!descricao) return null;
-      return { ...descricao, label: "Excluir definitivamente" };
+      /* `critical` é o tom que o Sanity reserva para o que não tem volta —
+         vermelho, separado do resto do menu. É a diferença visível entre
+         "Tirar do ar", que é reversível e fica em `caution`, e apagar. */
+      return {
+        ...descricao,
+        label: "Excluir definitivamente",
+        tone: "critical" as const,
+      };
     };
     renomeada.action = acao.action;
     renomeada.displayName = "ExcluirDefinitivamente";

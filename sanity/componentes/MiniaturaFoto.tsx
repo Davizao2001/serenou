@@ -75,7 +75,7 @@ export function MiniaturaFoto(props: ObjectItemProps) {
         {principal && (
           <div style={{ paddingLeft: 4 }}>
             <span style={{ fontSize: 11, opacity: 0.6 }}>
-              aparece primeiro no catálogo
+              é a primeira imagem exibida no catálogo
             </span>
           </div>
         )}

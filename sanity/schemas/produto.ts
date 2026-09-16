@@ -238,7 +238,7 @@ export const produto = defineType({
       type: "array",
       group: "opcoes",
       description:
-        "Deixe vazio se a peça não tem opção de cor — o site simplesmente não mostra o seletor.",
+        "Sem cor cadastrada, o site não mostra o seletor de cor na peça.",
       components: { input: CoresDaPeca },
       validation: (r) =>
         r.custom((cores, contexto) => {
@@ -331,7 +331,7 @@ export const produto = defineType({
       type: "array",
       group: "opcoes",
       description:
-        "Os cinco mais usados estão em botões. Para 38, Único ou outro, use Adicionar item. Peça sem tamanho é só deixar vazio.",
+        "Sem tamanho cadastrado, o site não mostra o seletor de tamanho na peça.",
       components: { input: TamanhosDaPeca },
       /* "M" duas vezes vira dois botões "M" na página da peça — e, se só um
          dos dois estiver marcado como esgotado, um riscado e o outro não,
@@ -396,11 +396,13 @@ export const produto = defineType({
             value: "disponivel",
           },
           {
-            title: "Esgotada — aparece com selo, sem botão de pedido",
+            title:
+              "Esgotada — aparece no site, mas não pode ser pedida normalmente",
             value: "indisponivel",
           },
           {
-            title: "Oculta — sai do site, e o cadastro fica guardado aqui",
+            title:
+              "Oculta — continua cadastrada, mas não aparece no site",
             value: "oculto",
           },
         ],
