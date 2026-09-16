@@ -229,24 +229,45 @@
    conforme o componente, e testar visualmente cada um custaria mais do que
    escrever os dois seletores.
 --------------------------------------------------------------------------- */
+/* A cor da aba é fixada aqui, e não herdada, por um motivo aritmético: a
+   etapa inativa recua por opacidade, e opacidade sobre uma cor desconhecida
+   dá um contraste desconhecido. Com carvão fixo, 0,62 sobre o linho é
+   4,89:1 — medido, acima do 4,5:1 que texto pequeno exige. A ativa, em 1,
+   dá 15,8:1. A distância entre as duas é o que faz a etapa de agora saltar,
+   e ela existe sem empurrar a inativa para baixo do legível. */
+.painel-serenou [data-ui="Tab"],
+.painel-serenou [data-ui="Tab"] [data-ui="Text"] {
+  color: var(--serenou-carvao);
+}
+
 .painel-serenou [data-ui="Tab"] {
   font-weight: 400;
-  opacity: 0.72;
+  opacity: 0.62;
   transition:
     opacity 0.15s ease-out,
     background-color 0.15s ease-out;
 }
 
 .painel-serenou [data-ui="Tab"]:hover {
-  opacity: 1;
+  opacity: 0.85;
 }
 
 .painel-serenou
   [data-ui="Tab"]:is([aria-selected="true"], [data-selected], [data-state="active"]) {
   opacity: 1;
   font-weight: 600;
-  background-color: rgba(230, 219, 203, 0.55);
+  color: var(--serenou-carvao);
+  background-color: rgba(230, 219, 203, 0.7);
   box-shadow: inset 0 -2px 0 0 var(--serenou-carvao);
+}
+
+/* O rótulo dentro da aba também precisa engrossar — o Sanity desenha o texto
+   num `Text` filho, e `font-weight` no botão não atravessa. */
+.painel-serenou
+  [data-ui="Tab"]:is([aria-selected="true"], [data-selected], [data-state="active"])
+  [data-ui="Text"] {
+  font-weight: 600;
+  color: var(--serenou-carvao);
 }
 
 /* ---------------------------------------------------------------------------
@@ -271,22 +292,25 @@
 }
 
 /* ---------------------------------------------------------------------------
-   AGRUPAR POR ESPAÇO, NÃO POR MOLDURA
+   AGRUPAR POR ESPAÇO E FIO, NÃO POR MOLDURA
 
-   O formulário do Sanity já desenha um cartão por campo de objeto. Somado ao
-   cartão do formulário e ao do painel, um array de cores dentro de uma peça
-   chegava a três bordas concêntricas.
+   Correção de uma regra anterior que mirava `[data-ui="Fieldset"]` — esse
+   componente não existe neste Studio, então a regra não pegava nada. O
+   agrupamento do formulário sai de `MemberFieldSet`, que monta um Stack com
+   título e `data-testid="fieldset-<nome>"`. É esse o gancho, e ele é estável
+   porque o Sanity o publica de propósito, para teste.
 
-   Aqui as bordas internas dos fieldsets viram fio de cima — a separação
-   continua, a caixa some. Os componentes próprios seguem a mesma regra em
-   sanity/componentes/estilo.ts.
+   A boa notícia do engano: o fieldset do Sanity JÁ vem sem borda. Não havia
+   cartão para desfazer — faltava a separação. Então o que entra aqui é só um
+   fio em cima e ar em volta: o bloco começa visivelmente, e nenhuma moldura
+   nova nasce dentro do cartão do formulário.
+
+   Os componentes próprios seguem a mesma regra em sanity/componentes/estilo.ts.
 --------------------------------------------------------------------------- */
-.painel-serenou [data-ui="Fieldset"] {
-  border: 0;
+.painel-serenou [data-testid^="fieldset-"] {
   border-top: 1px solid var(--serenou-fio);
-  border-radius: 0;
-  padding-left: 0;
-  padding-right: 0;
+  margin-top: 12px;
+  padding-top: 20px;
 }
 
 /* ---------------------------------------------------------------------------
@@ -329,4 +353,45 @@
   .painel-serenou [data-testid="document-panel-actions"] > * {
     flex: 1 1 auto;
   }
+}
+
+/* ---------------------------------------------------------------------------
+   A LARGURA ÚTIL DO FORMULÁRIO
+
+   O Studio limita a ficha a 640px. Isso é régua de texto corrido, e aqui não
+   é texto corrido: é ficha de produto, com radio de categoria, grade de
+   fotos, fileira de cores e fileira de tamanhos — tudo coisa que ganha quando
+   tem onde se espalhar. Em 1440 sobrava tanta margem que o formulário parecia
+   uma coluna solta no meio da tela.
+
+   52rem (832px), e não a tela inteira. Campo de texto com 1200px de largura é
+   pior que campo estreito: o olho perde o começo da linha ao voltar, e o
+   rótulo fica a um palmo do valor. 832 cabe folgado em 1280 e enche 1440 sem
+   esticar nada.
+
+   ONDE A TRAVA REALMENTE MORA
+
+   Não é no `Container` do @sanity/ui — é num `div` próprio do formulário
+   (`FormContainerRoot`), com `max-width: calc(640px + calços)`. Ele não tem
+   atributo próprio para mirar, mas é filho DIRETO do scroller e é o único
+   que contém o `form-view`. Daí o `:has()`: descreve o elemento pelo que ele
+   guarda, em vez de depender de uma classe gerada que muda a cada versão do
+   Sanity.
+
+   O `Container` entra junto porque cabeçalho e rodapé do documento usam
+   `width={1}` — os mesmos 640px. Sem isso, a ficha ficaria mais larga que o
+   próprio topo dela, e a borda de um não bateria com a do outro.
+
+   Só `max-width` muda: abaixo de 832px tudo continua encolhendo como antes,
+   então o celular não sente nada disto.
+--------------------------------------------------------------------------- */
+.painel-serenou
+  [data-testid="document-panel-scroller"]
+  > div:has([data-testid="form-view"]) {
+  max-width: 52rem;
+}
+
+.painel-serenou [data-testid="document-pane"] [data-ui="Container"],
+.painel-serenou [data-testid="document-panel-scroller"] [data-ui="Container"] {
+  max-width: 52rem;
 }

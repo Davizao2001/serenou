@@ -162,7 +162,10 @@ export function Revisar(props: { document: { displayed: Partial<SanityDocument> 
   const capa = miniatura(fotos[0]);
 
   return (
-    <div style={{ padding: 20, maxWidth: 820, margin: "0 auto" }}>
+    /* A mesma régua do formulário (52rem em painel.css): a revisão é a
+         continuação da mesma tela, e mudar de largura no meio do caminho
+         faria a peça parecer outra. */
+    <div style={{ padding: 20, maxWidth: "52rem", margin: "0 auto" }}>
       <Flex as="div" direction="column" gap={5}>
         {/* ---- A peça ---- */}
         <Card as="div" padding={4} radius={3} border>

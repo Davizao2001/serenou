@@ -45,10 +45,35 @@ export const produto = defineType({
     { name: "vitrine", title: "Onde aparece" },
   ],
 
-  /* O endereço da página é o único campo técnico que sobrou no formulário, e
-     fica fechado. Ele se preenche sozinho a partir do nome (ver
-     `EnderecoDaPagina`); quem precisar renomear de propósito abre a gaveta. */
+  /* ---------------------------------------------------------------------
+     OS CAMPOS AGRUPADOS POR ASSUNTO
+
+     A aba "A peça" lia como uma sequência: nome, valor, categoria, descrição,
+     um atrás do outro, todos com o mesmo peso. Agora ela lê em dois tempos —
+     o que a peça É (nome, descrição, informações), e depois, atrás de um fio,
+     por quanto e em que categoria ela se vende. Os campos de preço e
+     categoria mudaram de lugar na declaração só por isso; o documento não
+     tem ordem, então nada nos cadastros muda.
+
+     SÓ OS AGRUPAMENTOS QUE EXISTEM DE VERDADE
+
+     Não há fieldset em volta de nome/descrição: a aba já se chama "A peça",
+     e um bloco chamado "Informações da peça" dentro dela seria o mesmo
+     rótulo duas vezes — ainda por cima brigando com o campo que já tem esse
+     nome. O mesmo vale para a situação em "Onde aparece": um bloco de um
+     campo só, com o nome do campo, é moldura sem conteúdo. Ela fica solta no
+     topo e "Coleções" é o único grupo da aba.
+
+     Isto é agrupamento de FORMULÁRIO, não de dado: `fieldset` muda onde o
+     campo aparece na tela e não toca no documento. Os 18 cadastros continuam
+     válidos, byte por byte.
+
+     Sem moldura: o `painel.css` desenha fieldset como fio de cima mais
+     rótulo, e não como mais um cartão dentro do cartão do formulário.
+  --------------------------------------------------------------------- */
   fieldsets: [
+    { name: "venda", title: "Valor e categoria" },
+    { name: "colecoes", title: "Coleções" },
     {
       name: "avancado",
       title: "Configuração avançada",
@@ -64,56 +89,6 @@ export const produto = defineType({
       group: "principal",
       description: "Como a peça aparece no site e na mensagem do WhatsApp.",
       validation: (r) => r.required().error("A peça precisa de um nome."),
-    }),
-
-    defineField({
-      name: "slug",
-      title: "Endereço da página",
-      type: "slug",
-      group: "principal",
-      fieldset: "avancado",
-      description:
-        "É o final do link da peça, e se preenche sozinho pelo nome. Depois que o link já circulou no WhatsApp, mudar aqui transforma toda mensagem enviada em página não encontrada.",
-      options: { source: "nome", maxLength: 80 },
-      components: { input: EnderecoDaPagina },
-      validation: (r) =>
-        r.required().error("A peça precisa de um endereço. Escreva um nome e ele aparece sozinho."),
-    }),
-
-    defineField({
-      name: "preco",
-      title: "Valor (R$)",
-      type: "number",
-      group: "principal",
-      description: "Só o número. Exemplo: 189,90",
-      /* Cada regra com a sua mensagem, e não uma só no fim da corrente.
-         `.error("Informe o valor")` aplicado à cadeia inteira respondia isso
-         também para um preço negativo, que não explica nada.
-
-         O teto e as duas casas decimais existem por um erro de digitação
-         concreto: sem eles, `18990` no lugar de `189,90` publica um vestido
-         de R$ 18.990,00 em silêncio — e esse número segue direto para a
-         mensagem do WhatsApp. 9.999,99 está muito acima da peça mais cara da
-         loja e muito abaixo de um dedo escorregando no teclado.
-
-         `min(0.01)` e não `min(0)`: peça de graça não existe no catálogo, e
-         um zero esquecido aparecia como "R$ 0,00" na vitrine. */
-      validation: (r) => [
-        r.required().error("Informe o valor da peça."),
-        r.min(0.01).error("O valor precisa ser maior que zero."),
-        r.max(9999.99).error("Valor acima de R$ 9.999,99 — confira se não faltou a vírgula."),
-        r.precision(2).error("No máximo duas casas decimais. Exemplo: 189,90"),
-      ],
-    }),
-
-
-    defineField({
-      name: "categoria",
-      title: "Categoria",
-      type: "string",
-      group: "principal",
-      options: { list: CATEGORIAS_SANITY, layout: "radio" },
-      validation: (r) => r.required().error("Escolha uma categoria."),
     }),
 
     defineField({
@@ -141,6 +116,51 @@ export const produto = defineType({
       description:
         "Uma informação por linha: tecido, modelagem, comprimento, o que vier junto.",
       of: [{ type: "string" }],
+    }),
+
+    defineField({
+      name: "preco",
+      title: "Valor (R$)",
+      type: "number",
+      group: "principal",
+      fieldset: "venda",
+      description: "Só o número. Exemplo: 189,90",
+      /* Cada regra com a sua mensagem, e não uma só no fim da corrente.
+         `.error("Informe o valor")` aplicado à cadeia inteira respondia isso
+         também para um preço negativo, que não explica nada.
+
+         O teto e as duas casas decimais existem por um erro de digitação
+         concreto: sem eles, `18990` no lugar de `189,90` publica um vestido
+         de R$ 18.990,00 em silêncio — e esse número segue direto para a
+         mensagem do WhatsApp. 9.999,99 está muito acima da peça mais cara da
+         loja e muito abaixo de um dedo escorregando no teclado.
+
+         `min(0.01)` e não `min(0)`: peça de graça não existe no catálogo, e
+         um zero esquecido aparecia como "R$ 0,00" na vitrine. */
+      validation: (r) => [
+        r.required().error("Informe o valor da peça."),
+        r.min(0.01).error("O valor precisa ser maior que zero."),
+        r.max(9999.99).error("Valor acima de R$ 9.999,99 — confira se não faltou a vírgula."),
+        r.precision(2).error("No máximo duas casas decimais. Exemplo: 189,90"),
+        /* Entre o certo e o absurdo existe o suspeito. Hoje o catálogo vai de
+           R$ 59 a R$ 159 — mil reais é seis vezes a peça mais cara da loja,
+           então o aviso nunca incomoda um cadastro legítimo e pega a vírgula
+           esquecida antes do erro duro de 9.999,99. Aviso, não erro: se um dia
+           existir uma peça de dois mil, ela publica assim mesmo. */
+        r
+          .max(999.99)
+          .warning("Bem acima do que a loja costuma cobrar. Confira se não faltou a vírgula."),
+      ],
+    }),
+
+    defineField({
+      name: "categoria",
+      title: "Categoria",
+      type: "string",
+      group: "principal",
+      fieldset: "venda",
+      options: { list: CATEGORIAS_SANITY, layout: "radio" },
+      validation: (r) => r.required().error("Escolha uma categoria."),
     }),
 
     defineField({
@@ -384,7 +404,7 @@ export const produto = defineType({
       group: "vitrine",
       initialValue: "disponivel",
       description:
-        "Onde a peça está hoje. Dá para mudar quantas vezes quiser — nada se perde.",
+        "Define se a peça aparece e pode ser pedida no site.",
       /* Cada rótulo diz a consequência, não só o estado. "Indisponível" virou
          "Esgotada" porque é a palavra que a Grazi usa e é o que o selo do site
          escreve — o painel e a loja falando a mesma língua. */
@@ -402,7 +422,7 @@ export const produto = defineType({
           },
           {
             title:
-              "Oculta — continua cadastrada, mas não aparece no site",
+              "Oculta — continua cadastrada, mas não aparece para as clientes",
             value: "oculto",
           },
         ],
@@ -412,6 +432,7 @@ export const produto = defineType({
 
     defineField({
       name: "novidade",
+      fieldset: "colecoes",
       title: "É novidade",
       type: "boolean",
       group: "vitrine",
@@ -422,6 +443,7 @@ export const produto = defineType({
 
     defineField({
       name: "promocao",
+      fieldset: "colecoes",
       title: "Está em promoção",
       type: "boolean",
       group: "vitrine",
@@ -431,6 +453,7 @@ export const produto = defineType({
     }),
     defineField({
       name: "precoAnterior",
+      fieldset: "colecoes",
       title: "Valor antes da promoção (R$)",
       type: "number",
       group: "vitrine",
@@ -476,6 +499,19 @@ export const produto = defineType({
         }),
     }),
 
+    defineField({
+      name: "slug",
+      title: "Endereço da página",
+      type: "slug",
+      group: "principal",
+      fieldset: "avancado",
+      description:
+        "É o final do link da peça, e se preenche sozinho pelo nome. Depois que o link já circulou no WhatsApp, mudar aqui transforma toda mensagem enviada em página não encontrada.",
+      options: { source: "nome", maxLength: 80 },
+      components: { input: EnderecoDaPagina },
+      validation: (r) =>
+        r.required().error("A peça precisa de um endereço. Escreva um nome e ele aparece sozinho."),
+    }),
 
     defineField({
       name: "teste",
