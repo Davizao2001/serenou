@@ -1,5 +1,10 @@
 import { defineField, defineType } from "sanity";
 import { CATEGORIAS } from "../../lib/loja";
+import { CorDaFoto } from "../componentes/CorDaFoto";
+import { MiniaturaFoto } from "../componentes/MiniaturaFoto";
+import { CoresDaPeca } from "../componentes/CoresDaPeca";
+import { TamanhosDaPeca } from "../componentes/TamanhosDaPeca";
+import { EnderecoDaPagina } from "../componentes/EnderecoDaPagina";
 
 /* ---------------------------------------------------------------------------
    PRODUTO — o único tipo de documento do painel
@@ -29,11 +34,26 @@ export const produto = defineType({
   title: "Peça",
   type: "document",
 
+  /* A ordem das abas é a ordem do cadastro: o que a peça é, como ela é
+     fotografada, em que cores e tamanhos existe, e onde aparece. A quinta
+     etapa — Revisar — não é aba de formulário: é uma view ao lado, porque
+     precisa ler o documento inteiro e não editar nada. Ver sanity.config.ts. */
   groups: [
     { name: "principal", title: "A peça", default: true },
     { name: "fotos", title: "Fotos" },
     { name: "opcoes", title: "Cores e tamanhos" },
     { name: "vitrine", title: "Onde aparece" },
+  ],
+
+  /* O endereço da página é o único campo técnico que sobrou no formulário, e
+     fica fechado. Ele se preenche sozinho a partir do nome (ver
+     `EnderecoDaPagina`); quem precisar renomear de propósito abre a gaveta. */
+  fieldsets: [
+    {
+      name: "avancado",
+      title: "Configuração avançada",
+      options: { collapsible: true, collapsed: true },
+    },
   ],
 
   fields: [
@@ -51,10 +71,13 @@ export const produto = defineType({
       title: "Endereço da página",
       type: "slug",
       group: "principal",
+      fieldset: "avancado",
       description:
-        "Gerado a partir do nome. É o final do link da peça. Depois de divulgado, evite mudar.",
+        "É o final do link da peça, e se preenche sozinho pelo nome. Depois que o link já circulou no WhatsApp, mudar aqui transforma toda mensagem enviada em página não encontrada.",
       options: { source: "nome", maxLength: 80 },
-      validation: (r) => r.required().error("Clique em Gerar para criar o endereço."),
+      components: { input: EnderecoDaPagina },
+      validation: (r) =>
+        r.required().error("A peça precisa de um endereço. Escreva um nome e ele aparece sozinho."),
     }),
 
     defineField({
@@ -83,50 +106,6 @@ export const produto = defineType({
       ],
     }),
 
-    defineField({
-      name: "precoAnterior",
-      title: "Valor antes da promoção (R$)",
-      type: "number",
-      group: "principal",
-      description:
-        "Preencha só quando a peça estiver em promoção. Aparece riscado ao lado do valor.",
-      hidden: ({ parent }) => !parent?.promocao,
-      /* OS DOIS CAMPOS DA PROMOÇÃO PRECISAM CONCORDAR — NOS DOIS SENTIDOS
-
-         `promocao` é uma caixa na aba "Onde aparece"; `precoAnterior` é um
-         número na aba "A peça". Eram independentes, e `hidden` esconde do
-         olho sem apagar o dado. Daí as duas incoerências que ninguém via:
-
-           promoção marcada, valor vazio  → selo "Promoção" sem desconto
-                                            nenhum na tela;
-           promoção desmarcada depois     → o campo some, o valor continua
-                                            gravado, e a peça saía de
-                                            Promoções CONTINUANDO com o preço
-                                            riscado.
-
-         Agora cada estado cobra o outro. Nenhuma peça estava em promoção
-         quando isto foi escrito, então nada no ar precisou ser corrigido — e
-         é por isso que era o momento de fechar. */
-      validation: (r) =>
-        r.custom((valor, contexto) => {
-          const pai = contexto.parent as
-            | { preco?: number; promocao?: boolean }
-            | undefined;
-
-          if (pai?.promocao && valor == null)
-            return "Peça em promoção precisa do valor de antes — é ele que aparece riscado.";
-
-          if (!pai?.promocao && valor != null)
-            return 'Só vale com "Está em promoção" marcado. Apague o valor ou marque a caixa em "Onde aparece".';
-
-          if (valor == null) return true;
-
-          if (pai?.preco != null && valor <= pai.preco)
-            return "O valor de antes precisa ser maior que o valor atual.";
-
-          return true;
-        }),
-    }),
 
     defineField({
       name: "categoria",
@@ -205,7 +184,12 @@ export const produto = defineType({
               title: "Cor desta foto",
               type: "string",
               description:
-                "Escreva exatamente o nome de uma das cores da peça. Deixe em branco se a foto não é de uma cor específica.",
+                "Escolha entre as cores cadastradas nesta peça, na aba Cores e tamanhos.",
+              components: { input: CorDaFoto },
+              /* A validação continua, e virou rede em vez de porteira: o
+                 seletor já impede escolher uma cor que não existe, mas ela
+                 pega o documento antigo cadastrado à mão e o caso de alguém
+                 renomear uma cor deixando fotos com o nome velho. */
               validation: (r) =>
                 r.custom((valor, contexto) => {
                   if (!valor) return true;
@@ -225,6 +209,24 @@ export const produto = defineType({
                 }),
             }),
           ],
+
+          /* O nome da cor vira o título da linha da foto — é a informação que
+             faltava para saber, sem abrir, a que cor cada fotografia pertence.
+             Sem cor, a linha diz "Foto geral", que é o estado normal de foto
+             de detalhe, de costas ou de peça fotografada em duas cores. */
+          preview: {
+            select: { cor: "cor", alt: "alt", media: "asset" },
+            prepare: ({ cor, alt, media }) => ({
+              title: (cor as string) || "Foto geral",
+              subtitle: (alt as string) || "Sem descrição",
+              media,
+            }),
+          },
+
+          /* O selo PRINCIPAL depende da POSIÇÃO, e `prepare` não recebe
+             posição. Por isso ele mora num componente de item, que recebe
+             `index` — ver `MiniaturaFoto`. */
+          components: { item: MiniaturaFoto },
         },
       ],
       validation: (r) => r.min(1).error("A peça precisa de pelo menos uma foto."),
@@ -237,20 +239,58 @@ export const produto = defineType({
       group: "opcoes",
       description:
         "Deixe vazio se a peça não tem opção de cor — o site simplesmente não mostra o seletor.",
-      /* Duas cores com o mesmo nome desenham duas bolinhas iguais no site, e
-         deixam a troca de fotografia ambígua: a validação de `imagens[].cor`
-         compara por nome, e com o nome repetido ela não sabe qual das duas a
-         foto representa. O erro é do cadastro, mas quem descobre é a cliente
-         clicando numa bolinha que não faz nada. */
+      components: { input: CoresDaPeca },
       validation: (r) =>
-        r.custom((cores) => {
-          const nomes = ((cores ?? []) as { nome?: string }[])
+        r.custom((cores, contexto) => {
+          const lista = (cores ?? []) as { nome?: string }[];
+          const nomes = lista
             .map((c) => c?.nome?.trim().toLowerCase())
             .filter(Boolean) as string[];
+
+          /* Duas cores com o mesmo nome desenham duas bolinhas iguais no site
+             e deixam a troca de fotografia ambígua: o vínculo é por nome, e
+             com o nome repetido não há como saber qual das duas a foto
+             representa. O erro é do cadastro, mas quem descobre é a cliente
+             clicando numa bolinha que não faz nada. */
           const repetido = nomes.find((n, i) => nomes.indexOf(n) !== i);
-          return repetido
-            ? `A cor "${repetido}" está cadastrada duas vezes. Cada cor entra uma vez só.`
-            : true;
+          if (repetido)
+            return `A cor "${repetido}" está cadastrada duas vezes. Cada cor entra uma vez só.`;
+
+          /* REMOVER UMA COR NÃO PODE DEIXAR FOTO ÓRFÃ
+
+             A validação de `imagens[].cor` só roda quando aquele campo é
+             editado. Removendo a cor aqui, as fotos marcadas com ela
+             continuavam apontando para um nome que não existe mais, e ninguém
+             avisava — a bolinha sumia do site e a foto ficava presa a nada.
+             Agora o aviso vem no campo onde a remoção acontece, dizendo
+             quantas fotos dependem daquela cor. */
+          const doc = contexto.document as
+            | { imagens?: { cor?: string }[] }
+            | undefined;
+          const usadas = (doc?.imagens ?? [])
+            .map((i) => i?.cor)
+            .filter(Boolean) as string[];
+
+          const igual = (a: string) =>
+            a.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const cadastradas = new Set(
+            lista.map((c) => igual(c?.nome ?? "")).filter(Boolean)
+          );
+
+          const orfas = new Map<string, number>();
+          for (const usada of usadas) {
+            if (cadastradas.has(igual(usada))) continue;
+            orfas.set(usada, (orfas.get(usada) ?? 0) + 1);
+          }
+
+          if (orfas.size > 0) {
+            const partes = [...orfas.entries()].map(
+              ([nome, n]) => `"${nome}" está em ${n} ${n === 1 ? "foto" : "fotos"}`
+            );
+            return `${partes.join(", ")}. Troque a cor dessas fotos na aba Fotos antes de remover a cor daqui.`;
+          }
+
+          return true;
         }),
       of: [
         {
@@ -291,7 +331,8 @@ export const produto = defineType({
       type: "array",
       group: "opcoes",
       description:
-        "Escreva os tamanhos como você usa: P, M, G, 38, Único. Deixe vazio se a peça não tem tamanho.",
+        "Os cinco mais usados estão em botões. Para 38, Único ou outro, use Adicionar item. Peça sem tamanho é só deixar vazio.",
+      components: { input: TamanhosDaPeca },
       /* "M" duas vezes vira dois botões "M" na página da peça — e, se só um
          dos dois estiver marcado como esgotado, um riscado e o outro não,
          lado a lado. */
@@ -342,12 +383,26 @@ export const produto = defineType({
       type: "string",
       group: "vitrine",
       initialValue: "disponivel",
+      description:
+        "Onde a peça está hoje. Dá para mudar quantas vezes quiser — nada se perde.",
+      /* Cada rótulo diz a consequência, não só o estado. "Indisponível" virou
+         "Esgotada" porque é a palavra que a Grazi usa e é o que o selo do site
+         escreve — o painel e a loja falando a mesma língua. */
       options: {
         layout: "radio",
         list: [
-          { title: "Disponível — aparece normalmente", value: "disponivel" },
-          { title: "Indisponível — aparece como esgotada", value: "indisponivel" },
-          { title: "Oculta — sai do site", value: "oculto" },
+          {
+            title: "Disponível — aparece no site e a cliente pode pedir",
+            value: "disponivel",
+          },
+          {
+            title: "Esgotada — aparece com selo, sem botão de pedido",
+            value: "indisponivel",
+          },
+          {
+            title: "Oculta — sai do site, e o cadastro fica guardado aqui",
+            value: "oculto",
+          },
         ],
       },
       validation: (r) => r.required(),
@@ -358,7 +413,8 @@ export const produto = defineType({
       title: "É novidade",
       type: "boolean",
       group: "vitrine",
-      description: "A peça aparece também em Novidades, sem sair da categoria dela.",
+      description:
+        "Aparece também em Novidades. Não troca a categoria: um vestido continua em Vestidos e aparece nos dois lugares.",
       initialValue: false,
     }),
 
@@ -367,9 +423,57 @@ export const produto = defineType({
       title: "Está em promoção",
       type: "boolean",
       group: "vitrine",
-      description: "A peça aparece também em Promoções, sem sair da categoria dela.",
+      description:
+        "Aparece também em Promoções, sem sair da categoria. Precisa do valor de antes, no campo que aparece abaixo.",
       initialValue: false,
     }),
+    defineField({
+      name: "precoAnterior",
+      title: "Valor antes da promoção (R$)",
+      type: "number",
+      group: "vitrine",
+      description:
+        "Preencha só quando a peça estiver em promoção. Aparece riscado ao lado do valor.",
+      hidden: ({ parent }) => !parent?.promocao,
+      /* OS DOIS CAMPOS DA PROMOÇÃO PRECISAM CONCORDAR — NOS DOIS SENTIDOS
+
+         Os dois campos ficavam em abas diferentes — a caixa aqui, o número
+         em "A peça" — e eram independentes. Para pôr uma peça em promoção a
+         Grazi marcava aqui, voltava para a primeira aba e preenchia o campo
+         que só então aparecia. Agora estão colados, e `hidden` esconde do
+         olho sem apagar o dado, o que produzia duas incoerências invisíveis:
+
+           promoção marcada, valor vazio  → selo "Promoção" sem desconto
+                                            nenhum na tela;
+           promoção desmarcada depois     → o campo some, o valor continua
+                                            gravado, e a peça saía de
+                                            Promoções CONTINUANDO com o preço
+                                            riscado.
+
+         Agora cada estado cobra o outro. Nenhuma peça estava em promoção
+         quando isto foi escrito, então nada no ar precisou ser corrigido — e
+         é por isso que era o momento de fechar. */
+      validation: (r) =>
+        r.custom((valor, contexto) => {
+          const pai = contexto.parent as
+            | { preco?: number; promocao?: boolean }
+            | undefined;
+
+          if (pai?.promocao && valor == null)
+            return "Peça em promoção precisa do valor de antes — é ele que aparece riscado.";
+
+          if (!pai?.promocao && valor != null)
+            return 'Só vale com "Está em promoção" marcado. Apague o valor ou marque a caixa em "Onde aparece".';
+
+          if (valor == null) return true;
+
+          if (pai?.preco != null && valor <= pai.preco)
+            return "O valor de antes precisa ser maior que o valor atual.";
+
+          return true;
+        }),
+    }),
+
 
     defineField({
       name: "teste",
@@ -391,27 +495,100 @@ export const produto = defineType({
     { name: "nome", title: "Nome (A–Z)", by: [{ field: "nome", direction: "asc" }] },
   ],
 
+  /* ---------------------------------------------------------------------
+     A LINHA DA LISTA
+
+     Reconhecer a peça sem abrir. Antes eram miniatura + nome + uma linha
+     curta; agora as três faixas que a lista oferece carregam o que a Grazi
+     precisa para decidir se é aquela peça mesmo:
+
+       Conjunto Bless
+       R$ 159,00 · Conjuntos
+       Disponível · 3 cores · P M G
+
+     Três faixas é o teto — o Sanity não renderiza uma quarta, e `prepare` só
+     devolve TEXTO: título, subtítulo e descrição. Nada de badge colorido aqui,
+     porque a structure não deixa customizar o render da linha nesta versão.
+     Conferido na tipagem do pacote, não suposto. Então o estado vai por
+     palavra, que também é o jeito que funciona para quem não distingue cor.
+
+     A ordem da terceira faixa é deliberada: primeiro o que muda o que a
+     cliente vê (situação, novidade, promoção), depois o que descreve a peça
+     (cores, tamanhos).
+  --------------------------------------------------------------------- */
   preview: {
     select: {
       title: "nome",
       categoria: "categoria",
       preco: "preco",
       status: "status",
+      novidade: "novidade",
+      promocao: "promocao",
       teste: "teste",
+      cores: "cores",
+      tamanhos: "tamanhos",
       media: "imagens.0",
     },
-    prepare: ({ title, categoria, preco, status, teste, media }) => {
+    prepare: ({
+      title,
+      categoria,
+      preco,
+      status,
+      novidade,
+      promocao,
+      teste,
+      cores,
+      tamanhos,
+      media,
+    }) => {
       const nomeCategoria =
-        CATEGORIAS_SANITY.find((c) => c.value === categoria)?.title ?? "sem categoria";
+        CATEGORIAS_SANITY.find((c) => c.value === categoria)?.title ??
+        "sem categoria";
+
       const valor =
         typeof preco === "number"
           ? preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
           : "sem valor";
-      const situacao =
-        status === "oculto" ? " · oculta" : status === "indisponivel" ? " · esgotada" : "";
+
+      /* O estado só aparece por extenso; "Disponível" é o caso comum e
+         também é dito, porque a lista mistura os três e o silêncio
+         obrigaria a deduzir. */
+      const estado =
+        status === "oculto"
+          ? "Oculta"
+          : status === "indisponivel"
+            ? "Esgotada"
+            : "Disponível";
+
+      const listaCores = (cores ?? []) as { nome?: string }[];
+      const listaTamanhos = (tamanhos ?? []) as { rotulo?: string }[];
+
+      const quantasCores = listaCores.filter((c) => c?.nome).length;
+      const rotulos = listaTamanhos
+        .map((t) => t?.rotulo)
+        .filter(Boolean) as string[];
+
+      const faixa = [
+        estado,
+        novidade ? "Novidade" : null,
+        promocao ? "Promoção" : null,
+        quantasCores > 0
+          ? `${quantasCores} ${quantasCores === 1 ? "cor" : "cores"}`
+          : null,
+        /* Cinco rótulos cabem; acima disso a linha estoura e vira ruído. */
+        rotulos.length > 0
+          ? rotulos.length <= 5
+            ? rotulos.join(" ")
+            : `${rotulos.length} tamanhos`
+          : null,
+      ]
+        .filter(Boolean)
+        .join(" · ");
+
       return {
         title: teste ? `${title} (teste)` : title,
-        subtitle: `${nomeCategoria} · ${valor}${situacao}`,
+        subtitle: `${valor} · ${nomeCategoria}`,
+        description: faixa,
         media,
       };
     },

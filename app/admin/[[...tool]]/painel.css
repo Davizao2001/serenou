@@ -113,16 +113,43 @@
   opacity: 0.6;
 }
 
-/* ---- Forma: canto reto ---------------------------------------------------
-   O site inteiro é quadrado: hero, botão, moldura de foto, card de produto.
-   Avatar e indicador de presença ficam de fora — ali o redondo é função,
-   não estilo. */
-.painel-serenou :is([data-ui="Button"], [data-ui="TextInput"], [data-ui="TextArea"], [data-ui="Select"], [data-ui="Menu"], [data-ui="MenuItem"], [data-ui="Dialog"], [data-ui="Popover"], [data-ui="Tab"], [data-ui="Autocomplete"]) {
-  border-radius: 0;
+/* ---- Forma: canto suave --------------------------------------------------
+
+   Aqui havia `border-radius: 0` em tudo, com a justificativa de que o site é
+   quadrado. Não é mais: o site trabalha com cinco raios — 16px na fotografia,
+   13px no painel, 12px no cartão, 11px na ação, 8px na miniatura — e o canto
+   reto no painel era o que fazia a ferramenta parecer de outra marca.
+
+   Os valores abaixo são os MESMOS tokens do site, escritos em pixel porque
+   `app/globals.css` não alcança esta rota. Proporcional, não arredondado:
+   o container é mais macio que o campo, e o campo mais que nada.
+
+   Avatar e indicador de presença continuam de fora — ali o redondo é função,
+   não estilo, e o Sanity já resolve. */
+.painel-serenou :is([data-ui="Dialog"], [data-ui="Popover"], [data-ui="Menu"]) {
+  border-radius: 13px;
 }
 
+.painel-serenou :is([data-ui="Card"], [data-ui="Tab"]) {
+  border-radius: 12px;
+}
+
+.painel-serenou :is([data-ui="Button"], [data-ui="TextInput"], [data-ui="TextArea"], [data-ui="Select"], [data-ui="Autocomplete"], [data-ui="MenuItem"]) {
+  border-radius: 10px;
+}
+
+/* O Sanity desenha campo e botão em duas camadas: a de fora recebe o foco, a
+   de dentro pinta o fundo. Sem a segunda regra, o preenchimento vaza pelos
+   cantos da primeira e aparece um quadradinho em cada canto. */
 .painel-serenou :is([data-ui="Button"], [data-ui="TextInput"], [data-ui="TextArea"], [data-ui="Select"]) > * {
-  border-radius: 0;
+  border-radius: inherit;
+}
+
+/* A fotografia da peça na lista e no formulário: o raio da miniatura do
+   site. */
+.painel-serenou [data-ui="Preview"] [data-ui="Media"] {
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 /* ---- Nome da peça --------------------------------------------------------

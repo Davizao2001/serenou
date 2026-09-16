@@ -7,6 +7,8 @@ import { apiVersion, dataset, projectId } from "./sanity/env";
 import { temaSerenou } from "./sanity/tema";
 import { traducoesSerenou } from "./sanity/i18n";
 import { MarcaSerenou } from "./sanity/MarcaSerenou";
+import { Revisar } from "./sanity/componentes/Revisar";
+import { acoesDaPeca } from "./sanity/componentes/acoes";
 
 /* ---------------------------------------------------------------------------
    PAINEL DA SERENOU
@@ -114,6 +116,24 @@ export default defineConfig({
                   .filter('_type == "produto" && teste == true')
               ),
           ]),
+
+      /* A QUINTA ETAPA DO CADASTRO É UMA VIEW, NÃO UMA ABA
+
+         "Revisar" precisa ler o documento inteiro — foto, preço, cores,
+         tamanhos, situação — e não edita nada. Uma aba de formulário
+         (`group`) mostra CAMPOS; uma view mostra o DOCUMENTO, e recebe
+         `document.displayed`: os valores atuais da tela, incluindo o que a
+         Grazi acabou de digitar e ainda não publicou.
+
+         É essa diferença que faz a revisão valer: consultando o dataset de
+         novo, ela mudaria o preço, abriria Revisar e veria o preço velho. */
+      defaultDocumentNode: (S, { schemaType }) =>
+        schemaType === "produto"
+          ? S.document().views([
+              S.view.form().title("Editar"),
+              S.view.component(Revisar).title("Revisar").id("revisar"),
+            ])
+          : S.document(),
     }),
     colorInput(),
     ptBRLocale(),
@@ -144,5 +164,11 @@ export default defineConfig({
 
   document: {
     comments: { enabled: false },
+
+    /* Ver no site, Copiar link e Tirar do ar entram; as nativas de risco vão
+       para o fim do menu e "Apagar" ganha um nome que não se confunde com
+       "Tirar do ar". Nenhuma ação nativa é quebrada — ver sanity/componentes/
+       acoes.tsx, inclusive o porquê de não adiantar esconder o apagar. */
+    actions: acoesDaPeca,
   },
 });
