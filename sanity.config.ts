@@ -1,5 +1,6 @@
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
+import { route } from "sanity/router";
 import { colorInput } from "@sanity/color-input";
 import { ptBRLocale } from "@sanity/locale-pt-br";
 import { schemaTypes } from "./sanity/schemas";
@@ -9,6 +10,8 @@ import { traducoesSerenou } from "./sanity/i18n";
 import { MarcaSerenou } from "./sanity/MarcaSerenou";
 import { Revisar } from "./sanity/componentes/Revisar";
 import { acoesDaPeca } from "./sanity/componentes/acoes";
+import { Ajuda } from "./sanity/ajuda/Ajuda";
+import { IconeAjuda } from "./sanity/ajuda/IconeAjuda";
 
 /* ---------------------------------------------------------------------------
    PAINEL DA SERENOU
@@ -137,6 +140,28 @@ export default defineConfig({
     }),
     colorInput(),
     ptBRLocale(),
+  ],
+
+  /* ---------------------------------------------------------------------
+     AJUDA — a segunda entrada da barra de cima
+
+     Uma ferramenta, ao lado de Peças. `tools` recebe as que já existem e
+     devolve a lista: nada do Studio é substituído.
+
+     A rota `/:artigo` é o que faz os links de ajuda espalhados pelo
+     formulário caírem no artigo certo, e não num índice. Sem ela,
+     "Entenda Disponível, Esgotada e Oculta" abriria a lista e a Grazi teria
+     que procurar de novo o que já tinha pedido.
+  --------------------------------------------------------------------- */
+  tools: (anteriores) => [
+    ...anteriores,
+    {
+      name: "ajuda",
+      title: "Ajuda",
+      icon: IconeAjuda,
+      component: Ajuda,
+      router: route.create("/:artigo"),
+    },
   ],
 
   /* Os pacotes entram depois do pt-BR: o último a declarar uma chave vence,

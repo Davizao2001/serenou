@@ -3,6 +3,7 @@ import { CATEGORIAS } from "../../lib/loja";
 import { CorDaFoto } from "../componentes/CorDaFoto";
 import { MiniaturaFoto } from "../componentes/MiniaturaFoto";
 import { FotosDaPeca } from "../componentes/FotosDaPeca";
+import { campoComAjuda } from "../ajuda/CampoComAjuda";
 import { CoresDaPeca } from "../componentes/CoresDaPeca";
 import { TamanhosDaPeca } from "../componentes/TamanhosDaPeca";
 import { EnderecoDaPagina } from "../componentes/EnderecoDaPagina";
@@ -306,7 +307,12 @@ export const produto = defineType({
          o menu de cada foto e o ajuste de recorte continuam sendo os do
          Sanity; nada disso é reimplementado aqui. */
       options: { layout: "grid" },
-      components: { input: FotosDaPeca },
+      /* O outro link. Aqui porque ligar a foto à cor errada é o engano que a
+         cliente descobre clicando numa bolinha e vendo a peça de outra cor. */
+      components: {
+        input: FotosDaPeca,
+        field: campoComAjuda("fotos-e-cores", "Como organizar fotos e cores"),
+      },
       of: [
         {
           type: "image",
@@ -446,6 +452,16 @@ export const produto = defineType({
       title: "Situação",
       type: "string",
       group: "vitrine",
+      /* Um dos dois únicos links de ajuda dentro do formulário. Aqui porque
+         escolher errado tira a peça do site — e a diferença entre "Esgotada"
+         e "Oculta" é a pergunta que mais custa caro no painel inteiro. A
+         microajuda continua sendo uma frase; o artigo é a fonte. */
+      components: {
+        field: campoComAjuda(
+          "situacao",
+          "Entenda Disponível, Esgotada e Oculta"
+        ),
+      },
       initialValue: "disponivel",
       description:
         "Define se a peça aparece e pode ser pedida no site.",

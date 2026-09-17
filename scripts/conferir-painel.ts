@@ -12,6 +12,7 @@
 import { altAutomatico } from "../sanity/lib/produtos";
 import { slotDeImagem } from "../sanity/lib/imagem";
 import { produto } from "../sanity/schemas/produto";
+import { ARTIGOS, artigoPor } from "../sanity/ajuda/artigos";
 
 let falhas = 0;
 function confere(nome: string, obtido: unknown, esperado: unknown) {
@@ -81,6 +82,40 @@ confere(
 const posicao = (n: string) => campos.findIndex((c) => c.name === n);
 confere("cor vem antes de foto", posicao("cores") < posicao("imagens"), true);
 confere("tamanho vem depois de foto", posicao("tamanhos") > posicao("imagens"), true);
+
+console.log("\nA AJUDA");
+confere("todo artigo tem id único", ARTIGOS.length, new Set(ARTIGOS.map((a) => a.id)).size);
+confere("todo artigo tem título e resumo", ARTIGOS.every((a) => a.titulo && a.resumo), true);
+confere("todo artigo tem conteúdo", ARTIGOS.every((a) => a.blocos.length > 0), true);
+
+/* Os dois links dentro do formulário apontam para artigos que existem. Um id
+   trocado abriria uma tela em branco, e é o tipo de erro que só aparece se
+   alguém clicar. */
+confere("link de ajuda da situação resolve", Boolean(artigoPor("situacao")), true);
+confere("link de ajuda das fotos resolve", Boolean(artigoPor("fotos-e-cores")), true);
+
+/* A ajuda tem que falar a língua da tela. O painel escreve "Esgotada" no
+   rádio da situação; um artigo dizendo "Indisponível" mandaria a Grazi
+   procurar uma opção que não existe. */
+const rotulosDaSituacao = (
+  (campos.find((c) => c.name === "status") as { options?: { list?: { title: string }[] } })
+    ?.options?.list ?? []
+).map((o) => o.title);
+const textoDaAjuda = JSON.stringify(ARTIGOS);
+confere(
+  "a ajuda usa as palavras do formulário",
+  rotulosDaSituacao.every((t) => textoDaAjuda.includes(t.split(" —")[0])),
+  true
+);
+confere("a ajuda não diz Indisponível", textoDaAjuda.includes("Indispon"), false);
+
+/* Nenhum termo técnico escapou para o texto que a Grazi lê. */
+const PROIBIDOS = ["schema", "dataset", "GROQ", "array", "slug", "draft", "mutation", "patch", "deploy", "documento do Sanity"];
+confere(
+  "sem termo técnico nos artigos",
+  PROIBIDOS.filter((t) => textoDaAjuda.toLowerCase().includes(t.toLowerCase())),
+  []
+);
 
 console.log("\nCADA INFORMAÇÃO EM UM LUGAR SÓ");
 const nomes = campos.map((c) => c.name);
