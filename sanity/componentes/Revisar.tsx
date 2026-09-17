@@ -103,14 +103,15 @@ export function Revisar(props: { document: { displayed: Partial<SanityDocument> 
      segunda régua que possa discordar dela. */
   const pendencias = useMemo(() => {
     const p: string[] = [];
-    if (!peca.nome?.trim()) p.push("Falta o nome da peça.");
+    if (!peca.nome?.trim()) p.push("Dê um nome à peça antes de publicar.");
     if (typeof peca.preco !== "number" || peca.preco <= 0)
-      p.push("Falta o valor da peça.");
-    if (!peca.categoria) p.push("Falta escolher uma categoria.");
-    if (fotos.length === 0) p.push("Falta pelo menos uma foto.");
-    if (!peca.status) p.push("Falta escolher a situação.");
+      p.push("Informe o valor da peça antes de publicar.");
+    if (!peca.categoria) p.push("Escolha uma categoria antes de publicar.");
+    if (fotos.length === 0)
+      p.push("Adicione pelo menos uma foto antes de publicar.");
+    if (!peca.status) p.push("Escolha a situação antes de publicar.");
     if (peca.promocao && typeof peca.precoAnterior !== "number")
-      p.push("A peça está marcada como promoção e falta o valor de antes.");
+      p.push("A peça está em promoção: informe o valor de antes, em No site.");
 
     const semFoto = cores
       .map((c) => c.nome as string)
@@ -138,10 +139,10 @@ export function Revisar(props: { document: { displayed: Partial<SanityDocument> 
     { rotulo: "Foto principal", ok: fotos.length > 0 },
     { rotulo: "Situação", ok: Boolean(peca.status) },
   ];
-  if (cores.length > 0)
-    conferidos.push({ rotulo: `Cores (${cores.length})`, ok: true });
-  if (tamanhos.length > 0)
-    conferidos.push({ rotulo: `Tamanhos (${tamanhos.length})`, ok: true });
+  /* Cinco linhas, e só as que impedem de publicar. "Cores (3)" e
+     "Tamanhos (5)" saíram: eram linhas que sempre diziam sim, e uma
+     conferência onde tudo sempre passa deixa de ser lida. Os dois números
+     continuam à vista, na prévia da peça logo acima. */
 
   const origem =
     typeof window !== "undefined" ? window.location.origin : undefined;

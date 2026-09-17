@@ -80,6 +80,66 @@ const CONSULTA_SLUGS = `*[${VISIVEIS}].slug.current`;
 const CATEGORIAS_CONHECIDAS = new Set<string>(CATEGORIAS.map((c) => c.slug));
 
 /** Converte o documento do Sanity no tipo que os componentes já usam. */
+
+/* ---------------------------------------------------------------------------
+   A DESCRIÇÃO AUTOMÁTICA DA FOTO
+
+   Isto é FALLBACK, e só. Em `slotDeImagem` a linha é
+   `alt: imagem.alt ?? alt ?? ""` — o que a Grazi escreveu no campo "Descrição
+   da foto" sempre vence. Nada é gravado no documento, nada é migrado, os
+   cadastros existentes não mudam um byte. Esta função só decide o que dizer
+   quando o campo está vazio.
+
+   O que havia antes era `"Conjunto Bless, fotografia 3"`. Está correto e não
+   diz nada: quem usa leitor de tela ouve um número de posição no lugar da
+   peça. Mas o documento já sabe mais do que isso — a foto tem `cor`, e a cor
+   tem nome. `"Conjunto Bless na cor bordô"` sai dos mesmos dados e descreve
+   a fotografia.
+
+   A CAPITALIZAÇÃO, SEM NLP
+
+   No painel a cor é um rótulo e começa com maiúscula: "Bordô", "Off-white".
+   Dentro de uma frase, "na cor Bordô" lê como nome próprio. A regra é a
+   mínima que funciona: derruba a PRIMEIRA letra e não toca no resto.
+
+     Bordô          → bordô
+     Off-white      → off-white
+     Azul-marinho   → azul-marinho
+     Azul Tiffany   → azul Tiffany     (Tiffany é marca, e sobrevive)
+
+   Uma regra. Sem dicionário, sem lista de exceções, sem tentar adivinhar o
+   que é nome próprio.
+
+   SEM COR
+
+   Quando a foto não tem cor vinculada não existe mais dado para usar — só a
+   posição. A primeira fica com o nome limpo, que é a que mais importa (é a
+   da vitrine e a que abre a página). As seguintes voltam a ser numeradas,
+   porque três fotos com alt idêntico é pior para leitor de tela do que três
+   numeradas: a pessoa perde a noção de quantas são e de onde está.
+
+   Essa é a fronteira honesta do automático. Descrever o que a foto MOSTRA
+   continua sendo trabalho do campo manual, que segue lá.
+--------------------------------------------------------------------------- */
+/** Exportada só para o teste em `scripts/conferir-painel.ts`. */
+export function altAutomatico(
+  nome: string | undefined,
+  cor: string | null | undefined,
+  indice: number
+): string {
+  if (!nome) return "";
+
+  const corLimpa = cor?.trim();
+  if (corLimpa) return `${nome} na cor ${minusculaInicial(corLimpa)}`;
+
+  return indice === 0 ? nome : `${nome}, foto ${indice + 1}`;
+}
+
+function minusculaInicial(texto: string): string {
+  return texto.charAt(0).toLocaleLowerCase("pt-BR") + texto.slice(1);
+}
+
+
 function adaptar(d: ProdutoSanity): Produto {
   /* Uma categoria que o site não conhece vinha virando "vestidos" em
      silêncio. Continua virando — a peça precisa aparecer em algum lugar, e
@@ -118,7 +178,7 @@ function adaptar(d: ProdutoSanity): Produto {
     imagens: (d.imagens ?? []).map((img, i) =>
       slotDeImagem(img, {
         id: `${d._id}-${i}`,
-        alt: d.nome ? `${d.nome}, fotografia ${i + 1}` : "",
+        alt: altAutomatico(d.nome, img?.cor, i),
         note: `Fotografia de ${d.nome ?? "peça"}`,
       })
     ),

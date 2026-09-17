@@ -2,6 +2,7 @@ import { defineField, defineType } from "sanity";
 import { CATEGORIAS } from "../../lib/loja";
 import { CorDaFoto } from "../componentes/CorDaFoto";
 import { MiniaturaFoto } from "../componentes/MiniaturaFoto";
+import { FotosDaPeca } from "../componentes/FotosDaPeca";
 import { CoresDaPeca } from "../componentes/CoresDaPeca";
 import { TamanhosDaPeca } from "../componentes/TamanhosDaPeca";
 import { EnderecoDaPagina } from "../componentes/EnderecoDaPagina";
@@ -34,15 +35,27 @@ export const produto = defineType({
   title: "Peça",
   type: "document",
 
-  /* A ordem das abas é a ordem do cadastro: o que a peça é, como ela é
-     fotografada, em que cores e tamanhos existe, e onde aparece. A quinta
-     etapa — Revisar — não é aba de formulário: é uma view ao lado, porque
-     precisa ler o documento inteiro e não editar nada. Ver sanity.config.ts. */
+  /* QUATRO ETAPAS, E POR QUE "FOTOS" E "CORES" VIRARAM UMA SÓ
+
+     Eram cinco lugares para quatro decisões. E a separação entre "Fotos" e
+     "Cores e tamanhos" não era só estética: era uma dependência de dados
+     virada do avesso. O campo `cor` de cada foto só oferece as cores já
+     cadastradas em `cores[]` — então cadastrar cor tinha que vir ANTES de
+     marcar foto, e as duas coisas moravam em abas diferentes. O caminho real
+     era Produto → Cores → Fotos → No site: ela saía da aba das fotos, ia
+     cadastrar cor, e voltava.
+
+     Juntas, a cor nasce na mesma tela onde a foto vai ser marcada. E o aviso
+     de "essa cor está em 3 fotos, troque antes de remover" passa a chegar com
+     as fotos à vista, em vez de numa aba onde elas não estão.
+
+     A quarta etapa — Revisar — não é aba de formulário: é uma view ao lado,
+     porque precisa ler o documento inteiro sem duplicar campo nenhum. Ver
+     sanity.config.ts. */
   groups: [
-    { name: "principal", title: "A peça", default: true },
-    { name: "fotos", title: "Fotos" },
-    { name: "opcoes", title: "Cores e tamanhos" },
-    { name: "vitrine", title: "Onde aparece" },
+    { name: "principal", title: "Produto", default: true },
+    { name: "fotos", title: "Fotos e opções" },
+    { name: "vitrine", title: "No site" },
   ],
 
   /* ---------------------------------------------------------------------
@@ -60,7 +73,7 @@ export const produto = defineType({
      Não há fieldset em volta de nome/descrição: a aba já se chama "A peça",
      e um bloco chamado "Informações da peça" dentro dela seria o mesmo
      rótulo duas vezes — ainda por cima brigando com o campo que já tem esse
-     nome. O mesmo vale para a situação em "Onde aparece": um bloco de um
+     nome. O mesmo vale para a situação em "No site": um bloco de um
      campo só, com o nome do campo, é moldura sem conteúdo. Ela fica solta no
      topo e "Coleções" é o único grupo da aba.
 
@@ -177,6 +190,14 @@ export const produto = defineType({
       group: "fotos",
       description:
         "A primeira foto é a que aparece na vitrine. Arraste para mudar a ordem.",
+      /* `layout: "grid"` é opção de schema do próprio Studio: ele troca
+         `ListArrayInput` por `GridArrayInput` e a lista vertical de linhas
+         vira uma grade de miniaturas — que é a forma certa para uma tela cujo
+         assunto é fotografia. Subir arquivo arrastando, reordenar arrastando,
+         o menu de cada foto e o ajuste de recorte continuam sendo os do
+         Sanity; nada disso é reimplementado aqui. */
+      options: { layout: "grid" },
+      components: { input: FotosDaPeca },
       of: [
         {
           type: "image",
@@ -211,7 +232,7 @@ export const produto = defineType({
               title: "Cor desta foto",
               type: "string",
               description:
-                "Escolha entre as cores cadastradas nesta peça, na aba Cores e tamanhos.",
+                "Escolha entre as cores cadastradas nesta peça, logo abaixo das fotos.",
               components: { input: CorDaFoto },
               /* A validação continua, e virou rede em vez de porteira: o
                  seletor já impede escolher uma cor que não existe, mas ela
@@ -227,7 +248,7 @@ export const produto = defineType({
                     .map((c) => c?.nome)
                     .filter(Boolean) as string[];
                   if (cores.length === 0)
-                    return "Esta peça ainda não tem cores cadastradas na aba Opções.";
+                    return "Esta peça ainda não tem cores cadastradas. Elas ficam logo abaixo das fotos.";
                   const igual = (a: string) =>
                     a.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
                   return cores.some((c) => igual(c) === igual(valor))
@@ -263,7 +284,7 @@ export const produto = defineType({
       name: "cores",
       title: "Cores",
       type: "array",
-      group: "opcoes",
+      group: "fotos",
       description:
         "Sem cor cadastrada, o site não mostra o seletor de cor na peça.",
       components: { input: CoresDaPeca },
@@ -314,7 +335,7 @@ export const produto = defineType({
             const partes = [...orfas.entries()].map(
               ([nome, n]) => `"${nome}" está em ${n} ${n === 1 ? "foto" : "fotos"}`
             );
-            return `${partes.join(", ")}. Troque a cor dessas fotos na aba Fotos antes de remover a cor daqui.`;
+            return `${partes.join(", ")}. Troque a cor dessas fotos aqui em cima, na miniatura, antes de remover a cor.`;
           }
 
           return true;
@@ -356,7 +377,7 @@ export const produto = defineType({
       name: "tamanhos",
       title: "Tamanhos",
       type: "array",
-      group: "opcoes",
+      group: "fotos",
       description:
         "Sem tamanho cadastrado, o site não mostra o seletor de tamanho na peça.",
       components: { input: TamanhosDaPeca },
@@ -495,7 +516,7 @@ export const produto = defineType({
             return "Peça em promoção precisa do valor de antes — é ele que aparece riscado.";
 
           if (!pai?.promocao && valor != null)
-            return 'Só vale com "Está em promoção" marcado. Apague o valor ou marque a caixa em "Onde aparece".';
+            return 'Só vale com "Está em promoção" marcado. Apague o valor ou marque a caixa acima.';
 
           if (valor == null) return true;
 
@@ -510,7 +531,7 @@ export const produto = defineType({
       name: "slug",
       title: "Endereço da página",
       type: "slug",
-      group: "principal",
+      group: "vitrine",
       fieldset: "avancado",
       description:
         "É o final do link da peça, e se preenche sozinho pelo nome. Depois que o link já circulou no WhatsApp, mudar aqui transforma toda mensagem enviada em página não encontrada.",
@@ -525,6 +546,7 @@ export const produto = defineType({
       title: "Peça de teste",
       type: "boolean",
       group: "vitrine",
+      fieldset: "avancado",
       description:
         "Uso interno, durante o desenvolvimento. Antes de o site ir ao ar, todas as peças marcadas aqui são apagadas.",
       initialValue: false,

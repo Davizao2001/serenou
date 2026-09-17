@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { Flex, Text } from "@sanity/ui";
-import { insert, type ArrayOfObjectsInputProps } from "sanity";
+import { insert, useFormValue, type ArrayOfObjectsInputProps } from "sanity";
 import { CORES_DA_LOJA, chave, valorDeCor } from "./paleta";
 import { ALTURA, COR, GRUPO, RAIO, ROTULO_GRUPO, bolinha } from "./estilo";
 
@@ -35,6 +35,9 @@ import { ALTURA, COR, GRUPO, RAIO, ROTULO_GRUPO, bolinha } from "./estilo";
 --------------------------------------------------------------------------- */
 
 type Cor = { _key?: string; nome?: string; amostra?: { hex?: string } };
+type Foto = { cor?: string };
+
+const SEM_FOTOS: Foto[] = [];
 
 export function CoresDaPeca(props: ArrayOfObjectsInputProps) {
   const { value, onChange, renderDefault } = props;
@@ -69,6 +72,8 @@ export function CoresDaPeca(props: ArrayOfObjectsInputProps) {
   return (
     <Flex as="div" direction="column" gap={4}>
       {renderDefault(props)}
+
+      <ContagemDeFotos cores={(value ?? []) as Cor[]} />
 
       {disponiveis.length > 0 && (
         <div style={GRUPO}>
@@ -133,5 +138,65 @@ function BotaoDeCor({
       <span aria-hidden="true" style={bolinha(18, hex)} />
       {nome}
     </button>
+  );
+}
+
+/* ---------------------------------------------------------------------------
+   QUANTAS FOTOS CADA COR TEM
+
+   A validação deste campo já avisa "essa cor está em 3 fotos, troque antes de
+   remover" — mas só na hora de remover, e antes disso o número era invisível.
+   Uma cor sem foto nenhuma não é erro (o site mostra as fotos das outras e
+   avisa a cliente), e é exatamente o tipo de coisa que passa despercebida até
+   a peça estar no ar.
+
+   A contagem lê `imagens` por `useFormValue`, que é o valor ATUAL do
+   formulário: marcar uma foto como bordô na grade acima muda este número na
+   mesma hora, sem salvar.
+
+   Compara sem acento e sem caixa pelo mesmo motivo da validação: "Azul
+   marinho" e "Azul-marinho" são a mesma cor para quem cadastrou e nomes
+   diferentes para o `===`.
+--------------------------------------------------------------------------- */
+function ContagemDeFotos({ cores }: { cores: Cor[] }) {
+  /* Array constante quando o campo ainda não existe: `?? []` inline criaria
+     uma referência nova a cada render e derrubaria o `useMemo` abaixo. */
+  const fotos = (useFormValue(["imagens"]) as Foto[] | undefined) ?? SEM_FOTOS;
+
+  const linhas = useMemo(() => {
+    const igual = (a: string) =>
+      a.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    const usadas = fotos.map((f) => f?.cor).filter(Boolean) as string[];
+
+    return cores
+      .filter((c) => c?.nome)
+      .map((c) => ({
+        nome: c.nome as string,
+        hex: c.amostra?.hex,
+        quantas: usadas.filter((u) => igual(u) === igual(c.nome as string)).length,
+      }));
+  }, [cores, fotos]);
+
+  if (linhas.length === 0) return null;
+
+  const gerais = fotos.filter((f) => !f?.cor?.trim()).length;
+
+  return (
+    <Flex as="div" gap={3} wrap="wrap" align="center">
+      {linhas.map((l) => (
+        <Flex as="div" key={l.nome} gap={2} align="center">
+          <span aria-hidden="true" style={bolinha(12, l.hex ?? "#cbbda6")} />
+          <Text as="div" size={1} muted>
+            {l.nome} · {l.quantas === 0 ? "sem foto" : l.quantas === 1 ? "1 foto" : `${l.quantas} fotos`}
+          </Text>
+        </Flex>
+      ))}
+      {gerais > 0 && (
+        <Text as="div" size={1} muted>
+          Gerais · {gerais === 1 ? "1 foto" : `${gerais} fotos`}
+        </Text>
+      )}
+    </Flex>
   );
 }

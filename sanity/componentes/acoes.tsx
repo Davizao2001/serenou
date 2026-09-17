@@ -129,7 +129,7 @@ export const TirarDoAr: DocumentActionComponent = (props) => {
       type: "confirm",
       tone: "caution",
       message:
-        "A peça sai do catálogo e o link dela deixa de abrir. O cadastro e as fotos continuam guardados aqui, e você pode trazê-la de volta quando quiser, em Onde aparece.",
+        "A peça sai do catálogo e o link dela deixa de abrir. O cadastro e as fotos continuam guardados aqui, e você pode trazê-la de volta quando quiser, em No site.",
       confirmButtonText: "Tirar do ar",
       cancelButtonText: "Deixar como está",
       onConfirm: () => {
