@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Flex, Text } from "@sanity/ui";
 import { insert, useFormValue, type ArrayOfObjectsInputProps } from "sanity";
 import { CORES_DA_LOJA, chave, valorDeCor } from "./paleta";
@@ -32,6 +32,20 @@ import { ALTURA, COR, GRUPO, RAIO, ROTULO_GRUPO, bolinha } from "./estilo";
    Cor já cadastrada some do atalho: oferecer de novo o que já está na peça só
    produz duplicata, e duplicata quebra o vínculo das fotos (duas bolinhas
    "Verde" e nenhuma forma de saber qual é qual).
+
+   O ESTADO VAZIO É UMA LINHA
+
+   Cores vem antes de Fotos porque em 15 das 18 peças toda foto tem cor — o
+   caminho dominante é criar as cores e já carimbar as fotos ao subir. Mas
+   três peças não têm cor nenhuma, e para essas a seção aberta seria a
+   primeira coisa da tela: catorze bolinhas para uma decisão que não existe.
+
+   Então, vazia, ela é um botão. Um clique abre a lista do Sanity e o atalho
+   juntos — a peça com cor paga um toque a mais UMA vez, e a peça sem cor não
+   paga tela nenhuma.
+
+   Não há interruptor "esta peça não tem cor". Lista vazia já significa isso,
+   e o site já lê assim: sem cor cadastrada, nenhum seletor é desenhado.
 --------------------------------------------------------------------------- */
 
 type Cor = { _key?: string; nome?: string; amostra?: { hex?: string } };
@@ -69,6 +83,35 @@ export function CoresDaPeca(props: ArrayOfObjectsInputProps) {
     [onChange]
   );
 
+  const temCor = ((value ?? []) as Cor[]).length > 0;
+  const [abriu, setAbriu] = useState(false);
+  const aberto = temCor || abriu;
+
+  if (!aberto) {
+    return (
+      <Flex as="div" direction="column" gap={2}>
+        <button
+          type="button"
+          onClick={() => setAbriu(true)}
+          style={{
+            alignSelf: "flex-start",
+            minHeight: ALTURA.miudo,
+            padding: "0 12px",
+            borderRadius: RAIO.acao,
+            border: `1px solid ${COR.fio}`,
+            background: "transparent",
+            cursor: "pointer",
+            font: "inherit",
+            fontSize: 13,
+            color: "inherit",
+          }}
+        >
+          + Adicionar cor
+        </button>
+      </Flex>
+    );
+  }
+
   return (
     <Flex as="div" direction="column" gap={4}>
       {renderDefault(props)}
@@ -95,7 +138,8 @@ export function CoresDaPeca(props: ArrayOfObjectsInputProps) {
 
             <Text as="div" size={1} muted>
               Um clique já preenche o nome e a bolinha. Para uma cor que não
-              está aqui, use <strong>Adicionar item</strong> acima.
+              está aqui, use <strong>Adicionar item</strong> acima. Sem cor
+              cadastrada, o site não mostra o seletor de cor na peça.
             </Text>
           </Flex>
         </div>

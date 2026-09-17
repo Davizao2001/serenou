@@ -73,6 +73,15 @@ confere(
   "grid"
 );
 
+/* A ordem de declaração é a ordem de renderização dentro da aba. Cor precisa
+   vir ANTES de foto: o seletor da miniatura só oferece as cores já
+   cadastradas, e em 15 das 18 peças toda foto tem cor. Invertido, volta o vai
+   e vem — subir foto, descer, criar cor, voltar. Esta asserção é o que
+   impede alguém de "arrumar" a ordem sem saber disso. */
+const posicao = (n: string) => campos.findIndex((c) => c.name === n);
+confere("cor vem antes de foto", posicao("cores") < posicao("imagens"), true);
+confere("tamanho vem depois de foto", posicao("tamanhos") > posicao("imagens"), true);
+
 console.log("\nCADA INFORMAÇÃO EM UM LUGAR SÓ");
 const nomes = campos.map((c) => c.name);
 confere("sem campo repetido", nomes.length, new Set(nomes).size);

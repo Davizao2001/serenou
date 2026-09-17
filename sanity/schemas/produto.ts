@@ -49,6 +49,20 @@ export const produto = defineType({
      de "essa cor está em 3 fotos, troque antes de remover" passa a chegar com
      as fotos à vista, em vez de numa aba onde elas não estão.
 
+     E DENTRO DA ETAPA, COR VEM ANTES DE FOTO
+
+     Pela mesma dependência, e pelo que o catálogo mostra: em 15 das 18 peças
+     TODA foto tem cor vinculada. O caminho dominante é criar as cores, subir
+     as fotos e carimbar cada uma na hora. Com as fotos em cima, ela subia,
+     descia até as cores, criava, e voltava para carimbar — o vai e vem tinha
+     deixado de ser troca de aba e virado rolagem, mas continuava existindo.
+     Nesta ordem ele some.
+
+     O preço seria penalizar a peça sem cor, que também existe (três no
+     catálogo). Por isso a seção de cores encolhe para um botão quando está
+     vazia — ver `CoresDaPeca`. Peça simples vê uma linha, não uma fileira de
+     bolinhas.
+
      A quarta etapa — Revisar — não é aba de formulário: é uma view ao lado,
      porque precisa ler o documento inteiro sem duplicar campo nenhum. Ver
      sanity.config.ts. */
@@ -184,109 +198,14 @@ export const produto = defineType({
     }),
 
     defineField({
-      name: "imagens",
-      title: "Fotos",
-      type: "array",
-      group: "fotos",
-      description:
-        "A primeira foto é a que aparece na vitrine. Arraste para mudar a ordem.",
-      /* `layout: "grid"` é opção de schema do próprio Studio: ele troca
-         `ListArrayInput` por `GridArrayInput` e a lista vertical de linhas
-         vira uma grade de miniaturas — que é a forma certa para uma tela cujo
-         assunto é fotografia. Subir arquivo arrastando, reordenar arrastando,
-         o menu de cada foto e o ajuste de recorte continuam sendo os do
-         Sanity; nada disso é reimplementado aqui. */
-      options: { layout: "grid" },
-      components: { input: FotosDaPeca },
-      of: [
-        {
-          type: "image",
-          options: { hotspot: true },
-          fields: [
-            defineField({
-              name: "alt",
-              title: "Descrição da foto",
-              type: "string",
-              description:
-                "Para quem usa leitor de tela e para o Google. Exemplo: Vestido longo verde oliva, com caimento fluido.",
-              /* Aviso, nunca erro: uma foto sem descrição não pode impedir a
-                 peça de ir ao ar. Mas o campo era opcional e silencioso, e
-                 campo opcional e silencioso ninguém preenche 45 vezes — o
-                 site cai num genérico ("Nome da peça, fotografia 3") e quem
-                 usa leitor de tela ouve isso em vez da peça. Um aviso visível
-                 no formulário custa nada e muda o hábito. */
-              validation: (r) =>
-                r.warning("Sem descrição, quem usa leitor de tela não sabe o que a foto mostra."),
-            }),
-            /* De que cor é esta foto.
-               Quando preenchido, clicar na bolinha da cor no site troca a
-               fotografia para esta. Em branco, a foto continua na galeria
-               normalmente e não responde a cor nenhuma — é o que acontece
-               com foto de detalhe, de costas ou de cor que a loja ainda não
-               confirmou como disponível.
-               A validação compara com as cores cadastradas na própria peça,
-               porque um nome digitado diferente ("Azul marinho" x
-               "Azul-marinho") quebraria a troca em silêncio. */
-            defineField({
-              name: "cor",
-              title: "Cor desta foto",
-              type: "string",
-              description:
-                "Escolha entre as cores cadastradas nesta peça, logo abaixo das fotos.",
-              components: { input: CorDaFoto },
-              /* A validação continua, e virou rede em vez de porteira: o
-                 seletor já impede escolher uma cor que não existe, mas ela
-                 pega o documento antigo cadastrado à mão e o caso de alguém
-                 renomear uma cor deixando fotos com o nome velho. */
-              validation: (r) =>
-                r.custom((valor, contexto) => {
-                  if (!valor) return true;
-                  const doc = contexto.document as
-                    | { cores?: { nome?: string }[] }
-                    | undefined;
-                  const cores = (doc?.cores ?? [])
-                    .map((c) => c?.nome)
-                    .filter(Boolean) as string[];
-                  if (cores.length === 0)
-                    return "Esta peça ainda não tem cores cadastradas. Elas ficam logo abaixo das fotos.";
-                  const igual = (a: string) =>
-                    a.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                  return cores.some((c) => igual(c) === igual(valor))
-                    ? true
-                    : `Não existe a cor "${valor}" nesta peça. As cadastradas são: ${cores.join(", ")}.`;
-                }),
-            }),
-          ],
-
-          /* O nome da cor vira o título da linha da foto — é a informação que
-             faltava para saber, sem abrir, a que cor cada fotografia pertence.
-             Sem cor, a linha diz "Foto geral", que é o estado normal de foto
-             de detalhe, de costas ou de peça fotografada em duas cores. */
-          preview: {
-            select: { cor: "cor", alt: "alt", media: "asset" },
-            prepare: ({ cor, alt, media }) => ({
-              title: (cor as string) || "Foto geral",
-              subtitle: (alt as string) || "Sem descrição",
-              media,
-            }),
-          },
-
-          /* O selo PRINCIPAL depende da POSIÇÃO, e `prepare` não recebe
-             posição. Por isso ele mora num componente de item, que recebe
-             `index` — ver `MiniaturaFoto`. */
-          components: { item: MiniaturaFoto },
-        },
-      ],
-      validation: (r) => r.min(1).error("A peça precisa de pelo menos uma foto."),
-    }),
-
-    defineField({
       name: "cores",
       title: "Cores",
       type: "array",
       group: "fotos",
-      description:
-        "Sem cor cadastrada, o site não mostra o seletor de cor na peça.",
+      /* Sem `description`: no estado vazio — o da peça simples — o título e um
+         botão já dizem tudo, e uma frase sobre o seletor do site ali seria
+         ruído antes da primeira decisão. A frase mora em `CoresDaPeca` e
+         aparece quando a seção abre, que é onde ela serve. */
       components: { input: CoresDaPeca },
       validation: (r) =>
         r.custom((cores, contexto) => {
@@ -335,7 +254,7 @@ export const produto = defineType({
             const partes = [...orfas.entries()].map(
               ([nome, n]) => `"${nome}" está em ${n} ${n === 1 ? "foto" : "fotos"}`
             );
-            return `${partes.join(", ")}. Troque a cor dessas fotos aqui em cima, na miniatura, antes de remover a cor.`;
+            return `${partes.join(", ")}. Troque a cor dessas fotos na miniatura, logo abaixo, antes de remover a cor.`;
           }
 
           return true;
@@ -371,6 +290,103 @@ export const produto = defineType({
           },
         },
       ],
+    }),
+
+    defineField({
+      name: "imagens",
+      title: "Fotos",
+      type: "array",
+      group: "fotos",
+      description:
+        "A primeira foto é a que aparece na vitrine. Arraste para mudar a ordem.",
+      /* `layout: "grid"` é opção de schema do próprio Studio: ele troca
+         `ListArrayInput` por `GridArrayInput` e a lista vertical de linhas
+         vira uma grade de miniaturas — que é a forma certa para uma tela cujo
+         assunto é fotografia. Subir arquivo arrastando, reordenar arrastando,
+         o menu de cada foto e o ajuste de recorte continuam sendo os do
+         Sanity; nada disso é reimplementado aqui. */
+      options: { layout: "grid" },
+      components: { input: FotosDaPeca },
+      of: [
+        {
+          type: "image",
+          options: { hotspot: true },
+          fields: [
+            defineField({
+              name: "alt",
+              title: "Descrição da foto",
+              type: "string",
+              description:
+                "Para quem usa leitor de tela e para o Google. Exemplo: Vestido longo verde oliva, com caimento fluido.",
+              /* Aviso, nunca erro: uma foto sem descrição não pode impedir a
+                 peça de ir ao ar. Mas o campo era opcional e silencioso, e
+                 campo opcional e silencioso ninguém preenche 45 vezes — o
+                 site cai num genérico ("Nome da peça, fotografia 3") e quem
+                 usa leitor de tela ouve isso em vez da peça. Um aviso visível
+                 no formulário custa nada e muda o hábito. */
+              validation: (r) =>
+                r.warning("Sem descrição, quem usa leitor de tela não sabe o que a foto mostra."),
+            }),
+            /* De que cor é esta foto.
+               Quando preenchido, clicar na bolinha da cor no site troca a
+               fotografia para esta. Em branco, a foto continua na galeria
+               normalmente e não responde a cor nenhuma — é o que acontece
+               com foto de detalhe, de costas ou de cor que a loja ainda não
+               confirmou como disponível.
+               A validação compara com as cores cadastradas na própria peça,
+               porque um nome digitado diferente ("Azul marinho" x
+               "Azul-marinho") quebraria a troca em silêncio. */
+            defineField({
+              name: "cor",
+              title: "Cor desta foto",
+              type: "string",
+              description:
+                "Escolha entre as cores cadastradas nesta peça, logo acima das fotos.",
+              components: { input: CorDaFoto },
+              /* A validação continua, e virou rede em vez de porteira: o
+                 seletor já impede escolher uma cor que não existe, mas ela
+                 pega o documento antigo cadastrado à mão e o caso de alguém
+                 renomear uma cor deixando fotos com o nome velho. */
+              validation: (r) =>
+                r.custom((valor, contexto) => {
+                  if (!valor) return true;
+                  const doc = contexto.document as
+                    | { cores?: { nome?: string }[] }
+                    | undefined;
+                  const cores = (doc?.cores ?? [])
+                    .map((c) => c?.nome)
+                    .filter(Boolean) as string[];
+                  if (cores.length === 0)
+                    return "Esta peça ainda não tem cores cadastradas. Elas ficam logo acima das fotos.";
+                  const igual = (a: string) =>
+                    a.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                  return cores.some((c) => igual(c) === igual(valor))
+                    ? true
+                    : `Não existe a cor "${valor}" nesta peça. As cadastradas são: ${cores.join(", ")}.`;
+                }),
+            }),
+          ],
+
+          /* O nome da cor vira o título da linha da foto — é a informação que
+             faltava para saber, sem abrir, a que cor cada fotografia pertence.
+             Sem cor, a linha diz "Foto geral", que é o estado normal de foto
+             de detalhe, de costas ou de peça fotografada em duas cores. */
+          preview: {
+            select: { cor: "cor", alt: "alt", media: "asset" },
+            prepare: ({ cor, alt, media }) => ({
+              title: (cor as string) || "Foto geral",
+              subtitle: (alt as string) || "Sem descrição",
+              media,
+            }),
+          },
+
+          /* O selo PRINCIPAL depende da POSIÇÃO, e `prepare` não recebe
+             posição. Por isso ele mora num componente de item, que recebe
+             `index` — ver `MiniaturaFoto`. */
+          components: { item: MiniaturaFoto },
+        },
+      ],
+      validation: (r) => r.min(1).error("A peça precisa de pelo menos uma foto."),
     }),
 
     defineField({
