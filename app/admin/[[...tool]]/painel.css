@@ -238,11 +238,17 @@
 .painel-serenou [data-ui="Tab"],
 .painel-serenou [data-ui="Tab"] [data-ui="Text"] {
   color: var(--serenou-carvao);
+  /* Etapa é controle, não título. O tamanho desce para o registro de
+     interface — o Sanity escreve o rótulo num `Text` filho, então os dois
+     precisam da regra. */
+  font-size: 12px;
 }
 
 .painel-serenou [data-ui="Tab"] {
   font-weight: 400;
   opacity: 0.62;
+  padding-top: 6px;
+  padding-bottom: 6px;
   transition:
     opacity 0.15s ease-out,
     background-color 0.15s ease-out;
@@ -257,7 +263,7 @@
   opacity: 1;
   font-weight: 600;
   color: var(--serenou-carvao);
-  background-color: rgba(230, 219, 203, 0.7);
+  background-color: rgba(230, 219, 203, 0.45);
   box-shadow: inset 0 -2px 0 0 var(--serenou-carvao);
 }
 
@@ -309,7 +315,9 @@
 --------------------------------------------------------------------------- */
 .painel-serenou [data-testid^="fieldset-"] {
   border-top: 1px solid var(--serenou-fio);
-  margin-top: 12px;
+  /* 12 → 18: seis pixels a mais de silêncio antes do fio. O bloco seguinte
+     começa depois de uma pausa, não logo em seguida. */
+  margin-top: 18px;
   padding-top: 20px;
 }
 

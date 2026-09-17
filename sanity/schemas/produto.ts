@@ -87,7 +87,11 @@ export const produto = defineType({
       title: "Nome da peça",
       type: "string",
       group: "principal",
-      description: "Como a peça aparece no site e na mensagem do WhatsApp.",
+      /* Sem microajuda. "Como a peça aparece no site e na mensagem do
+         WhatsApp" era verdade e não evitava erro nenhum: não existe jeito
+         errado de escrever o nome de uma peça. A ajuda fica onde um engano é
+         possível e custa caro — o formato do preço, a consequência da
+         situação, o endereço que já circulou no WhatsApp. */
       validation: (r) => r.required().error("A peça precisa de um nome."),
     }),
 
@@ -97,8 +101,11 @@ export const produto = defineType({
       type: "text",
       rows: 3,
       group: "principal",
-      description:
-        "Uma ou duas frases, do jeito que você descreveria a peça para uma cliente. Aparece na página da peça, abaixo do nome.",
+      /* Ficou a parte que evita erro — o tamanho. Duas frases cabem no
+         parágrafo da página; um texto longo briga com a fotografia, e a
+         validação abaixo avisa quando passa disso. Onde o texto aparece ela
+         descobre publicando uma vez. */
+      description: "Uma ou duas frases, como você descreveria a peça para uma cliente.",
       /* Era "Frase da peça", limitada a 90 caracteres, porque a suposição era
          uma linha só. As descrições que a Grazi escreve têm uma ou duas frases
          e caem num parágrafo da página de produto, que é onde este campo
