@@ -6,7 +6,7 @@ import { FotosDaPeca } from "../componentes/FotosDaPeca";
 import { campoComAjuda } from "../ajuda/CampoComAjuda";
 import { CoresDaPeca } from "../componentes/CoresDaPeca";
 import { TamanhosDaPeca } from "../componentes/TamanhosDaPeca";
-import { EnderecoDaPagina } from "../componentes/EnderecoDaPagina";
+import { PecaComEndereco } from "../componentes/PecaComEndereco";
 
 /* ---------------------------------------------------------------------------
    PRODUTO — o único tipo de documento do painel
@@ -35,6 +35,13 @@ export const produto = defineType({
   name: "produto",
   title: "Peça",
   type: "document",
+
+  /* O endereço da página se preenche a partir do nome, e o preenchimento mora
+     AQUI, na raiz do formulário, e não no componente do campo. O motivo está
+     em `PecaComEndereco`: o campo vive numa gaveta fechada, e o Sanity não
+     monta o conteúdo de gaveta fechada — o efeito nunca rodava, e a peça nova
+     chegava no botão de publicar sem endereço. */
+  components: { input: PecaComEndereco },
 
   /* QUATRO ETAPAS, E POR QUE "FOTOS" E "CORES" VIRARAM UMA SÓ
 
@@ -538,25 +545,49 @@ export const produto = defineType({
          Agora cada estado cobra o outro. Nenhuma peça estava em promoção
          quando isto foi escrito, então nada no ar precisou ser corrigido — e
          é por isso que era o momento de fechar. */
-      validation: (r) =>
+      /* DUAS REGRAS, E SÓ UMA BLOQUEIA
+
+         A primeira é erro: com a promoção marcada, o valor de antes precisa
+         existir e precisa ser maior que o atual. Publicar sem isso põe no ar
+         um selo de promoção sem desconto, ou um desconto negativo.
+
+         A segunda é AVISO, e essa distinção veio da auditoria. O caminho é
+         banal: marcar a promoção, preencher o valor, mudar de ideia e
+         desmarcar. O campo some (`hidden`), o valor fica gravado — e o
+         Sanity 6.13 valida campo escondido, não há curto-circuito por
+         `hidden` em `Rule.validate`. O resultado era a publicação bloqueada
+         por um erro apontando para um campo fora da tela.
+
+         Aviso resolve porque o dado órfão é inofensivo: `produtos.ts` só
+         expõe `precoAnterior` quando `promocao` é verdadeiro, então a peça
+         sai de Promoções e o preço riscado some, com ou sem o valor guardado.
+         O aviso continua dizendo como limpar, sem impedir o trabalho. */
+      validation: (r) => [
         r.custom((valor, contexto) => {
           const pai = contexto.parent as
             | { preco?: number; promocao?: boolean }
             | undefined;
 
-          if (pai?.promocao && valor == null)
+          if (!pai?.promocao) return true;
+
+          if (valor == null)
             return "Peça em promoção precisa do valor de antes — é ele que aparece riscado.";
 
-          if (!pai?.promocao && valor != null)
-            return 'Só vale com "Está em promoção" marcado. Apague o valor ou marque a caixa acima.';
-
-          if (valor == null) return true;
-
-          if (pai?.preco != null && valor <= pai.preco)
+          if (pai?.preco != null && (valor as number) <= pai.preco)
             return "O valor de antes precisa ser maior que o valor atual.";
 
           return true;
         }),
+
+        r
+          .custom((valor, contexto) => {
+            const pai = contexto.parent as { promocao?: boolean } | undefined;
+            return !pai?.promocao && valor != null
+              ? 'Só vale com "Está em promoção" marcado. Marque a caixa acima para apagar o valor, ou deixe como está — fora da promoção ele não aparece no site.'
+              : true;
+          })
+          .warning(),
+      ],
     }),
 
     defineField({
@@ -568,7 +599,6 @@ export const produto = defineType({
       description:
         "É o final do link da peça, e se preenche sozinho pelo nome. Depois que o link já circulou no WhatsApp, mudar aqui transforma toda mensagem enviada em página não encontrada.",
       options: { source: "nome", maxLength: 80 },
-      components: { input: EnderecoDaPagina },
       validation: (r) =>
         r.required().error("A peça precisa de um endereço. Escreva um nome e ele aparece sozinho."),
     }),

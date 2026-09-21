@@ -12,6 +12,7 @@
 import { altAutomatico } from "../sanity/lib/produtos";
 import { slotDeImagem } from "../sanity/lib/imagem";
 import { produto } from "../sanity/schemas/produto";
+import { PecaComEndereco } from "../sanity/componentes/PecaComEndereco";
 import { ARTIGOS, artigoPor } from "../sanity/ajuda/artigos";
 
 let falhas = 0;
@@ -115,6 +116,33 @@ confere(
   "sem termo técnico nos artigos",
   PROIBIDOS.filter((t) => textoDaAjuda.toLowerCase().includes(t.toLowerCase())),
   []
+);
+
+console.log("\nO ENDEREÇO DA PÁGINA");
+
+/* O preenchimento automático do endereço precisa morar na RAIZ do formulário.
+   Dentro do campo ele não roda: o campo vive no fieldset "Configuração
+   avançada", que abre fechado, e o Sanity não monta o conteúdo de fieldset
+   fechado. Foi assim que uma peça nova chegava no botão de publicar sem
+   endereço, com a aba Revisar dizendo que estava tudo certo.
+
+   Estas duas asserções são o que impede a regressão: se alguém mover o
+   componente de volta para o campo, elas falham aqui e não no uso real. */
+confere(
+  "o preenchimento mora na raiz do documento",
+  (produto as { components?: { input?: unknown } }).components?.input ===
+    PecaComEndereco,
+  true
+);
+confere(
+  "o campo do endereço não tem componente próprio",
+  (campos.find((c) => c.name === "slug") as { components?: unknown })?.components,
+  undefined
+);
+confere(
+  "o endereço continua na gaveta fechada",
+  (campos.find((c) => c.name === "slug") as { fieldset?: string })?.fieldset,
+  "avancado"
 );
 
 console.log("\nCADA INFORMAÇÃO EM UM LUGAR SÓ");

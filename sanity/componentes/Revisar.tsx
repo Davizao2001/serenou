@@ -98,6 +98,10 @@ export function Revisar(props: { document: { displayed: Partial<SanityDocument> 
     tamanhos.find((t) => t.disponivel !== false)?.rotulo ??
     undefined;
 
+  /* Lido uma vez e usado nos dois lugares: na lista do que falta e no link da
+     prévia do WhatsApp, lá embaixo. */
+  const endereco = peca.slug?.current;
+
   /* O que falta. Cada linha é uma frase que diz o que fazer, nunca o nome
      técnico do campo. A lista espelha a validação do schema — não invento uma
      segunda régua que possa discordar dela. */
@@ -110,6 +114,26 @@ export function Revisar(props: { document: { displayed: Partial<SanityDocument> 
     if (fotos.length === 0)
       p.push("Adicione pelo menos uma foto antes de publicar.");
     if (!peca.status) p.push("Escolha a situação antes de publicar.");
+
+    /* O endereço se preenche a partir do nome, na raiz do formulário (ver
+       `PecaComEndereco`), então normalmente ele já existe quando a Grazi
+       chega aqui. O que sobra é um caminho só: ela abriu a Configuração
+       avançada e apagou o que estava lá. O preenchimento não repõe o mesmo
+       valor de propósito — é o que permite escrever um endereço à mão sem
+       ser atropelado — então o campo fica vazio, e vazio a peça não vai ao
+       ar.
+
+       Sem esta linha, a revisão diria "tudo certo" enquanto o botão de
+       publicar recusa. Era exatamente o que a auditoria encontrou, e é o
+       único motivo de o endereço aparecer aqui.
+
+       Só quando a peça JÁ tem nome: sem nome, a pendência do nome já está na
+       lista e o endereço nasce dela. Duas frases para a mesma causa é ruído. */
+    if (peca.nome?.trim() && !endereco?.trim())
+      p.push(
+        "O endereço da página está vazio, e sem ele a peça não vai ao ar. Preencha em Configuração avançada, no fim de No site."
+      );
+
     if (peca.promocao && typeof peca.precoAnterior !== "number")
       p.push("A peça está em promoção: informe o valor de antes, em No site.");
 
@@ -130,7 +154,7 @@ export function Revisar(props: { document: { displayed: Partial<SanityDocument> 
       );
 
     return p;
-  }, [peca, fotos, cores]);
+  }, [peca, fotos, cores, endereco]);
 
   const conferidos = [
     { rotulo: "Nome", ok: Boolean(peca.nome?.trim()) },
@@ -146,7 +170,6 @@ export function Revisar(props: { document: { displayed: Partial<SanityDocument> 
 
   const origem =
     typeof window !== "undefined" ? window.location.origin : undefined;
-  const endereco = peca.slug?.current;
 
   const mensagem = mensagemProduto({
     nome: peca.nome || "esta peça",
