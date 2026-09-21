@@ -1,5 +1,6 @@
 import { defineField, defineType } from "sanity";
 import { CATEGORIAS } from "../../lib/loja";
+import { mesmaCor } from "../../lib/media";
 import { CorDaFoto } from "../componentes/CorDaFoto";
 import { MiniaturaFoto } from "../componentes/MiniaturaFoto";
 import { FotosDaPeca } from "../componentes/FotosDaPeca";
@@ -656,6 +657,7 @@ export const produto = defineType({
       teste: "teste",
       cores: "cores",
       tamanhos: "tamanhos",
+      imagens: "imagens",
       media: "imagens.0",
     },
     prepare: ({
@@ -668,6 +670,7 @@ export const produto = defineType({
       teste,
       cores,
       tamanhos,
+      imagens,
       media,
     }) => {
       const nomeCategoria =
@@ -697,6 +700,27 @@ export const produto = defineType({
         .map((t) => t?.rotulo)
         .filter(Boolean) as string[];
 
+      /* COR SEM FOTO PRÓPRIA, VISÍVEL NA LISTA
+
+         O painel já sabia disto — a aba Revisar avisa — mas só peça por peça.
+         Para descobrir quais do catálogo estão assim, a Grazi teria que abrir
+         as dezoito. Agora a linha da lista conta.
+
+         Não é erro: uma cor sem foto funciona, o site mostra as fotos das
+         outras cores e avisa a cliente. É o tipo de coisa que ninguém decide
+         deixar assim — acontece quando a foto ainda não chegou, e some da
+         memória. Hoje são três peças no catálogo.
+
+         `mesmaCor` é a MESMA função que o site usa para casar a bolinha com
+         a fotografia (lib/media.ts). Comparar aqui com `===` daria um número
+         que discorda do que a cliente vê no dia em que um nome divergir por
+         acento. */
+      const listaFotos = (imagens ?? []) as { cor?: string }[];
+      const coresSemFoto = listaCores
+        .map((c) => c?.nome)
+        .filter(Boolean)
+        .filter((nome) => !listaFotos.some((f) => mesmaCor(f?.cor, nome))).length;
+
       const faixa = [
         estado,
         novidade ? "Novidade" : null,
@@ -709,6 +733,9 @@ export const produto = defineType({
           ? rotulos.length <= 5
             ? rotulos.join(" ")
             : `${rotulos.length} tamanhos`
+          : null,
+        coresSemFoto > 0
+          ? `${coresSemFoto} ${coresSemFoto === 1 ? "cor sem foto" : "cores sem foto"}`
           : null,
       ]
         .filter(Boolean)

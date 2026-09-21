@@ -27,6 +27,13 @@ import {
      peça acaba, e antes eram quatro passos: abrir a aba certa, achar o rádio,
      marcar, publicar. Pede confirmação porque muda o que a cliente vê.
 
+   COLOCAR NO AR
+     O caminho de volta, que era mais difícil que o de ida: sair era um
+     clique, voltar eram os mesmos quatro passos. A assimetria não tinha
+     razão de ser — é a mesma ação invertida. Não pede confirmação porque
+     pôr no ar é o estado normal da peça, e porque o erro se desfaz com o
+     botão vizinho.
+
    SOBRE "EXCLUIR DEFINITIVAMENTE"
 
    A ação nativa de apagar continua existindo, renomeada e empurrada para o
@@ -143,11 +150,37 @@ export const TirarDoAr: DocumentActionComponent = (props) => {
   };
 };
 
+export const ColocarNoAr: DocumentActionComponent = (props) => {
+  const { id, type, published, draft } = props;
+  const { patch, publish } = useDocumentOperation(id, type);
+  const { push } = useToast();
+
+  const doc = (draft ?? published) as Peca | null;
+  const oculta = doc?.status === "oculto";
+
+  return {
+    label: "Colocar no ar",
+    /* Só aparece quando faz diferença. Numa peça que já está no site este
+       botão não teria efeito nenhum, e botão sem efeito ensina a ignorar o
+       menu. */
+    disabled: !oculta,
+    title: oculta ? undefined : "Esta peça já está no site.",
+    onHandle: () => {
+      patch.execute([{ set: { status: "disponivel" } }]);
+      publish.execute();
+      push({ status: "success", title: "Peça no site" });
+      props.onComplete();
+    },
+  };
+};
+
 /* ---------------------------------------------------------------------------
    A ORDEM DO MENU
 
    `publish` fica onde está — é o gesto principal e o Sanity já o destaca.
-   Depois vêm as três nossas, que são o dia a dia. As nativas de risco
+   Depois vêm as quatro nossas, que são o dia a dia. "Tirar do ar" e "Colocar
+   no ar" ficam lado a lado, e em qualquer peça só uma das duas está ativa —
+   a outra diz por que não. As nativas de risco
    (`delete`, `unpublish`, `discardChanges`) vão para o fim, e `delete` ganha
    um nome que não se confunde com "tirar do ar".
 --------------------------------------------------------------------------- */
@@ -185,5 +218,5 @@ export function acoesDaPeca(
   const seguras = nativas.filter((a) => !RISCO.has(a.action ?? ""));
   const perigosas = nativas.filter((a) => RISCO.has(a.action ?? ""));
 
-  return [...seguras, VerNoSite, CopiarLink, TirarDoAr, ...perigosas];
+  return [...seguras, VerNoSite, CopiarLink, TirarDoAr, ColocarNoAr, ...perigosas];
 }

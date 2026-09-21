@@ -13,6 +13,7 @@ import { altAutomatico } from "../sanity/lib/produtos";
 import { slotDeImagem } from "../sanity/lib/imagem";
 import { produto } from "../sanity/schemas/produto";
 import { PecaComEndereco } from "../sanity/componentes/PecaComEndereco";
+import { ColocarNoAr } from "../sanity/componentes/acoes";
 import { ARTIGOS, artigoPor } from "../sanity/ajuda/artigos";
 
 let falhas = 0;
@@ -143,6 +144,84 @@ confere(
   "o endereço continua na gaveta fechada",
   (campos.find((c) => c.name === "slug") as { fieldset?: string })?.fieldset,
   "avancado"
+);
+
+console.log("\nO QUE A LISTA CONTA");
+
+/* A linha da lista precisa dizer quando uma cor ficou sem foto própria —
+   hoje são três peças no catálogo, e sem isto a Grazi só descobre abrindo as
+   dezoito uma a uma. O `prepare` é chamado aqui com os mesmos dados que o
+   Studio passa. */
+type Prepare = (v: Record<string, unknown>) => { description?: string; title?: string };
+const preparar = (produto as unknown as { preview: { prepare: Prepare } }).preview.prepare;
+
+const COR = (nome: string) => ({ _key: nome, nome });
+const FOTO = (cor?: string) => (cor ? { cor } : {});
+
+const comLacuna = preparar({
+  title: "Body de Um Ombro",
+  categoria: "bodies",
+  preco: 89,
+  status: "disponivel",
+  cores: [COR("Preto"), COR("Azul-marinho"), COR("Marrom")],
+  imagens: [FOTO("Preto"), FOTO("Marrom")],
+  tamanhos: [],
+});
+confere(
+  "cor sem foto aparece na linha",
+  comLacuna.description?.includes("1 cor sem foto"),
+  true
+);
+
+const completa = preparar({
+  title: "Conjunto Bless",
+  categoria: "conjuntos",
+  preco: 159,
+  status: "disponivel",
+  cores: [COR("Bordô"), COR("Preto")],
+  imagens: [FOTO("Bordô"), FOTO("Preto")],
+  tamanhos: [],
+});
+confere(
+  "peça completa não ganha aviso nenhum",
+  completa.description?.includes("sem foto"),
+  false
+);
+
+/* O acento não pode inventar uma lacuna: o site casa a bolinha com a foto
+   por `mesmaCor`, que ignora acento e caixa. Comparar aqui com `===` daria
+   um número que discorda do que a cliente vê. */
+const acentuada = preparar({
+  title: "Teste",
+  categoria: "conjuntos",
+  preco: 100,
+  status: "disponivel",
+  cores: [COR("Bordô")],
+  imagens: [FOTO("bordo")],
+  tamanhos: [],
+});
+confere(
+  "acento diferente não vira lacuna falsa",
+  acentuada.description?.includes("sem foto"),
+  false
+);
+
+const semCor = preparar({
+  title: "Macaquinho",
+  categoria: "macaquinhos",
+  preco: 120,
+  status: "disponivel",
+  cores: [],
+  imagens: [FOTO()],
+  tamanhos: [],
+});
+confere("peça sem cor nenhuma não ganha aviso", semCor.description?.includes("sem foto"), false);
+
+console.log("\nVOLTAR AO AR É TÃO FÁCIL QUANTO SAIR");
+confere(
+  "a ação de colocar no ar existe",
+  typeof ColocarNoAr === "function",
+  true
 );
 
 console.log("\nCADA INFORMAÇÃO EM UM LUGAR SÓ");
