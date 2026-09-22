@@ -308,13 +308,22 @@ export const produto = defineType({
       group: "fotos",
       description:
         "A primeira foto é a que aparece na vitrine. Arraste para mudar a ordem.",
-      /* `layout: "grid"` é opção de schema do próprio Studio: ele troca
-         `ListArrayInput` por `GridArrayInput` e a lista vertical de linhas
-         vira uma grade de miniaturas — que é a forma certa para uma tela cujo
-         assunto é fotografia. Subir arquivo arrastando, reordenar arrastando,
-         o menu de cada foto e o ajuste de recorte continuam sendo os do
-         Sanity; nada disso é reimplementado aqui. */
-      options: { layout: "grid" },
+      /* NÃO USE `options: { layout: "grid" }` AQUI.
+
+         A grade nativa do Studio é mais bonita — quatro miniaturas lado a
+         lado em vez de quatro linhas — e foi o que esteve no ar até hoje. Mas
+         ela desliga o `components.item`: em `GridArrayInput` a célula é
+         desenhada pelo componente interno do Sanity, e o nosso nunca é
+         chamado. Conferido no painel rodando: zero seletores de cor na
+         tela, nenhum "Principal", nenhum "Geral".
+
+         Ou seja, a grade apagava exatamente a informação pela qual esta tela
+         existe — de que cor é cada foto. Bonito e mudo perde para feio e
+         claro: em lista, cada foto mostra a etiqueta e deixa trocar a cor em
+         dois toques (ver `MiniaturaFoto`).
+
+         Se um dia o Sanity passar a chamar `components.item` na grade, isto
+         volta numa linha. */
       /* O outro link. Aqui porque ligar a foto à cor errada é o engano que a
          cliente descobre clicando numa bolinha e vendo a peça de outra cor. */
       components: {
@@ -656,7 +665,6 @@ export const produto = defineType({
       promocao: "promocao",
       teste: "teste",
       cores: "cores",
-      tamanhos: "tamanhos",
       media: "imagens.0",
       /* AS CORES DAS FOTOS, UMA POR UMA — E POR QUE NÃO O ARRAY INTEIRO
 
@@ -685,7 +693,6 @@ export const produto = defineType({
       promocao,
       teste,
       cores,
-      tamanhos,
       media,
       ...resto
     }) => {
@@ -715,14 +722,7 @@ export const produto = defineType({
       const listaCores = Array.isArray(cores)
         ? (cores as { nome?: string }[])
         : [];
-      const listaTamanhos = Array.isArray(tamanhos)
-        ? (tamanhos as { rotulo?: string }[])
-        : [];
 
-      const quantasCores = listaCores.filter((c) => c?.nome).length;
-      const rotulos = listaTamanhos
-        .map((t) => t?.rotulo)
-        .filter(Boolean) as string[];
 
       /* COR SEM FOTO PRÓPRIA, VISÍVEL NA LISTA
 
@@ -748,19 +748,30 @@ export const produto = defineType({
         .filter((n): n is string => typeof n === "string" && n.trim() !== "")
         .filter((nome) => !coresDasFotos.some((c) => mesmaCor(c, nome))).length;
 
+      /* O QUE CABE NA LINHA DA LISTA
+
+         Esta faixa morava em `description`, e `description` NÃO é desenhada
+         na lista de documentos do Studio — conferido no painel rodando: cada
+         linha mostra só título e subtítulo. Situação, cores, tamanhos e o
+         aviso de cor sem foto estiveram invisíveis esse tempo todo.
+
+         Agora ela entra no `subtitle`, que é uma linha só. Uma linha só
+         obriga a escolher, e a escolha é esta: a linha fica calada quando a
+         peça está em ordem, e fala quando alguma coisa pede atenção.
+
+         Saíram a contagem de cores e a lista de tamanhos — informação que
+         não pede ação nenhuma e que ela vê ao abrir a peça. Saiu "Disponível"
+         por ser o caso comum. Ficaram "Esgotada", "Novidade", "Promoção" e a
+         cor sem foto. */
       const faixa = [
-        estado,
+        valor,
+        nomeCategoria,
+        /* "Disponível" não entra: é o caso comum, e a lista "Catálogo" já
+           não mostra as ocultas. O que entra é o que muda o que a cliente
+           vê. */
+        estado === "Disponível" ? null : estado,
         novidade ? "Novidade" : null,
         promocao ? "Promoção" : null,
-        quantasCores > 0
-          ? `${quantasCores} ${quantasCores === 1 ? "cor" : "cores"}`
-          : null,
-        /* Cinco rótulos cabem; acima disso a linha estoura e vira ruído. */
-        rotulos.length > 0
-          ? rotulos.length <= 5
-            ? rotulos.join(" ")
-            : `${rotulos.length} tamanhos`
-          : null,
         coresSemFoto > 0
           ? `${coresSemFoto} ${coresSemFoto === 1 ? "cor sem foto" : "cores sem foto"}`
           : null,
@@ -770,8 +781,7 @@ export const produto = defineType({
 
       return {
         title: teste ? `${title} (teste)` : title,
-        subtitle: `${valor} · ${nomeCategoria}`,
-        description: faixa,
+        subtitle: faixa,
         media,
       };
     },

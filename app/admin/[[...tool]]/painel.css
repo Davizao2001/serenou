@@ -163,6 +163,22 @@
   color: var(--serenou-carvao-fraco, rgba(22, 19, 15, 0.7)) !important;
 }
 
+/* A PEÇA ABERTA, NA LISTA DO MEIO
+
+   Mesmo defeito do menu da esquerda, em outro painel e no sentido contrário.
+   Aqui o Sanity pinta o item selecionado de carvão e o nosso tema deixa o
+   subtítulo em #4b4238 — escuro sobre escuro. Medido no painel rodando:
+   o nome da peça em 15,5:1, e o preço e a categoria logo abaixo em 1,9:1.
+
+   A peça que a Grazi está editando era a única da coluna com o preço
+   ilegível. Agora o subtítulo acompanha o fundo: linho a 72%, 8,4:1. */
+.painel-serenou
+  [data-testid="document-list-pane"]
+  [data-ui="PreviewCard"][data-selected]
+  [data-ui="Text"]:not(:first-child) {
+  color: rgba(241, 233, 220, 0.72) !important;
+}
+
 /* ---- Fios --------------------------------------------------------------- */
 .painel-serenou [data-testid="pane-header"][data-scheme="light"] {
   border-bottom: 1px solid rgba(211, 195, 172, 0.55);

@@ -70,10 +70,14 @@ confere("cores na MESMA etapa das fotos", grupoDe("cores"), "fotos");
 confere("tamanhos na MESMA etapa das fotos", grupoDe("tamanhos"), "fotos");
 confere("situação em No site", grupoDe("status"), "vitrine");
 confere("endereço da página fora do caminho", grupoDe("slug"), "vitrine");
+/* A grade nativa (`layout: "grid"`) NÃO pode voltar: ela desliga o
+   `components.item`, e com isso a etiqueta de cor some de toda miniatura —
+   conferido no painel rodando, zero seletores na tela. É a informação pela
+   qual a tela de fotos existe. */
 confere(
-  "grade nativa nas fotos",
+  "as fotos ficam em lista, para a etiqueta de cor aparecer",
   campos.find((c) => c.name === "imagens")?.options?.layout,
-  "grid"
+  undefined
 );
 
 /* A ordem de declaração é a ordem de renderização dentro da aba. Cor precisa
@@ -152,7 +156,7 @@ console.log("\nO QUE A LISTA CONTA");
    hoje são três peças no catálogo, e sem isto a Grazi só descobre abrindo as
    dezoito uma a uma. O `prepare` é chamado aqui com os mesmos dados que o
    Studio passa. */
-type Prepare = (v: Record<string, unknown>) => { description?: string; title?: string };
+type Prepare = (v: Record<string, unknown>) => { subtitle?: string; title?: string };
 const preparar = (produto as unknown as { preview: { prepare: Prepare } }).preview.prepare;
 
 const COR = (nome: string) => ({ _key: nome, nome });
@@ -166,17 +170,34 @@ const FOTOS = (...cores: (string | undefined)[]) =>
 
 const comLacuna = preparar({
   title: "Body de Um Ombro",
-  categoria: "bodies",
-  preco: 89,
+  categoria: "blusas",
+  preco: 69,
   status: "disponivel",
   cores: [COR("Preto"), COR("Azul-marinho"), COR("Marrom")],
   ...FOTOS("Preto", "Marrom"),
   tamanhos: [],
 });
+/* A faixa vive no `subtitle`. Em `description` ela não era desenhada: a lista
+   do Studio mostra só título e subtítulo. */
 confere(
   "cor sem foto aparece na linha",
-  comLacuna.description?.includes("1 cor sem foto"),
+  comLacuna.subtitle?.includes("1 cor sem foto"),
   true
+);
+confere(
+  "a linha traz valor e categoria",
+  comLacuna.subtitle?.replace(/\u00a0/g, " ").startsWith("R$ 69,00 · Blusas"),
+  true
+);
+confere(
+  "categoria desconhecida não quebra a linha",
+  preparar({ title: "X", categoria: "inexistente", preco: 10, cores: [] }).subtitle?.includes("sem categoria"),
+  true
+);
+confere(
+  "nada vai para description, que a lista ignora",
+  (comLacuna as { description?: string }).description,
+  undefined
 );
 
 const completa = preparar({
@@ -190,7 +211,7 @@ const completa = preparar({
 });
 confere(
   "peça completa não ganha aviso nenhum",
-  completa.description?.includes("sem foto"),
+  completa.subtitle?.includes("sem foto"),
   false
 );
 
@@ -208,7 +229,7 @@ const acentuada = preparar({
 });
 confere(
   "acento diferente não vira lacuna falsa",
-  acentuada.description?.includes("sem foto"),
+  acentuada.subtitle?.includes("sem foto"),
   false
 );
 
@@ -221,7 +242,7 @@ const semCor = preparar({
   ...FOTOS(undefined),
   tamanhos: [],
 });
-confere("peça sem cor nenhuma não ganha aviso", semCor.description?.includes("sem foto"), false);
+confere("peça sem cor nenhuma não ganha aviso", semCor.subtitle?.includes("sem foto"), false);
 
 /* A REGRESSÃO QUE CUSTOU A LISTA INTEIRA
 
