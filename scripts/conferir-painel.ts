@@ -14,6 +14,8 @@ import { slotDeImagem } from "../sanity/lib/imagem";
 import { produto } from "../sanity/schemas/produto";
 import { PecaComEndereco } from "../sanity/componentes/PecaComEndereco";
 import { ColocarNoAr } from "../sanity/componentes/acoes";
+import { escolherDaVitrine } from "../components/site/VitrineDaHome";
+import type { Produto } from "../lib/catalogo";
 import { ARTIGOS, artigoPor } from "../sanity/ajuda/artigos";
 
 let falhas = 0;
@@ -274,6 +276,65 @@ confere(
   typeof ColocarNoAr === "function",
   true
 );
+
+/* ---------------------------------------------------------------------------
+   A VITRINE DA HOME
+
+   Não é painel, mas é o único script de conferência do projeto e a regra
+   daqui é do tipo que quebra em silêncio: ela escolhe quatro peças entre
+   dezessete, e um erro não derruba nada — só faz a home abrir torta.
+--------------------------------------------------------------------------- */
+console.log("\nA VITRINE DA HOME");
+
+const peca = (nome: string, categoria: string, extra: Partial<Produto> = {}) =>
+  ({ nome, slug: nome, categoria, status: "disponivel", preco: 10000, ...extra }) as Produto;
+
+const CATALOGO = [
+  peca("Biquíni A", "moda-praia"),
+  peca("Biquíni B", "moda-praia"),
+  peca("Biquíni C", "moda-praia"),
+  peca("Conjunto", "conjuntos"),
+  peca("Calça", "calcas"),
+  peca("Vestido", "vestidos"),
+];
+
+const escolhidas = escolherDaVitrine(CATALOGO);
+confere("escolhe quatro", escolhidas.length, 4);
+confere(
+  "não repete categoria — três biquínis seguidos era o defeito",
+  new Set(escolhidas.map((p) => p.categoria)).size,
+  4
+);
+
+const comNovidade = escolherDaVitrine([
+  ...CATALOGO,
+  peca("Novidade da loja", "vestidos", { novidade: true }),
+]);
+confere("novidade vem primeiro", comNovidade[0].nome, "Novidade da loja");
+
+confere(
+  "esgotada fica de fora",
+  escolherDaVitrine([
+    peca("Esgotada", "vestidos", { status: "indisponivel" }),
+    peca("No ar", "conjuntos"),
+  ]).map((p) => p.nome),
+  ["No ar"]
+);
+
+/* Loja com poucas categorias: completa repetindo em vez de deixar buraco. */
+confere(
+  "catálogo de uma categoria só ainda enche a fileira",
+  escolherDaVitrine([
+    peca("A", "vestidos"),
+    peca("B", "vestidos"),
+    peca("C", "vestidos"),
+    peca("D", "vestidos"),
+    peca("E", "vestidos"),
+  ]).length,
+  4
+);
+
+confere("catálogo vazio não inventa peça", escolherDaVitrine([]).length, 0);
 
 console.log("\nCADA INFORMAÇÃO EM UM LUGAR SÓ");
 const nomes = campos.map((c) => c.name);
