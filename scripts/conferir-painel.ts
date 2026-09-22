@@ -156,7 +156,13 @@ type Prepare = (v: Record<string, unknown>) => { description?: string; title?: s
 const preparar = (produto as unknown as { preview: { prepare: Prepare } }).preview.prepare;
 
 const COR = (nome: string) => ({ _key: nome, nome });
-const FOTO = (cor?: string) => (cor ? { cor } : {});
+
+/* As cores das fotos chegam por caminho indexado — `imagens.0.cor`,
+   `imagens.1.cor`… — e não como array. O array inteiro derrubou a lista em
+   produção: o resolvedor de preview do Sanity não devolve array para
+   `imagens`, e `.some` lançava dentro do `prepare`. */
+const FOTOS = (...cores: (string | undefined)[]) =>
+  Object.fromEntries(cores.map((c, i) => [`corFoto${i}`, c]));
 
 const comLacuna = preparar({
   title: "Body de Um Ombro",
@@ -164,7 +170,7 @@ const comLacuna = preparar({
   preco: 89,
   status: "disponivel",
   cores: [COR("Preto"), COR("Azul-marinho"), COR("Marrom")],
-  imagens: [FOTO("Preto"), FOTO("Marrom")],
+  ...FOTOS("Preto", "Marrom"),
   tamanhos: [],
 });
 confere(
@@ -179,7 +185,7 @@ const completa = preparar({
   preco: 159,
   status: "disponivel",
   cores: [COR("Bordô"), COR("Preto")],
-  imagens: [FOTO("Bordô"), FOTO("Preto")],
+  ...FOTOS("Bordô", "Preto"),
   tamanhos: [],
 });
 confere(
@@ -197,7 +203,7 @@ const acentuada = preparar({
   preco: 100,
   status: "disponivel",
   cores: [COR("Bordô")],
-  imagens: [FOTO("bordo")],
+  ...FOTOS("bordo"),
   tamanhos: [],
 });
 confere(
@@ -212,10 +218,34 @@ const semCor = preparar({
   preco: 120,
   status: "disponivel",
   cores: [],
-  imagens: [FOTO()],
+  ...FOTOS(undefined),
   tamanhos: [],
 });
 confere("peça sem cor nenhuma não ganha aviso", semCor.description?.includes("sem foto"), false);
+
+/* A REGRESSÃO QUE CUSTOU A LISTA INTEIRA
+
+   Um `prepare` que lança troca a linha da peça por "Invalid preview config".
+   Aconteceu em produção porque o valor selecionado não era o array que o
+   código supunha. Estas entradas são deliberadamente erradas: nenhuma pode
+   derrubar o prepare. */
+const LIXO: Record<string, unknown>[] = [
+  {},
+  { title: "X", cores: "não é array", tamanhos: 42 },
+  { title: "X", cores: { _type: "coisa" }, tamanhos: null, corFoto0: 7 },
+  { title: "X", cores: [null, undefined, { nome: "" }], corFoto0: null },
+  { title: "X", preco: "cento e cinquenta", status: "inventado" },
+];
+let lancou: string | null = null;
+for (const entrada of LIXO) {
+  try {
+    preparar(entrada);
+  } catch (e) {
+    lancou = `${JSON.stringify(entrada).slice(0, 60)} → ${(e as Error).message}`;
+    break;
+  }
+}
+confere("o prepare nunca lança, nem com valor de forma errada", lancou, null);
 
 console.log("\nVOLTAR AO AR É TÃO FÁCIL QUANTO SAIR");
 confere(

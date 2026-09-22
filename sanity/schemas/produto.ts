@@ -657,8 +657,24 @@ export const produto = defineType({
       teste: "teste",
       cores: "cores",
       tamanhos: "tamanhos",
-      imagens: "imagens",
       media: "imagens.0",
+      /* AS CORES DAS FOTOS, UMA POR UMA — E POR QUE NÃO O ARRAY INTEIRO
+
+         Selecionar `imagens: "imagens"` parecia funcionar: `cores` e
+         `tamanhos` são arrays e chegam como array. Em produção quebrou a
+         lista INTEIRA — "Invalid preview config" em toda peça com cor, com
+         `TypeError: f.some is not a function` no console. O resolvedor de
+         preview do Sanity não devolve array para `imagens`; devolve outra
+         coisa, e `.some` não existe nela.
+
+         Caminho indexado devolve o valor, e disso há prova na própria linha
+         acima: `media: "imagens.0"` sempre funcionou. Doze é o teto — o
+         catálogo tem no máximo seis fotos por peça, e uma foto além da
+         décima segunda só faria a contagem deixar de ver uma vinculação,
+         nunca quebrar. */
+      ...Object.fromEntries(
+        Array.from({ length: 12 }, (_, i) => [`corFoto${i}`, `imagens.${i}.cor`])
+      ),
     },
     prepare: ({
       title,
@@ -670,8 +686,8 @@ export const produto = defineType({
       teste,
       cores,
       tamanhos,
-      imagens,
       media,
+      ...resto
     }) => {
       const nomeCategoria =
         CATEGORIAS_SANITY.find((c) => c.value === categoria)?.title ??
@@ -692,8 +708,16 @@ export const produto = defineType({
             ? "Esgotada"
             : "Disponível";
 
-      const listaCores = (cores ?? []) as { nome?: string }[];
-      const listaTamanhos = (tamanhos ?? []) as { rotulo?: string }[];
+      /* `Array.isArray` e não `?? []`: o resolvedor de preview já provou que
+         pode devolver algo que não é array, e um `prepare` que lança derruba
+         a linha inteira da lista — foi assim que o catálogo inteiro virou
+         "Invalid preview config". Aqui nada pode lançar. */
+      const listaCores = Array.isArray(cores)
+        ? (cores as { nome?: string }[])
+        : [];
+      const listaTamanhos = Array.isArray(tamanhos)
+        ? (tamanhos as { rotulo?: string }[])
+        : [];
 
       const quantasCores = listaCores.filter((c) => c?.nome).length;
       const rotulos = listaTamanhos
@@ -715,11 +739,14 @@ export const produto = defineType({
          a fotografia (lib/media.ts). Comparar aqui com `===` daria um número
          que discorda do que a cliente vê no dia em que um nome divergir por
          acento. */
-      const listaFotos = (imagens ?? []) as { cor?: string }[];
+      const coresDasFotos = Array.from({ length: 12 }, (_, i) =>
+        (resto as Record<string, unknown>)[`corFoto${i}`]
+      ).filter((c): c is string => typeof c === "string" && c.trim() !== "");
+
       const coresSemFoto = listaCores
         .map((c) => c?.nome)
-        .filter(Boolean)
-        .filter((nome) => !listaFotos.some((f) => mesmaCor(f?.cor, nome))).length;
+        .filter((n): n is string => typeof n === "string" && n.trim() !== "")
+        .filter((nome) => !coresDasFotos.some((c) => mesmaCor(c, nome))).length;
 
       const faixa = [
         estado,

@@ -39,6 +39,8 @@
 
   /* O fio de contorno, nos dois pesos do site. Os componentes próprios
      (sanity/componentes/estilo.ts) leem daqui em vez de repetir o rgba. */
+  --serenou-raio-acao: 10px;
+  --serenou-carvao-fraco: rgb(22 19 15 / 0.7);
   --serenou-fio: rgb(22 19 15 / 0.16);
   --serenou-fio-forte: rgb(22 19 15 / 0.3);
 }
@@ -119,20 +121,46 @@
   background-color: rgba(22, 19, 15, 0.06) !important;
 }
 
-/* Onde a Grazi está agora.
+/* ONDE A GRAZI ESTÁ AGORA
 
-   Era carvão sólido — e um retângulo preto na coluna puxava o olho para a
-   navegação, justamente o contrário da hierarquia que a peça precisa. Agora é
-   o papel claro da área de trabalho com um prumo de carvão à esquerda: diz
-   "é este" sem gritar, e ainda amarra visualmente a coluna ao painel do
-   documento, que tem esse mesmo fundo. */
-.painel-serenou [data-testid="structure-tool-list-pane"] [data-ui="PreviewCard"][data-scheme="light"][data-selected] {
+   Esta regra estava com um defeito que só apareceu vendo a tela: ela forçava
+   o fundo claro e NÃO mexia na cor do texto. O Sanity pinta o rótulo do item
+   selecionado de #f1e9dc — claro, porque o tema dele assume fundo escuro no
+   selecionado. Claro sobre claro deu 1,05:1 medido no navegador. O item onde
+   a Grazi estava era o único ilegível da coluna.
+
+   Agora a cor vem junto do fundo, sempre no mesmo lugar: carvão sobre linho
+   alto, 16,9:1. E o canto esquerdo é reto, para o prumo de carvão encostar na
+   borda da coluna em vez de flutuar — era isso que fazia o item parecer um
+   cartão branco solto no meio do bege.
+
+   O plano claro continua sendo o mesmo papel do painel do documento, à
+   direita: a coluna e a peça ficam amarradas sem precisar de um retângulo
+   preto puxando o olho para a navegação. */
+.painel-serenou
+  [data-testid="structure-tool-list-pane"]
+  [data-ui="PreviewCard"][data-scheme="light"][data-selected] {
   background-color: var(--serenou-linho-alto) !important;
+  border-radius: 0 var(--serenou-raio-acao, 10px) var(--serenou-raio-acao, 10px) 0;
   box-shadow: inset 3px 0 0 0 var(--serenou-carvao);
 }
 
-.painel-serenou [data-testid="structure-tool-list-pane"] [data-ui="PreviewCard"][data-scheme="light"][data-selected] [data-ui="Text"] {
+.painel-serenou
+  [data-testid="structure-tool-list-pane"]
+  [data-ui="PreviewCard"][data-scheme="light"][data-selected]
+  [data-ui="Text"] {
   font-weight: 600;
+  color: var(--serenou-carvao) !important;
+}
+
+/* O rótulo secundário do item selecionado (a contagem, quando houver) fica um
+   degrau abaixo, mas ainda em carvão — o mesmo motivo de cima. */
+.painel-serenou
+  [data-testid="structure-tool-list-pane"]
+  [data-ui="PreviewCard"][data-scheme="light"][data-selected]
+  [data-ui="Text"]:not(:first-child) {
+  font-weight: 400;
+  color: var(--serenou-carvao-fraco, rgba(22, 19, 15, 0.7)) !important;
 }
 
 /* ---- Fios --------------------------------------------------------------- */
