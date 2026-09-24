@@ -140,7 +140,12 @@ export function ProductCard({ produto, priority = false, nivel = 3 }: Props) {
             href={`/produto/${produto.slug}`}
             onMouseEnter={entrar}
             onMouseLeave={() => setSobre(false)}
-            className="underline-offset-[0.3em] transition-colors duration-200 hover:underline focus-visible:underline focus-visible:outline-none"
+            /* `tap` porque a linha do nome tem 19px de altura: é o alvo mais
+               tocado do cartão depois da foto, e no telefone 19px é menos que
+               a ponta de um dedo. O pseudo-elemento estica a área para ~46px
+               sem mexer no desenho nem invadir a foto acima — o respiro de
+               14px entre as duas cobre os 13,6px que ele sobe. */
+            className="tap underline-offset-[0.3em] transition-colors duration-200 hover:underline focus-visible:underline focus-visible:outline-none"
           >
             {produto.nome}
           </Link>

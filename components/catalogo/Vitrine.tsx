@@ -2,6 +2,7 @@ import { FiltroCategorias } from "./FiltroCategorias";
 import { ProductGrid } from "./ProductGrid";
 import { GRADE_DENSA, type Produto } from "@/lib/catalogo";
 import { linkWhatsApp } from "@/lib/loja";
+import type { SecoesDaLoja } from "@/sanity/lib/produtos";
 
 /**
  * VITRINE
@@ -25,6 +26,8 @@ export function Vitrine({
   lista,
   totalCatalogo,
   filtro,
+  titulo,
+  secoes,
   falhou = false,
 }: {
   /** Já filtrada pelo servidor. */
@@ -32,6 +35,12 @@ export function Vitrine({
   /** Tamanho do catálogo inteiro — decide a densidade e o estado vazio. */
   totalCatalogo: number;
   filtro: string;
+  /** O nome da seleção. A aba do navegador já dizia "Promoções" enquanto a
+   *  página escrita dizia "Catálogo" — duas respostas para a mesma pergunta,
+   *  e a errada era a que a cliente estava olhando. */
+  titulo: string;
+  /** O que tem peça, para o trilho do telefone. */
+  secoes?: SecoesDaLoja;
   /** A leitura do catálogo falhou — vazio aqui não significa "não existe". */
   falhou?: boolean;
 }) {
@@ -47,7 +56,7 @@ export function Vitrine({
           onde a pessoa está antes de sair da frente. */}
       <header className="flex items-baseline justify-between gap-4">
         <h1 className="t-display text-[1.375rem] tracking-[0.02em] md:text-[1.5rem]">
-          Catálogo
+          {titulo}
         </h1>
         {temCatalogo && (
           <p className="t-eyebrow text-[0.6875rem] text-carvao-fraco">
@@ -61,7 +70,7 @@ export function Vitrine({
           dobro, justamente na tela que tem menos altura para gastar. */}
       {temCatalogo && (
         <div className="mt-3.5">
-          <FiltroCategorias ativo={filtro} />
+          <FiltroCategorias ativo={filtro} secoes={secoes} />
         </div>
       )}
 

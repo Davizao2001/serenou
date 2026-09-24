@@ -15,6 +15,7 @@ import { produto } from "../sanity/schemas/produto";
 import { PecaComEndereco } from "../sanity/componentes/PecaComEndereco";
 import { ColocarNoAr } from "../sanity/componentes/acoes";
 import { escolherDaVitrine } from "../components/site/VitrineDaHome";
+import { secoesDaLista } from "../sanity/lib/produtos";
 import type { Produto } from "../lib/catalogo";
 import { ARTIGOS, artigoPor } from "../sanity/ajuda/artigos";
 
@@ -335,6 +336,61 @@ confere(
 );
 
 confere("catálogo vazio não inventa peça", escolherDaVitrine([]).length, 0);
+
+/* ---------------------------------------------------------------------------
+   O MENU SAI DO CATÁLOGO
+
+   "Novidades" e "Promoções" dependem de a Grazi marcar a peça. Enquanto
+   ninguém marcar, as duas entradas levam a uma lista vazia — foi assim
+   durante meses, com dois dos nove itens do menu do telefone abrindo o nada.
+   Estas conferências existem para que isso não volte por descuido.
+--------------------------------------------------------------------------- */
+console.log("\nO MENU SÓ OFERECE O QUE TEM PEÇA");
+
+const catalogoReal = [
+  peca("Vestido Longo", "vestidos"),
+  peca("Conjunto Bless", "conjuntos"),
+  peca("Biquíni Sol", "moda-praia"),
+];
+
+confere(
+  "sem peça marcada, não há Novidades nem Promoções",
+  [secoesDaLista(catalogoReal).novidades, secoesDaLista(catalogoReal).promocoes],
+  [false, false]
+);
+
+confere(
+  "só as categorias com peça entram",
+  secoesDaLista(catalogoReal).categorias,
+  ["vestidos", "conjuntos", "moda-praia"]
+);
+
+/* A ordem é a do menu, não a que o banco devolveu: `array::unique` volta em
+   ordem alfabética, e o menu tem uma ordem pensada. */
+confere(
+  "a ordem é a do menu, não a alfabética",
+  secoesDaLista([
+    peca("Z", "moda-praia"),
+    peca("A", "blusas"),
+    peca("M", "vestidos"),
+  ]).categorias,
+  ["vestidos", "blusas", "moda-praia"]
+);
+
+confere(
+  "uma peça marcada devolve a entrada",
+  (() => {
+    const s = secoesDaLista([{ ...peca("Nova", "vestidos"), novidade: true }]);
+    return [s.novidades, s.promocoes];
+  })(),
+  [true, false]
+);
+
+confere(
+  "catálogo vazio não oferece nada",
+  secoesDaLista([]),
+  { categorias: [], novidades: false, promocoes: false }
+);
 
 console.log("\nCADA INFORMAÇÃO EM UM LUGAR SÓ");
 const nomes = campos.map((c) => c.name);

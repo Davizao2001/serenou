@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PecaEmFoco } from "@/components/catalogo/PecaEmFoco";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Header } from "@/components/site/Header";
+import { Cabecalho } from "@/components/site/Cabecalho";
 import { ASerenou } from "@/components/site/ASerenou";
 import { LojaFisica } from "@/components/site/LojaFisica";
 import { Fecho } from "@/components/site/Fecho";
@@ -95,7 +95,7 @@ export default async function Produto({ params }: Props) {
       <DadosEstruturados dados={produtoJsonLd(produto)} />
       <DadosEstruturados dados={trilhaJsonLd(produto)} />
 
-      <Header />
+      <Cabecalho />
       <main id="conteudo" className="bg-linho pb-[12svh] pt-[calc(var(--header-h)+5svh)]">
         {/* 1280px. Com três colunas a caixa precisa ser mais larga do que era
             com duas: em 1180 a fotografia cairia para 300px para a ficha

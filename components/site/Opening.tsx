@@ -123,7 +123,12 @@ export function Opening() {
                 href="/catalogo"
                 className="t-eyebrow hero-cta-solido px-8 py-4"
               >
-                Ver as novidades
+                {/* Dizia "Ver as novidades" e levava ao catálogo inteiro.
+                    Novidade é uma marca que a Grazi põe na peça, e enquanto
+                    nenhuma estiver marcada não existe novidade nenhuma — o
+                    botão principal do site prometia uma seção que não havia.
+                    O rótulo agora descreve o que o clique faz. */}
+                Ver as peças
               </Link>
               {/* CTA geral: abre a conversa com uma mensagem de boas-vindas,
                   sem contexto de produto — a peça ainda não foi escolhida.

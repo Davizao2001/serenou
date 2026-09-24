@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CATEGORIAS, COLECOES } from "@/lib/loja";
+import type { SecoesDaLoja } from "@/sanity/lib/produtos";
 
 /**
  * TRILHO DE CATEGORIAS — SÓ NO TELEFONE
@@ -23,12 +24,26 @@ import { CATEGORIAS, COLECOES } from "@/lib/loja";
  * que abrir /catalogo?c=vestidos direto e clicar em "Vestidos" passam a ser
  * literalmente o mesmo caminho.
  */
-export function FiltroCategorias({ ativo }: { ativo: string }) {
+export function FiltroCategorias({
+  ativo,
+  secoes,
+}: {
+  ativo: string;
+  /** O que tem peça. Sem isto o trilho oferece recortes vazios — e no
+   *  telefone ele é o único caminho entre categorias, então um item que não
+   *  leva a nada custa uma volta inteira. */
+  secoes?: SecoesDaLoja;
+}) {
   const categorias = [
     { slug: "tudo", nome: "Todas" },
-    ...CATEGORIAS.map((c) => ({ slug: c.slug, nome: c.nome })),
+    ...CATEGORIAS.filter((c) => !secoes || secoes.categorias.includes(c.slug)).map(
+      (c) => ({ slug: c.slug, nome: c.nome })
+    ),
   ];
-  const colecoes = COLECOES.map((c) => ({ slug: c.slug, nome: c.nome }));
+  const colecoes = COLECOES.filter(
+    (c) =>
+      !secoes || (c.slug === "novidades" ? secoes.novidades : secoes.promocoes)
+  ).map((c) => ({ slug: c.slug, nome: c.nome }));
 
   const item = (i: { slug: string; nome: string }) => {
     const selecionado = i.slug === ativo;
@@ -75,7 +90,9 @@ export function FiltroCategorias({ ativo }: { ativo: string }) {
       <div className="trilho-fim -mx-5 overflow-x-auto overflow-y-hidden px-5 md:-mx-8 md:px-8">
         <ul className="flex w-max min-w-full items-center gap-6 pb-4 md:gap-8">
           {categorias.map(item)}
-          <li aria-hidden="true" className="h-3 w-px shrink-0 bg-areia-forte" />
+          {colecoes.length > 0 && (
+            <li aria-hidden="true" className="h-3 w-px shrink-0 bg-areia-forte" />
+          )}
           {colecoes.map(item)}
         </ul>
       </div>

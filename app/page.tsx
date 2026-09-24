@@ -16,7 +16,7 @@
    tirar a faixa de degradê do topo de ASerenou (era o teaser que levava o
    fundo do bege para o carvão). */
 import { SerenouIntro } from "@/components/intro/SerenouIntro";
-import { Header } from "@/components/site/Header";
+import { Cabecalho } from "@/components/site/Cabecalho";
 import { Opening } from "@/components/site/Opening";
 import { VitrineDaHome } from "@/components/site/VitrineDaHome";
 import { ChapterLeve } from "@/components/site/ChapterLeve";
@@ -40,7 +40,7 @@ export default async function Home() {
   return (
     <>
       <SerenouIntro />
-      <Header />
+      <Cabecalho />
       <main id="conteudo">
         <Opening />
         <VitrineDaHome lista={produtos} />

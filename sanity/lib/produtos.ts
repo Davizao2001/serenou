@@ -311,3 +311,91 @@ export async function listarSlugs(): Promise<string[]> {
 export async function relacionadas(produto: Produto, quantas = 4): Promise<Produto[]> {
   return escolherRelacionadas(await listarProdutos(), produto, quantas);
 }
+
+/* -------------------------------------------------------------------------
+   O QUE O MENU PODE OFERECER
+
+   "Novidades" e "Promoções" são marcas que a Grazi põe na peça, não
+   categorias fixas. Enquanto nenhuma peça estiver marcada, as duas entradas
+   do menu levam a uma página vazia — e o site passou meses assim: dois dos
+   nove itens do menu do telefone, mais o botão principal da home, abriam uma
+   lista sem nada. Link que não leva a lugar nenhum não é um detalhe de
+   navegação; é a loja dizendo que não tem o que mostrar.
+
+   O mesmo vale para as categorias. Se a última calça sair do ar, "Calças"
+   vira o mesmo beco.
+
+   Então o menu passa a sair do catálogo. Marcar uma peça como novidade faz a
+   entrada aparecer; desmarcar a última faz a entrada sumir. A Grazi não
+   precisa saber que isso existe — é exatamente por isso que funciona.
+
+   SE A LEITURA FALHAR, O MENU FICA INTEIRO
+
+   O contrário seria trocar um minuto de instabilidade no Sanity por um site
+   sem navegação. Esconder é para quando se SABE que está vazio; não saber é
+   outra coisa, e a resposta a não saber é não mexer.
+------------------------------------------------------------------------- */
+
+export type SecoesDaLoja = {
+  /** Slugs de categoria que têm pelo menos uma peça visível. */
+  categorias: string[];
+  novidades: boolean;
+  promocoes: boolean;
+};
+
+/** Tudo visível — o que se mostra quando não dá para saber. */
+const TUDO: SecoesDaLoja = {
+  categorias: CATEGORIAS.map((c) => c.slug),
+  novidades: true,
+  promocoes: true,
+};
+
+const CONSULTA_SECOES = `{
+  "categorias": array::unique(*[${VISIVEIS}].categoria),
+  "novidades": count(*[${VISIVEIS} && novidade == true]),
+  "promocoes": count(*[${VISIVEIS} && promocao == true])
+}`;
+
+/** As seções de uma lista já em mãos — sem ir ao Sanity de novo. É o que o
+ *  catálogo usa: ele já carregou tudo, e uma segunda consulta para contar o
+ *  que está na memória seria trabalho por nada. */
+export function secoesDaLista(lista: Produto[]): SecoesDaLoja {
+  return {
+    categorias: CATEGORIAS.map((c) => c.slug).filter((slug) =>
+      lista.some((p) => p.categoria === slug)
+    ),
+    novidades: lista.some((p) => p.novidade),
+    promocoes: lista.some((p) => p.promocao),
+  };
+}
+
+/**
+ * Que entradas de menu têm peça por trás.
+ *
+ * Consulta própria, minúscula — três contagens, sem trazer o catálogo. É
+ * chamada em toda página que desenha o cabeçalho, e o cabeçalho é toda
+ * página do site.
+ */
+export async function secoesComPecas(): Promise<SecoesDaLoja> {
+  if (!CONFIGURADO)
+    return secoesDaLista(PRODUTOS_DESENVOLVIMENTO.filter((p) => p.status !== "oculto"));
+
+  const r = await consultar("contar as seções", () =>
+    clienteSanity().fetch<{
+      categorias: (string | null)[] | null;
+      novidades: number;
+      promocoes: number;
+    }>(CONSULTA_SECOES, {}, cache)
+  );
+
+  if (!r.ok || !r.valor) return TUDO;
+
+  const presentes = new Set((r.valor.categorias ?? []).filter(Boolean) as string[]);
+  return {
+    /* A ordem é a de CATEGORIAS, nunca a que o Sanity devolveu: o menu tem
+       uma ordem pensada, e `array::unique` devolve em ordem alfabética. */
+    categorias: CATEGORIAS.map((c) => c.slug).filter((slug) => presentes.has(slug)),
+    novidades: r.valor.novidades > 0,
+    promocoes: r.valor.promocoes > 0,
+  };
+}

@@ -49,38 +49,52 @@ import { CATEGORIAS, COLECOES, linkWhatsApp } from "@/lib/loja";
  * tinha aceitado como o preço de manter a tipografia legível, deixou de ser
  * necessário — a mesma decisão que custava uma concessão agora devolve ela.
  */
+/* ENTRADA VAZIA NÃO ENTRA NO MENU
+ *
+ * "Novidades" e "Promoções" dependem de a Grazi marcar a peça; uma categoria
+ * depende de ter peça cadastrada nela. Enquanto não houver, a entrada leva a
+ * uma lista vazia — e por meses foi exatamente isso: dois dos nove itens do
+ * menu do telefone abriam o nada.
+ *
+ * `secoes` vem do servidor, de uma contagem no catálogo. Sem ela — ou se a
+ * leitura falhar — o menu aparece inteiro, como sempre apareceu: esconder é
+ * para quando se sabe que está vazio, e não saber não é saber.
+ */
 const CATALOGO = { label: "Catálogo", href: "/catalogo" };
 
-/** As seis que vivem dentro da gaveta. */
-const CATEGORIAS_GAVETA = CATEGORIAS.map((c) => ({
+const entrada = (c: { slug: string; nome: string }) => ({
   label: c.nome,
   href: `/catalogo?c=${c.slug}`,
-}));
+});
 
-/** As duas coleções, soltas na barra. */
-const COLECOES_NAV = COLECOES.map((c) => ({
-  label: c.nome,
-  href: `/catalogo?c=${c.slug}`,
-}));
+export type SecoesDoMenu = {
+  categorias: string[];
+  novidades: boolean;
+  promocoes: boolean;
+};
 
-/** O menu do telefone continua mostrando tudo em lista — lá não há gaveta,
- *  e esconder categorias atrás de um toque a mais seria piorar. */
-const NAV_MOBILE = [
-  CATALOGO,
-  ...COLECOES.filter((c) => c.slug === "novidades").map((c) => ({
-    label: c.nome,
-    href: `/catalogo?c=${c.slug}`,
-  })),
-  ...CATEGORIAS_GAVETA,
-  ...COLECOES.filter((c) => c.slug === "promocoes").map((c) => ({
-    label: c.nome,
-    href: `/catalogo?c=${c.slug}`,
-  })),
-];
-
-export function Header() {
+export function Header({ secoes }: { secoes?: SecoesDoMenu }) {
   const header = useRef<HTMLElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  /* As seis que vivem dentro da gaveta — só as que têm peça. */
+  const CATEGORIAS_GAVETA = CATEGORIAS.filter(
+    (c) => !secoes || secoes.categorias.includes(c.slug)
+  ).map(entrada);
+
+  /* As coleções, soltas na barra. */
+  const temColecao = (slug: string) =>
+    !secoes || (slug === "novidades" ? secoes.novidades : secoes.promocoes);
+  const COLECOES_NAV = COLECOES.filter((c) => temColecao(c.slug)).map(entrada);
+
+  /* O menu do telefone continua mostrando tudo em lista — lá não há gaveta,
+     e esconder categorias atrás de um toque a mais seria piorar. */
+  const NAV_MOBILE = [
+    CATALOGO,
+    ...COLECOES.filter((c) => c.slug === "novidades" && temColecao(c.slug)).map(entrada),
+    ...CATEGORIAS_GAVETA,
+    ...COLECOES.filter((c) => c.slug === "promocoes" && temColecao(c.slug)).map(entrada),
+  ];
 
   useGSAP(
     () => {
@@ -138,16 +152,20 @@ export function Header() {
                   style={{ fontWeight: 600 }}
                 >
                   {CATALOGO.label}
-                  <svg
-                    viewBox="0 0 16 16"
-                    aria-hidden="true"
-                    className="h-2.5 w-2.5 shrink-0 fill-none stroke-current opacity-60"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="m4 6.5 4 4 4-4" />
-                  </svg>
+                  {/* A seta promete uma gaveta. Sem categoria com peça não há
+                      gaveta, e a seta viraria uma promessa vazia. */}
+                  {CATEGORIAS_GAVETA.length > 0 && (
+                    <svg
+                      viewBox="0 0 16 16"
+                      aria-hidden="true"
+                      className="h-2.5 w-2.5 shrink-0 fill-none stroke-current opacity-60"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="m4 6.5 4 4 4-4" />
+                    </svg>
+                  )}
                 </Link>
 
                 {/* A gaveta. Encosta no item, sem seta e sem sombra pesada:
@@ -167,6 +185,7 @@ export function Header() {
                     12,5rem e não 13,5: "Macaquinhos", o rótulo mais longo,
                     ocupa 88px. A gaveta não precisa ser larga, precisa ser
                     calma. */}
+                {CATEGORIAS_GAVETA.length > 0 && (
                 <div className="gaveta-painel absolute left-1/2 top-full z-50 w-[12.5rem] -translate-x-1/2 pt-3">
                   <div className="rounded-[var(--r-painel)] border border-areia-forte/60 bg-linho-alto p-1.5 shadow-[0_10px_28px_-20px_rgba(22,19,15,0.32)]">
                     <Link
@@ -193,6 +212,7 @@ export function Header() {
                     </ul>
                   </div>
                 </div>
+                )}
               </li>
 
               {COLECOES_NAV.map((item) => (

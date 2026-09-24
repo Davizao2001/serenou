@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/site/Header";
+import { Cabecalho } from "@/components/site/Cabecalho";
 import { ASerenou } from "@/components/site/ASerenou";
 import { LojaFisica } from "@/components/site/LojaFisica";
 import { Fecho } from "@/components/site/Fecho";
 import { Vitrine } from "@/components/catalogo/Vitrine";
-import { listarProdutosComEstado } from "@/sanity/lib/produtos";
+import { listarProdutosComEstado, secoesDaLista } from "@/sanity/lib/produtos";
 import { produtosVisiveis, filtrarPorSelecao, GRADE_DENSA } from "@/lib/catalogo";
 import { CATEGORIAS, COLECOES } from "@/lib/loja";
 
@@ -72,7 +72,7 @@ export default async function Catalogo({ searchParams }: Props) {
 
   return (
     <>
-      <Header />
+      <Cabecalho />
       <main
         id="conteudo"
         /* O respiro entre o header e o bloco do título é mais curto no
@@ -94,6 +94,11 @@ export default async function Catalogo({ searchParams }: Props) {
             lista={lista}
             totalCatalogo={totalCatalogo}
             filtro={filtro}
+            titulo={nomeDe(filtro)}
+            /* Calculado da lista que já está aqui: o catálogo acabou de ler
+               o catálogo inteiro, e uma consulta para contar o que está na
+               memória seria trabalho por nada. */
+            secoes={falhou ? undefined : secoesDaLista(produtos)}
             falhou={falhou}
           />
         </div>
