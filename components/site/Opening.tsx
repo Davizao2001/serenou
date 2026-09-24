@@ -43,10 +43,12 @@ export function Opening() {
         <div data-plate className="absolute inset-0 overflow-hidden">
           <div data-plate-reveal className="absolute inset-0">
             <div data-plate-zoom className="absolute inset-0">
-              {/* As três fotografias ocupam o mesmo lugar; a cena troca a
+              {/* As fotografias ocupam todas o mesmo lugar; a cena troca a
                   opacidade. A primeira entra com prioridade e opacidade 1 —
                   as outras nascem invisíveis, mas presentes, para que a
-                  primeira troca não espere download. */}
+                  primeira troca não espere download.
+
+                  Quantas são é decisão de HERO_SLIDES, não daqui. */}
               {HERO_SLIDES.map(({ slot, tom }, i) => (
                 <div
                   key={slot.id}
@@ -100,7 +102,7 @@ export function Opening() {
                 do quadro e terminava sobre os manequins, onde o carvão caía
                 para 2,4:1. Em três, a linha mais longa para nos 38% e a
                 headline inteira mora na parede vazia — que é justamente o
-                que as três fotografias têm em comum. */}
+                que todas as fotografias da hero têm em comum. */}
             <h1 className="t-display t-hero">
               {["Vista", "o dia", "inteiro."].map((linha, i, todas) => (
                 <span key={linha} className="line-mask">

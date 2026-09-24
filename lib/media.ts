@@ -237,7 +237,23 @@ export type TomHero = "claro" | "escuro";
  * acontece.
  */
 export const HERO_SLIDES: Array<{ slot: MediaSlot; tom: TomHero }> = [
-  { slot: MEDIA.hero, tom: "escuro" },
+  /* FORA DA ROTAÇÃO, ESPERANDO A SUBSTITUTA
+
+     `MEDIA.hero` — a fotografia com modelo — saiu a pedido da loja: outra
+     entra no lugar dela. A entrada continua descrita em MEDIA, e o arquivo
+     continua em public/, porque o que vai voltar é uma foto de mesma
+     natureza (lifestyle, pessoa ao centro) e os valores de `focus`,
+     `focusMobile` e `tone` dali são o ponto de partida certo para ela.
+
+     Para repor: trocar `base`, `alt` e as medidas de `MEDIA.hero`, e
+     devolver a linha abaixo ao topo desta lista.
+
+       { slot: MEDIA.hero, tom: "escuro" },
+
+     `tom` diz se a tipografia por cima vira off-white ou fica em carvão —
+     "escuro" para foto escura. O resto se ajusta sozinho: o HTML do
+     servidor já lê o tom da primeira daqui, e a rotação monta quantas
+     houver. */
   { slot: MEDIA.heroAzul, tom: "claro" },
   { slot: MEDIA.heroRosa, tom: "claro" },
   { slot: MEDIA.heroVerde, tom: "claro" },
