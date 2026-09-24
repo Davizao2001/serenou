@@ -58,7 +58,11 @@ export function Vitrine({
         <h1 className="t-display text-[1.375rem] tracking-[0.02em] md:text-[1.5rem]">
           {titulo}
         </h1>
-        {temCatalogo && (
+        {/* `lista.length > 0`, e não só `temCatalogo`: numa seleção vazia o
+            contador dizia "0 peças" ao lado do título, com o texto "nenhuma
+            peça nesta seleção" logo abaixo. Dois jeitos de dizer a mesma
+            falta, e o número é o pior dos dois. */}
+        {temCatalogo && lista.length > 0 && (
           <p className="t-eyebrow text-[0.6875rem] text-carvao-fraco">
             {lista.length} {lista.length === 1 ? "peça" : "peças"}
           </p>
