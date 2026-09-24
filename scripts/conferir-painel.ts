@@ -16,6 +16,7 @@ import { PecaComEndereco } from "../sanity/componentes/PecaComEndereco";
 import { ColocarNoAr } from "../sanity/componentes/acoes";
 import { escolherDaVitrine } from "../components/site/VitrineDaHome";
 import { secoesDaLista } from "../sanity/lib/produtos";
+import { portasDaLoja } from "../components/site/CategoriasDaHome";
 import type { Produto } from "../lib/catalogo";
 import { ARTIGOS, artigoPor } from "../sanity/ajuda/artigos";
 
@@ -390,6 +391,32 @@ confere(
   "catálogo vazio não oferece nada",
   secoesDaLista([]),
   { categorias: [], novidades: false, promocoes: false }
+);
+
+console.log("\nO ÍNDICE NO FIM DA HOME");
+
+confere(
+  "só categorias com peça, na ordem do menu",
+  portasDaLoja([
+    peca("Z", "moda-praia"),
+    peca("A", "blusas"),
+    peca("M", "vestidos"),
+    peca("N", "vestidos"),
+  ]).map((c) => `${c.nome}:${c.quantas}`),
+  ["Vestidos:2", "Blusas:1", "Moda Praia:1"]
+);
+
+confere("catálogo vazio não desenha índice", portasDaLoja([]).length, 0);
+
+/* Peça oculta não conta: o número ao lado da categoria é uma promessa do
+   que a cliente vai achar do outro lado do clique. */
+confere(
+  "peça oculta não entra na contagem",
+  portasDaLoja([
+    peca("No ar", "vestidos"),
+    peca("Fora", "vestidos", { status: "oculto" }),
+  ]).map((c) => c.quantas),
+  [1]
 );
 
 console.log("\nCADA INFORMAÇÃO EM UM LUGAR SÓ");

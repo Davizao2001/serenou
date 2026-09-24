@@ -750,6 +750,55 @@ picture {
 }
 
 /* ---------------------------------------------------------------------------
+   ÍNDICE DA LOJA — AS SEIS PORTAS NO FIM DA HOME
+
+   Uma linha por tipo de peça, com o nome grande à esquerda e a contagem à
+   direita. O gesto de hover é um só, e é o mesmo que a lista já faz quando
+   se lê de cima a baixo: o nome anda um pouco para a direita, na direção de
+   onde o clique leva.
+
+   O DESLOCAMENTO É DO NOME, NÃO DA LINHA
+
+   Mover a linha inteira arrastaria a contagem junto, e a contagem está
+   alinhada à borda direita do bloco — ela andando quebraria a coluna que o
+   olho usa para comparar os seis números. O nome anda; o número fica onde
+   está, que é a função dele.
+
+   4px, e não 8 ou 12: o tipo aqui chega a 36px, e um deslocamento que se
+   nota em corpo 11 vira solavanco em corpo 36. O que se quer é confirmar
+   que a linha respondeu ao ponteiro, não animá-la.
+
+   O fio de baixo escurece junto. Os dois juntos dizem "esta linha", que é a
+   única coisa que o hover precisa dizer numa lista onde todas as linhas
+   fazem a mesma coisa.
+
+   Sem `:focus-visible` próprio: o anel de foco geral do site já marca a
+   linha, e ele tem contraste que um deslocamento de 4px não tem. Somar os
+   dois só dobraria o sinal para quem já recebeu um.
+--------------------------------------------------------------------------- */
+.indice-linha > span:first-child {
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) {
+  .indice-linha:hover > span:first-child {
+    transform: translateX(4px);
+  }
+
+  .indice-linha:hover {
+    border-color: var(--color-areia-forte);
+  }
+}
+
+/* O corte geral já zera a duração; isto é só para não deixar a posição
+   final valendo sem o percurso — sem movimento, a linha não se mexe. */
+@media (prefers-reduced-motion: reduce) {
+  .indice-linha:hover > span:first-child {
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
    GALERIA DA PEÇA — A FAIXA DE MINIATURAS
 
    A faixa herda a altura da fotografia principal (está em absoluto ao lado

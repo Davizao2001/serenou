@@ -21,6 +21,7 @@ import { Opening } from "@/components/site/Opening";
 import { VitrineDaHome } from "@/components/site/VitrineDaHome";
 import { ChapterLeve } from "@/components/site/ChapterLeve";
 import { ChapterVersatil } from "@/components/site/ChapterVersatil";
+import { CategoriasDaHome } from "@/components/site/CategoriasDaHome";
 import { ASerenou } from "@/components/site/ASerenou";
 import { LojaFisica } from "@/components/site/LojaFisica";
 import { Fecho } from "@/components/site/Fecho";
@@ -46,6 +47,10 @@ export default async function Home() {
         <VitrineDaHome lista={produtos} />
         <ChapterLeve />
         <ChapterVersatil />
+        {/* O índice fecha a narrativa. Depois da vitrine, na terceira tela,
+            a home passava seis telas sem um caminho para a roupa — e
+            terminava em "A Serenou", em carvão, sem nenhum. */}
+        <CategoriasDaHome lista={produtos} />
       </main>
       <ASerenou />
       <LojaFisica />
