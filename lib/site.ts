@@ -56,4 +56,19 @@ export const IMAGEM_DO_CARTAO = "/opengraph-image.jpg";
    Vazio desliga a medição. Ver components/site/Analytics.tsx, que também só
    carrega em produção.
 --------------------------------------------------------------------------- */
-export const GA_ID = "";
+export const GA_ID = "G-53DNMBN41B";
+
+/* ---------------------------------------------------------------------------
+   GOOGLE SEARCH CONSOLE
+
+   O código que prova ao Google que o site é nosso. Vai como metatag no
+   <head> de toda página — o Search Console lê a home, mas o Next monta a tag
+   no layout, então ela sai em todas, e é isso mesmo: se a home mudar de
+   lugar um dia, a verificação não cai junto.
+
+   A propriedade é por ENDEREÇO: esta vale para serenou.vercel.app. No dia do
+   domínio próprio será uma propriedade nova, com código novo, e o histórico
+   não vem junto — por isso vale registrar o domínio antes de o site começar
+   a receber busca de verdade.
+--------------------------------------------------------------------------- */
+export const VERIFICACAO_GOOGLE = "lZ8qkz4LpZF3X5Fozk7lQXfGRyq_BL27SHrrHAPNImI";

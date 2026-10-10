@@ -7,7 +7,7 @@ import { MARCA } from "@/lib/loja";
 /* De onde o site está sendo servido. A cadeia de variáveis mora em
    lib/site.ts porque o sitemap, o robots e os dados estruturados precisam da
    mesma resposta. */
-import { ORIGEM } from "@/lib/site";
+import { ORIGEM, VERIFICACAO_GOOGLE } from "@/lib/site";
 import { Analytics } from "@/components/site/Analytics";
 import { DadosEstruturados } from "@/components/site/DadosEstruturados";
 import { lojaJsonLd } from "@/lib/dados-estruturados";
@@ -29,6 +29,7 @@ export const metadata: Metadata = {
     template: `%s | ${MARCA.nome}`,
   },
   description: DESCRICAO,
+  verification: { google: VERIFICACAO_GOOGLE },
   openGraph: {
     siteName: MARCA.nome,
     title: TITULO,
