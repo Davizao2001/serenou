@@ -7,6 +7,7 @@ import { Vitrine } from "@/components/catalogo/Vitrine";
 import { listarProdutosComEstado, secoesDaLista } from "@/sanity/lib/produtos";
 import { produtosVisiveis, filtrarPorSelecao, GRADE_DENSA } from "@/lib/catalogo";
 import { CATEGORIAS, COLECOES } from "@/lib/loja";
+import { IMAGEM_DO_CARTAO } from "@/lib/site";
 
 /* O Next exige um literal aqui: o valor da configuração de segmento é lido
    na compilação, antes de qualquer import rodar. 60 segundos é o mesmo
@@ -36,10 +37,19 @@ function nomeDe(filtro: string): string {
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const { c } = await searchParams;
   const filtro = c && FILTROS.has(c) ? c : "tudo";
+  /* O canônico acompanha o filtro, não aponta sempre para /catalogo: cada
+     seleção devolve uma lista de verdade, com título próprio, e é uma página
+     que vale ser encontrada. Apontar todas para /catalogo diria ao Google que
+     "Vestidos" é uma cópia do catálogo inteiro — e ele deixaria de mostrar a
+     página de vestidos para quem procura vestido. */
+  const caminho = filtro === "tudo" ? "/catalogo" : `/catalogo?c=${filtro}`;
+
   return {
     title: nomeDe(filtro),
     description:
       "As peças da Serenou: vestidos, macaquinhos, conjuntos, calças, blusas e moda praia.",
+    alternates: { canonical: caminho },
+    openGraph: { url: caminho, images: [IMAGEM_DO_CARTAO] },
   };
 }
 

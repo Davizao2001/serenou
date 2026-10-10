@@ -8,6 +8,7 @@ import { MARCA } from "@/lib/loja";
    lib/site.ts porque o sitemap, o robots e os dados estruturados precisam da
    mesma resposta. */
 import { ORIGEM } from "@/lib/site";
+import { Analytics } from "@/components/site/Analytics";
 import { DadosEstruturados } from "@/components/site/DadosEstruturados";
 import { lojaJsonLd } from "@/lib/dados-estruturados";
 
@@ -112,6 +113,8 @@ export default function RootLayout({
           Pular para o conteúdo
         </a>
         {children}
+        {/* Depois do conteúdo, e só em produção. Ver o componente. */}
+        <Analytics />
       </body>
     </html>
   );

@@ -15,6 +15,7 @@
    reimportar e recolocar dentro de <main>, depois de <ChapterVersatil />, e
    tirar a faixa de degradê do topo de ASerenou (era o teaser que levava o
    fundo do bege para o carvão). */
+import type { Metadata } from "next";
 import { SerenouIntro } from "@/components/intro/SerenouIntro";
 import { Cabecalho } from "@/components/site/Cabecalho";
 import { Opening } from "@/components/site/Opening";
@@ -26,10 +27,22 @@ import { ASerenou } from "@/components/site/ASerenou";
 import { LojaFisica } from "@/components/site/LojaFisica";
 import { Fecho } from "@/components/site/Fecho";
 import { listarProdutos } from "@/sanity/lib/produtos";
+import { IMAGEM_DO_CARTAO } from "@/lib/site";
 
 /* O mesmo REVALIDAR do catálogo e das páginas de peça. O Next exige um
    literal: o valor é lido na compilação, antes de qualquer import rodar. */
 export const revalidate = 60;
+
+/* O ENDEREÇO CANÔNICO DA HOME
+   A home responde em "/", mas também em "/?intro=0" e em qualquer "?utm_..."
+   que vier de link compartilhado. Sem canônico, cada variação é uma página
+   diferente para o Google e a força do endereço se divide entre elas.
+   `openGraph.url` é o par disso no cartão de link: sem ele o WhatsApp monta
+   a prévia sem endereço de origem. */
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  openGraph: { url: "/", images: [IMAGEM_DO_CARTAO] },
+};
 
 export default async function Home() {
   /* A home passa a ler o catálogo por causa da vitrine. `listarProdutos`

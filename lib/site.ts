@@ -32,3 +32,28 @@ export const ORIGEM_ABSOLUTA = ORIGEM ?? "http://localhost:3000";
 export function url(caminho = "/"): string {
   return new URL(caminho, ORIGEM_ABSOLUTA).toString();
 }
+
+/* ---------------------------------------------------------------------------
+   A IMAGEM DO CARTÃO DE LINK
+
+   O arquivo mora em app/opengraph-image.jpg e o Next publica a rota sozinho.
+   Ele também injeta a tag em toda página — MAS só enquanto a página não
+   declarar `openGraph` nenhum: declarar o objeto substitui o herdado inteiro,
+   imagem junto. Como o catálogo precisa declarar `openGraph.url`, ele perdia
+   a imagem em silêncio. Por isso o endereço vive aqui, e quem declara
+   `openGraph` repõe a imagem de propósito.
+--------------------------------------------------------------------------- */
+export const IMAGEM_DO_CARTAO = "/opengraph-image.jpg";
+
+/* ---------------------------------------------------------------------------
+   GOOGLE ANALYTICS
+
+   O identificador de medição do GA4. Ele é público — sai no código-fonte de
+   qualquer página — então mora aqui e não numa variável de ambiente: uma
+   variável a menos para alguém esquecer de cadastrar no dia em que o projeto
+   for recriado na Vercel.
+
+   Vazio desliga a medição. Ver components/site/Analytics.tsx, que também só
+   carrega em produção.
+--------------------------------------------------------------------------- */
+export const GA_ID = "";

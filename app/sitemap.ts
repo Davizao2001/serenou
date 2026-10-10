@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { listarSlugs } from "@/sanity/lib/produtos";
+import { listarSlugs, secoesComPecas } from "@/sanity/lib/produtos";
 import { CATEGORIAS, COLECOES } from "@/lib/loja";
 import { url } from "@/lib/site";
 
@@ -30,16 +30,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const agora = new Date();
   const slugs = await listarSlugs();
 
+  /* SÓ ENTRA SEÇÃO QUE TEM PEÇA
+
+     O sitemap anunciava /catalogo?c=novidades e ?c=promocoes sempre, e as
+     duas estão vazias desde o primeiro dia — nenhuma peça foi marcada. É o
+     mesmo furo que o menu tinha: avisar o Google sobre uma página vazia faz
+     ele rastrear, achar nada e descontar a confiança no resto do sitemap.
+     Agora a lista sai do catálogo, pela mesma regra do menu. */
+  const secoes = await secoesComPecas();
+  const temColecao = (slug: string) =>
+    slug === "novidades" ? secoes.novidades : secoes.promocoes;
+
   return [
     { url: url("/"), lastModified: agora },
     { url: url("/catalogo"), lastModified: agora },
 
-    ...CATEGORIAS.map((c) => ({
+    ...CATEGORIAS.filter((c) => secoes.categorias.includes(c.slug)).map((c) => ({
       url: url(`/catalogo?c=${c.slug}`),
       lastModified: agora,
     })),
 
-    ...COLECOES.map((c) => ({
+    ...COLECOES.filter((c) => temColecao(c.slug)).map((c) => ({
       url: url(`/catalogo?c=${c.slug}`),
       lastModified: agora,
     })),

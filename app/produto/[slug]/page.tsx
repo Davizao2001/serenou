@@ -11,6 +11,7 @@ import { buscarProduto, listarSlugs, relacionadas } from "@/sanity/lib/produtos"
 import { largest } from "@/lib/media";
 import { formatarPreco } from "@/lib/catalogo";
 import { MARCA, CATEGORIAS } from "@/lib/loja";
+import { IMAGEM_DO_CARTAO } from "@/lib/site";
 import { DadosEstruturados } from "@/components/site/DadosEstruturados";
 import { produtoJsonLd, trilhaJsonLd } from "@/lib/dados-estruturados";
 
@@ -60,11 +61,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: descricao,
     alternates: { canonical: `/produto/${p.slug}` },
     openGraph: {
+      url: `/produto/${p.slug}`,
       title: `${p.nome} | ${MARCA.nome}`,
       description: descricao,
       type: "website",
       locale: "pt_BR",
-      images: capa ? [{ url: capa, alt: p.imagens[0].alt }] : undefined,
+      /* A foto da peça é sempre melhor que a da loja — é ela que a cliente
+         viu antes de mandar o link. Peça sem foto cai na imagem da loja, em
+         vez de mandar um cartão cinza pelo WhatsApp. */
+      images: capa ? [{ url: capa, alt: p.imagens[0].alt }] : [IMAGEM_DO_CARTAO],
     },
   };
 }
